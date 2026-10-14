@@ -1,0 +1,6 @@
+.env
+out/
+state/
+__pycache__/
+*.pyc
+config/client_secret.json

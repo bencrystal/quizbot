@@ -1,0 +1,33 @@
+# quizbot settings. Any key here can be overridden by env var QUIZBOT_<KEY> (see .env.example).
+
+rounds_per_episode: 10
+countdown_seconds: 5
+width: 1920
+height: 1080
+fps: 30
+
+# Narration. dev = silent placeholder tones (for testing). openai | elevenlabs | piper for real voices.
+tts_provider: dev
+tts_voice: ""
+
+# Copywriting. template = free & deterministic. claude = titles/intros/fact rewrites via the Claude API.
+planner: template
+claude_model: claude-sonnet-4-5
+
+# Optional looping music bed under the whole video (royalty-free!). Leave empty for none.
+music_bed: ""
+music_bed_db: -18
+
+# Publishing. Keep upload: false until you've watched a few renders.
+upload: false
+youtube_privacy: private      # private | unlisted | public
+schedule_hours_ahead: 0       # >0 schedules publishAt N hours after upload (forces private until then)
+youtube_category_id: "27"     # Education
+made_for_kids: false
+
+notify_webhook: ""            # Slack/Discord incoming webhook URL for run summaries
+
+packs:
+  pokemon:
+    generations: [1, 2, 3, 4]
+    types: [fire, water, grass, electric, psychic, ghost, dragon, bug]

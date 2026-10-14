@@ -1,0 +1,54 @@
+# Alternative to launchd: run in GitHub Actions so the Mac Mini doesn't have to be on.
+# Secrets needed: OPENAI_API_KEY (or ELEVENLABS_API_KEY), ANTHROPIC_API_KEY (if planner: claude),
+# YT_CLIENT_SECRET_JSON (contents of config/client_secret.json), YT_TOKEN_JSON (contents of
+# state/youtube_token.json after running `python -m quizbot auth` locally once).
+# State (used-items DB) is kept as a cache so runs don't repeat Pokémon; also committed as artifact.
+name: daily episode
+on:
+  schedule:
+    - cron: "0 11 * * *"      # 06:00 America/New_York (EST) — adjust for DST or just accept the hour shift
+  workflow_dispatch:
+    inputs:
+      pack: { default: pokemon }
+      theme: { default: "" }
+
+jobs:
+  episode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install -r requirements.txt
+      - uses: actions/cache@v4
+        with:
+          path: state
+          key: quizbot-state-${{ github.run_id }}
+          restore-keys: quizbot-state-
+      - name: secrets → files
+        run: |
+          mkdir -p state config
+          echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
+          echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
+      - name: run
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          QUIZBOT_TTS_PROVIDER: openai
+          QUIZBOT_PLANNER: claude
+          QUIZBOT_UPLOAD: "true"
+        run: |
+          python -m quizbot retry-uploads || true
+          python -m quizbot run --pack "${{ github.event.inputs.pack || 'pokemon' }}" \
+            ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: episode-${{ github.run_id }}
+          path: |
+            out/**/*.mp4
+            out/**/thumbnail.jpg
+            out/**/episode.json
+            state/quizbot.log
+          retention-days: 7

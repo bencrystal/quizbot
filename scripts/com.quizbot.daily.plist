@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- launchd job: one episode every day at 06:00 local time.
+     Install:
+       sed "s#__REPO__#$PWD#g" scripts/com.quizbot.daily.plist > ~/Library/LaunchAgents/com.quizbot.daily.plist
+       launchctl load ~/Library/LaunchAgents/com.quizbot.daily.plist
+     Test now:  launchctl start com.quizbot.daily
+     Remove:    launchctl unload ~/Library/LaunchAgents/com.quizbot.daily.plist
+     launchd runs missed jobs on wake, so a sleeping Mac Mini still catches up. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.quizbot.daily</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>__REPO__/scripts/run.sh</string>
+    <string>pokemon</string>
+  </array>
+  <key>WorkingDirectory</key><string>__REPO__</string>
+  <key>StartCalendarInterval</key>
+  <dict><key>Hour</key><integer>6</integer><key>Minute</key><integer>0</integer></dict>
+  <key>StandardOutPath</key><string>__REPO__/state/launchd.out.log</string>
+  <key>StandardErrorPath</key><string>__REPO__/state/launchd.err.log</string>
+  <key>Nice</key><integer>10</integer>
+</dict>
+</plist>

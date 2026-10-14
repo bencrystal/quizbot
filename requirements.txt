@@ -1,0 +1,11 @@
+requests>=2.31
+pyyaml>=6
+pillow>=10
+# planner: claude
+anthropic>=0.40
+# tts: openai
+openai>=1.40
+# upload
+google-api-python-client>=2.140
+google-auth-oauthlib>=1.2
+google-auth-httplib2>=0.2
