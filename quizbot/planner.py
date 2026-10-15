@@ -1,7 +1,7 @@
 """Turn a pack + theme into an Episode. Two modes:
   template — deterministic strings, zero cost, always works.
-  claude   — Claude writes the title, description, intro/outro and rewrites each fact to be
-             punchier for narration. Falls back to template on any error so a run never dies here.
+  claude   — Claude writes the title, description, intro/outro, per-round host banter, and rewrites each
+             fact to sound good read aloud. Falls back to template on any error so a run never dies here.
 """
 from __future__ import annotations
 
@@ -26,15 +26,22 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     themes = pack.themes()
     theme = next((t for t in themes if t["id"] == theme_id), None) if theme_id else None
     theme = theme or pack.pick_theme(state.recent_themes(pack.name), rng)
-    print(f"[plan] theme: {theme['label']}")
+    print(f"[plan] format={settings.format} mechanic={settings.mechanic} theme={theme['label']}")
 
     pool = pack.candidates(theme)
-    items = pack.select(pool, state.used_ids(pack.name), settings.rounds_per_episode, rng)
+    items = pack.select(pool, state.used_ids(pack.name), settings.rounds, rng)
     if not items:
         raise SystemExit(f"No candidates for theme {theme['label']}")
+    if settings.mechanic == "choice":
+        for it in items:
+            it.choices = pack.make_choices(it, pool, rng)
 
     today = dt.date.today().isoformat()
-    slug = f"{pack.name}-{slugify(theme['label'])}-{today}"
+    slug = f"{pack.name}-{settings.format}-{slugify(theme['label'])}-{today}"
+    if settings.format == "short":
+        slug += f"-{slugify(items[0].answer)}"
+    if settings.mechanic != "ladder":
+        slug += f"-{settings.mechanic}"
     ep = _template_episode(pack, theme, items, slug, settings)
 
     if settings.planner == "claude":
@@ -47,18 +54,31 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
 
 def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str, settings: Settings) -> Episode:
     n = len(items)
-    title = f"{pack.display_name}: {theme['label']} ({n} Rounds)"
-    desc = (f"{pack.channel_blurb}\n\n{n} rounds of {theme['label']}. Listen, guess before the timer runs out, "
-            f"then learn something about each one.\n\nAnswers:\n" +
-            "\n".join(f"{i+1}. {it.answer}" for i, it in enumerate(items)) +
-            "\n\n#quiz #audioquiz #" + slugify(pack.name))
-    intro = (f"Welcome to {pack.display_name}. {n} rounds, {settings.countdown_seconds} seconds each. "
-             f"Today's theme: {theme['label']}. Let's go.")
-    outro = "That's all for today. How many did you get? Tell me in the comments, and subscribe for more."
-    tags = ["quiz", "audio quiz", "trivia", pack.name, theme["label"]]
-    return Episode(slug=slug, pack=pack.name, title=title, description=desc, tags=tags,
+    short = settings.format == "short"
+    answers = "\n".join(f"{i+1}. {it.answer}" for i, it in enumerate(items))
+    hashtags = f"#quiz #audioquiz #{slugify(pack.name)}" + (" #shorts" if short else "")
+
+    if short:
+        title = f"Can you name this {theme['label']} from its sound? #shorts"
+        desc = (f"{pack.channel_blurb}\n\nOne round. Three hints. How fast did you get it?\n"
+                f"Full {n if n > 1 else 10}-round quizzes every week.\n\nAnswer: {items[0].answer}\n\n{hashtags}")
+        intro = f"{pack.display_name}. Three hints, three points. Ready?"
+        outro = "Full quiz every Sunday. Follow so you don't miss it."
+    else:
+        title = f"{pack.display_name}: {theme['label']} ({n} Rounds)"
+        desc = (f"{pack.channel_blurb}\n\n{n} rounds of {theme['label']}. Guess after the sound for 3 points, "
+                f"after the first hint for 2, after the second for 1. Play with your eyes closed if you like — "
+                f"every hint is spoken.\n\nAnswers:\n{answers}\n\n{hashtags}")
+        intro = (f"Welcome to {pack.display_name}. {n} rounds, easy to hard. "
+                 + ("Guess after the sound for three points, after the first hint for two, after the second for one. "
+                    if settings.mechanic == "ladder" else "One point per round. ")
+                 + f"Today's theme: {theme['label']}. Round one.")
+        outro = (f"That's {n} rounds, {(3 if settings.mechanic == 'ladder' else 1) * n} points possible. "
+                 f"Drop your score in the comments, and subscribe for next week's quiz.")
+    tags = ["quiz", "audio quiz", "trivia", "guessing game", pack.name, theme["label"]]
+    return Episode(slug=slug, pack=pack.name, title=title[:100], description=desc, tags=tags,
                    intro=intro, outro=outro, items=items, theme=theme["label"],
-                   countdown_seconds=settings.countdown_seconds)
+                   format=settings.format, mechanic=settings.mechanic, stage_seconds=settings.stage)
 
 
 def _claude_polish(ep: Episode, pack: Pack, settings: Settings) -> Episode:
@@ -66,21 +86,28 @@ def _claude_polish(ep: Episode, pack: Pack, settings: Settings) -> Episode:
 
     client = anthropic.Anthropic()
     payload = {
-        "show": pack.display_name,
-        "theme": ep.theme,
-        "rounds": [{"n": i + 1, "answer": it.answer, "fact": it.fact} for i, it in enumerate(ep.items)],
+        "show": pack.display_name, "format": ep.format, "theme": ep.theme, "mechanic": ep.mechanic,
+        "rounds": [{"n": i + 1, "answer": it.answer, "hints": it.hints, "fact": it.fact} for i, it in enumerate(ep.items)],
     }
-    prompt = f"""You write narration for a YouTube audio-quiz channel. The host plays a sound, viewers guess
-within {ep.countdown_seconds} seconds, then the host reveals the answer and reads one interesting fact.
+    short = ep.format == "short"
+    prompt = f"""You write narration for a YouTube audio-quiz channel called "{settings.channel_name}".
+The host plays a sound; viewers guess; then hints are read one at a time ({ep.stage_seconds}s of thinking time
+after each), then the host reveals the answer and reads one fact. Many viewers listen without watching.
 
-Given this episode plan, return JSON with keys:
-  title        - YouTube title, under 70 chars, curiosity-driven, no clickbait caps
-  description  - 2-3 sentence description, then a timestamps-free answer list is appended by us (don't include)
-  intro        - 2 short spoken sentences welcoming viewers and naming the theme
-  outro        - 1-2 short spoken sentences; ask for a comment with their score
-  facts        - list of {{"n": int, "fact": str}}: rewrite each fact into 1-2 spoken sentences that are
-                 accurate to the source text, start with the answer's name, and sound good read aloud.
-Rules: never invent facts not in the source; keep names exactly as given; plain text, no emoji.
+{"This is a 9:16 SHORT: one round, ~40 seconds total. Hook in the first sentence." if short else
+ f"This is a long-form episode of {len(ep.items)} rounds, ordered easy to hard."}
+
+Return JSON with keys:
+  title        - YouTube title, under {60 if short else 70} chars, specific and curiosity-driven, no ALL CAPS{", ends with #shorts" if short else ""}
+  description  - 2 sentences (we append the answer list ourselves)
+  intro        - {"1 short spoken sentence" if short else "2-3 short spoken sentences; explain the 3/2/1 scoring in one clause"}
+  outro        - 1-2 short spoken sentences asking for a score in the comments
+  banter       - list of {{"n": int, "line": str}}: an optional 3-8 word spoken reaction the host says right after
+                 revealing the answer for that round (e.g. "A classic. Everyone got that one."). Vary them; at most
+                 half the rounds get one; never spoil a later answer.
+  facts        - list of {{"n": int, "fact": str}}: rewrite each fact into 1-2 spoken sentences, accurate to the
+                 source text, starting with the answer's name, no invented facts.
+Plain text only, no emoji, keep names exactly as given.
 
 Episode plan:
 {json.dumps(payload, ensure_ascii=False, indent=1)}
@@ -88,17 +115,19 @@ Episode plan:
     msg = client.messages.create(model=settings.claude_model, max_tokens=4000,
                                  messages=[{"role": "user", "content": prompt}])
     text = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
-    text = text[text.find("{"): text.rfind("}") + 1]
-    data = json.loads(text)
+    data = json.loads(text[text.find("{"): text.rfind("}") + 1])
 
     ep.title = data.get("title", ep.title)[:100]
     answers = "\n".join(f"{i+1}. {it.answer}" for i, it in enumerate(ep.items))
-    ep.description = f"{data.get('description', '').strip()}\n\nAnswers:\n{answers}\n\n#quiz #audioquiz #{slugify(pack.name)}"
+    hashtags = f"#quiz #audioquiz #{slugify(pack.name)}" + (" #shorts" if short else "")
+    label = "Answer" if short else "Answers"
+    ep.description = f"{data.get('description', '').strip()}\n\n{label}:\n{answers}\n\n{hashtags}"
     ep.intro = data.get("intro", ep.intro)
     ep.outro = data.get("outro", ep.outro)
-    facts = {f["n"]: f["fact"] for f in data.get("facts", [])}
+    ep.banter = {int(b["n"]): b["line"].strip() for b in data.get("banter", []) if b.get("line")}
+    facts = {int(f["n"]): f["fact"] for f in data.get("facts", [])}
     for i, it in enumerate(ep.items, 1):
-        if i in facts and facts[i].strip():
+        if facts.get(i, "").strip():
             it.fact = facts[i].strip()
     print(f"[plan] Claude title: {ep.title}")
     return ep

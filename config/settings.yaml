@@ -1,31 +1,39 @@
-# quizbot settings. Any key here can be overridden by env var QUIZBOT_<KEY> (see .env.example).
+# quizbot settings. Any key can be overridden by env var QUIZBOT_<KEY> (see .env.example) or CLI flags.
 
-rounds_per_episode: 10
-countdown_seconds: 5
-width: 1920
-height: 1080
+channel_name: "Audio Quiz"      # shown on cards; replace with your channel name
+
+# Game -----------------------------------------------------------------------
+format: long                    # long (16:9, 10 rounds) | short (9:16, 1 round). Scheduler passes --format.
+mechanic: ladder                # ladder (sound → hint → hint, 3/2/1 pts) | choice (spoken A-D) | cold
+rounds_per_episode: 0           # 0 = format default (10 long / 1 short)
+stage_seconds: 0                # thinking time per stage; 0 = format default (4 long / 3 short)
 fps: 30
 
-# Narration. dev = silent placeholder tones (for testing). openai | elevenlabs | piper for real voices.
-tts_provider: dev
-tts_voice: ""
+# Your audio (drop files in assets/music/). All optional; placeholders are synthesized if missing.
+music_bed: assets/music/bed.wav       # loopable, ~30-60s, instrumental
+music_bed_db: -20
+sting: assets/music/sting.wav         # ~0.5s reveal hit
+tick: assets/music/tick.wav           # ~0.1s per-second blip during thinking time
 
-# Copywriting. template = free & deterministic. claude = titles/intros/fact rewrites via the Claude API.
-planner: template
+# Providers ------------------------------------------------------------------
+tts_provider: dev               # dev | kokoro | openai | elevenlabs | piper
+tts_voice: ""                   # kokoro: af_heart / am_michael / bf_emma ... ; elevenlabs: voice id
+kokoro_url: ""                  # e.g. http://localhost:8880 if you run kokoro-fastapi; empty = in-process
+planner: template               # template | claude   (claude = titles, intros, banter, fact rewrites)
 claude_model: claude-sonnet-4-5
 
-# Optional looping music bed under the whole video (royalty-free!). Leave empty for none.
-music_bed: ""
-music_bed_db: -18
+# Safety rails for unattended runs --------------------------------------------
+max_episodes_per_day: 2         # scheduler never renders more than this, whatever happens
+max_tts_chars_per_run: 20000    # aborts a run that would blow through a paid TTS tier
 
-# Publishing. Keep upload: false until you've watched a few renders.
-upload: false
-youtube_privacy: private      # private | unlisted | public
-schedule_hours_ahead: 0       # >0 schedules publishAt N hours after upload (forces private until then)
-youtube_category_id: "27"     # Education
+# Publishing -----------------------------------------------------------------
+upload: false                   # keep false until you've watched a few renders
+youtube_privacy: private        # private | unlisted | public
+publish_time: "12:00"           # local time episodes go live (public only); render time doesn't matter
+youtube_category_id: "27"       # Education
 made_for_kids: false
 
-notify_webhook: ""            # Slack/Discord incoming webhook URL for run summaries
+notify_webhook: ""              # Slack/Discord incoming webhook for one-line run summaries
 
 packs:
   pokemon:

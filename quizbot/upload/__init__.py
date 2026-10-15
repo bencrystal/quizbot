@@ -40,6 +40,20 @@ def _creds(settings: Settings, interactive: bool):
     return creds
 
 
+def next_publish_time(settings: Settings) -> dt.datetime | None:
+    """publish_time "HH:MM" → next local occurrence at least 1h away; else fixed offset; else None."""
+    now = dt.datetime.now().astimezone()
+    if settings.publish_time:
+        h, m = (int(x) for x in settings.publish_time.split(":"))
+        t = now.replace(hour=h, minute=m, second=0, microsecond=0)
+        while t < now + dt.timedelta(hours=1):
+            t += dt.timedelta(days=1)
+        return t
+    if settings.schedule_hours_ahead > 0:
+        return now + dt.timedelta(hours=settings.schedule_hours_ahead)
+    return None
+
+
 def authorize(settings: Settings) -> None:
     _creds(settings, interactive=True)
     print("YouTube auth OK; token saved to state/youtube_token.json")
@@ -51,10 +65,11 @@ def upload(settings: Settings, ep: Episode, result: RenderResult) -> str:
 
     yt = build("youtube", "v3", credentials=_creds(settings, interactive=False))
     status = {"privacyStatus": settings.youtube_privacy, "selfDeclaredMadeForKids": settings.made_for_kids}
-    if settings.schedule_hours_ahead > 0:
-        publish_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=settings.schedule_hours_ahead)
-        status["privacyStatus"] = "private"            # required for scheduled publish
-        status["publishAt"] = publish_at.isoformat().replace("+00:00", "Z")
+    publish_at = next_publish_time(settings)
+    if publish_at and settings.youtube_privacy == "public":
+        status["privacyStatus"] = "private"            # YouTube requires private + publishAt for scheduling
+        status["publishAt"] = publish_at.astimezone(dt.timezone.utc).isoformat().replace("+00:00", "Z")
+        print(f"[upload] scheduled for {publish_at:%Y-%m-%d %H:%M %Z}")
     body = {
         "snippet": {"title": ep.title[:100], "description": ep.description[:5000],
                     "tags": ep.tags[:30], "categoryId": settings.youtube_category_id},

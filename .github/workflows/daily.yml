@@ -1,15 +1,15 @@
-# Alternative to launchd: run in GitHub Actions so the Mac Mini doesn't have to be on.
-# Secrets needed: OPENAI_API_KEY (or ELEVENLABS_API_KEY), ANTHROPIC_API_KEY (if planner: claude),
-# YT_CLIENT_SECRET_JSON (contents of config/client_secret.json), YT_TOKEN_JSON (contents of
-# state/youtube_token.json after running `python -m quizbot auth` locally once).
-# State (used-items DB) is kept as a cache so runs don't repeat Pokémon; also committed as artifact.
-name: daily episode
+# Zero-hardware alternative to launchd. Kokoro runs fine on the CPU runners.
+# Secrets: YT_CLIENT_SECRET_JSON (config/client_secret.json), YT_TOKEN_JSON (state/youtube_token.json after a local
+# `python -m quizbot auth`), ANTHROPIC_API_KEY if planner: claude, ELEVENLABS_API_KEY/OPENAI_API_KEY if used.
+# The used-items DB persists in the Actions cache so Pokémon don't repeat.
+name: episodes
 on:
   schedule:
-    - cron: "0 11 * * *"      # 06:00 America/New_York (EST) — adjust for DST or just accept the hour shift
+    - cron: "0 11 * * *"      # daily Short   — 07:00 New York (EDT; 06:00 in EST)
+    - cron: "30 11 * * 6"     # weekly long   — Saturday 07:30 New York
   workflow_dispatch:
     inputs:
-      pack: { default: pokemon }
+      format: { default: short, type: choice, options: [short, long] }
       theme: { default: "" }
 
 jobs:
@@ -19,8 +19,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
-      - run: pip install -r requirements.txt
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng
+      - run: pip install -r requirements.txt kokoro soundfile
       - uses: actions/cache@v4
         with:
           path: state
@@ -31,16 +31,25 @@ jobs:
           mkdir -p state config
           echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
           echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
+      - name: decide format
+        id: fmt
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then echo "format=${{ github.event.inputs.format }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.schedule }}" = "30 11 * * 6" ]; then echo "format=long" >> $GITHUB_OUTPUT
+          else echo "format=short" >> $GITHUB_OUTPUT; fi
       - name: run
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          QUIZBOT_TTS_PROVIDER: openai
-          QUIZBOT_PLANNER: claude
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          QUIZBOT_TTS_PROVIDER: ${{ vars.QUIZBOT_TTS_PROVIDER || 'kokoro' }}
+          QUIZBOT_TTS_VOICE: ${{ vars.QUIZBOT_TTS_VOICE || 'am_michael' }}
+          QUIZBOT_PLANNER: ${{ vars.QUIZBOT_PLANNER || 'template' }}
           QUIZBOT_UPLOAD: "true"
+          TZ: America/New_York
         run: |
           python -m quizbot retry-uploads || true
-          python -m quizbot run --pack "${{ github.event.inputs.pack || 'pokemon' }}" \
+          python -m quizbot run --format ${{ steps.fmt.outputs.format }} \
             ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }}
       - uses: actions/upload-artifact@v4
         if: always()

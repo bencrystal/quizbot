@@ -14,10 +14,12 @@ class QuizItem:
     answer: str                  # what gets revealed, e.g. "Pikachu"
     prompt_audio: Path           # the sound the viewer has to identify
     fact: str                    # what the narrator reads after the reveal (Pokédex entry, trivia, ...)
-    reveal_image: Optional[Path] = None   # artwork shown on reveal (silhouetted during the question if silhouette=True)
+    reveal_image: Optional[Path] = None   # artwork shown on reveal (silhouetted during the question)
     subtitle: str = ""           # small line under the answer, e.g. "#025 · Electric"
-    hint: str = ""               # optional spoken hint during the countdown
-    silhouette: bool = True      # show the blacked-out reveal_image during the question
+    hints: list[str] = field(default_factory=list)   # hint ladder, easiest last: ["It's an Electric type", "the Mouse Pokémon"]
+    choices: list[str] = field(default_factory=list) # multiple-choice distractors (filled by planner when mechanic=choice)
+    difficulty: float = 0.0      # lower = easier; planner orders rounds easy → hard
+    silhouette: bool = True
     pronunciation: Optional[str] = None   # override how TTS should say `answer`
     meta: dict = field(default_factory=dict)
 
@@ -26,16 +28,19 @@ class QuizItem:
 class Episode:
     """A fully planned video, before any audio/video is generated."""
 
-    slug: str                    # filesystem-safe id, e.g. "pokemon-gen1-water-2026-10-14"
-    pack: str                    # pack name, e.g. "pokemon"
-    title: str                   # YouTube title
-    description: str             # YouTube description
+    slug: str
+    pack: str
+    title: str
+    description: str
     tags: list[str]
-    intro: str                   # narrator's opening line(s)
-    outro: str                   # narrator's closing line(s)
+    intro: str
+    outro: str
     items: list[QuizItem]
-    theme: str = ""              # human-readable theme the planner chose
-    countdown_seconds: int = 5
+    theme: str = ""
+    format: str = "long"         # long (16:9, many rounds) | short (9:16, 1 round)
+    mechanic: str = "ladder"     # ladder | choice | cold
+    stage_seconds: int = 4       # thinking time after the cry and after each hint
+    banter: dict = field(default_factory=dict)   # optional per-round host lines from the planner, {round_n: "..."}
     meta: dict = field(default_factory=dict)
 
 

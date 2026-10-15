@@ -50,7 +50,20 @@ class Pack(ABC):
         if len(fresh) < n:
             fresh = items  # pool exhausted for this theme: allow repeats rather than fail
         rng.shuffle(fresh)
-        return fresh[:n]
+        chosen = fresh[:n]
+        chosen.sort(key=lambda i: i.difficulty)   # progressive difficulty, easy → hard
+        return chosen
+
+    def make_choices(self, item: QuizItem, pool: list[QuizItem], rng: random.Random, k: int = 3) -> list[str]:
+        """Distractors for multiple-choice mode: other answers from the same theme."""
+        others = [i.answer for i in pool if i.answer != item.answer]
+        rng.shuffle(others)
+        return others[:k]
+
+    # Narration hooks a pack may override
+    hint_line: str = "Hint: {hint}."
+    listen_again_line: str = "Listen again."
+    choice_line: str = "Is it {choices}?"
 
 
 def get_pack(name: str, settings: Settings) -> Pack:

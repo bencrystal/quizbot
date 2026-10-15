@@ -1,4 +1,4 @@
-"""Settings: environment variables + config/settings.yaml. Env wins."""
+"""Settings: environment variables + config/settings.yaml. Env (QUIZBOT_<KEY>) wins."""
 from __future__ import annotations
 
 import os
@@ -24,40 +24,54 @@ def _load_env_file(path: Path) -> None:
 
 _load_env_file(ROOT / ".env")
 
+FORMATS = {
+    "long":  {"width": 1920, "height": 1080, "rounds": 10, "stage_seconds": 4},
+    "short": {"width": 1080, "height": 1920, "rounds": 1,  "stage_seconds": 3},
+}
+
 
 @dataclass
 class Settings:
     root: Path = ROOT
-    out_dir: Path = ROOT / "out"
+    out_dir: Path = ROOT / "out"        # point these at an external drive if you like
     state_dir: Path = ROOT / "state"
     cache_dir: Path = ROOT / "state" / "cache"
     assets_dir: Path = ROOT / "assets"
 
-    # Video
-    width: int = 1920
-    height: int = 1080
+    # Game
+    format: str = "long"                 # long | short  (overridden by --format)
+    mechanic: str = "ladder"             # ladder | choice | cold
+    rounds_per_episode: int = 0          # 0 = format default (10 long / 1 short)
+    stage_seconds: int = 0               # 0 = format default
     fps: int = 30
-    countdown_seconds: int = 5
-    rounds_per_episode: int = 10
-    music_bed: str = ""              # path to a loopable mp3/wav; empty = silence
-    music_bed_db: float = -18.0      # how far to duck the bed under narration
+
+    # Audio assets (all optional; synthesized fallbacks exist)
+    music_bed: str = ""                  # loopable bed under the whole video
+    music_bed_db: float = -20.0
+    sting: str = ""                      # plays on reveal
+    tick: str = ""                       # one-shot per second of thinking time
 
     # Providers
-    tts_provider: str = "dev"        # dev | openai | elevenlabs | piper
+    tts_provider: str = "dev"            # dev | kokoro | openai | elevenlabs | piper
     tts_voice: str = ""
-    planner: str = "template"        # template | claude
+    kokoro_url: str = ""                 # optional kokoro-fastapi base URL; empty = in-process
+    planner: str = "template"            # template | claude
     claude_model: str = "claude-sonnet-4-5"
 
+    # Safety rails for unattended runs
+    max_episodes_per_day: int = 2
+    max_tts_chars_per_run: int = 20000
+
     # Upload
-    upload: bool = False             # False = render only (safe default)
-    youtube_privacy: str = "private" # private | unlisted | public
-    youtube_category_id: str = "27"  # 27 = Education
-    schedule_hours_ahead: int = 0    # >0 = set publishAt N hours from now
+    upload: bool = False
+    youtube_privacy: str = "private"     # private | unlisted | public
+    youtube_category_id: str = "27"      # Education
+    publish_time: str = ""               # "HH:MM" local; episodes are scheduled to the next such time (≥1h out)
+    schedule_hours_ahead: int = 0        # alternative: fixed offset. publish_time wins if both set.
     made_for_kids: bool = False
+    channel_name: str = "Audio Quiz"
 
-    # Notifications
-    notify_webhook: str = ""         # Slack/Discord-style webhook; empty = log only
-
+    notify_webhook: str = ""
     raw: dict = field(default_factory=dict)
 
     @classmethod
@@ -66,11 +80,11 @@ class Settings:
         cfg_path = ROOT / "config" / "settings.yaml"
         data = yaml.safe_load(cfg_path.read_text()) if cfg_path.exists() else {}
         s.raw = data or {}
+        fields = {f for f in vars(s) if f != "raw"}
         for k, v in (data or {}).items():
-            if hasattr(s, k) and k != "raw":
-                setattr(s, k, v)
-        # env overrides, QUIZBOT_<UPPER>
-        for k in list(vars(s)):
+            if k in fields:
+                setattr(s, k, Path(v) if isinstance(getattr(s, k), Path) else v)
+        for k in fields:
             env = os.environ.get(f"QUIZBOT_{k.upper()}")
             if env is None:
                 continue
@@ -88,6 +102,32 @@ class Settings:
         for d in (s.out_dir, s.state_dir, s.cache_dir):
             d.mkdir(parents=True, exist_ok=True)
         return s
+
+    # ---- derived ---------------------------------------------------------------
+    @property
+    def width(self) -> int:
+        return FORMATS[self.format]["width"]
+
+    @property
+    def height(self) -> int:
+        return FORMATS[self.format]["height"]
+
+    @property
+    def rounds(self) -> int:
+        return self.rounds_per_episode or FORMATS[self.format]["rounds"]
+
+    @property
+    def stage(self) -> int:
+        return self.stage_seconds or FORMATS[self.format]["stage_seconds"]
+
+    def asset(self, name: str) -> Path | None:
+        v = getattr(self, name)
+        if not v:
+            return None
+        p = Path(v)
+        if not p.is_absolute():
+            p = self.root / p
+        return p if p.exists() else None
 
     def pack_config(self, name: str) -> dict:
         return (self.raw.get("packs") or {}).get(name) or {}

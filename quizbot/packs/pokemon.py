@@ -33,8 +33,9 @@ PRONUNCIATIONS = {
 class PokemonPack(Pack):
     name = "pokemon"
     display_name = "Guess That Pokémon"
-    question_line = "Number {n}. Who's that Pokémon?"
+    question_line = "Round {n}. Who's that Pokémon?"
     reveal_line = "It's {answer}!"
+    hint_line = "Hint: {hint}."
     channel_blurb = "Can you name the Pokémon from its cry alone?"
     accent_color = (255, 203, 5)
     bg_color = (24, 28, 58)
@@ -117,6 +118,11 @@ class PokemonPack(Pack):
         genus = next((g["genus"] for g in species["genera"] if g["language"]["name"] == "en"), "")
         types = " / ".join(t["type"]["name"].title() for t in poke["types"])
 
+        type_names = [t["type"]["name"].title() for t in poke["types"]]
+        type_hint = f"it's a {type_names[0]} type" if len(type_names) == 1 else f"it's a {type_names[0]} and {type_names[1]} type"
+        gen = next(g for g, (lo, hi) in GENERATIONS.items() if lo <= pid <= hi)
+        hints = [type_hint, f"it's known as the {genus}" if genus else f"it was introduced in Generation {gen}"]
+
         return QuizItem(
             id=f"pokemon:{pid}",
             answer=name,
@@ -124,11 +130,28 @@ class PokemonPack(Pack):
             reveal_image=art,
             fact=f"{name}, the {genus}. {fact}" if genus else fact,
             subtitle=f"#{pid:03d}  ·  {types}",
+            hints=hints,
+            difficulty=self._difficulty(pid, gen, species),
             pronunciation=PRONUNCIATIONS.get(name),
-            meta={"dex": pid, "types": types, "genus": genus,
+            meta={"dex": pid, "types": types, "genus": genus, "gen": gen,
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
         )
 
+    @staticmethod
+    def _difficulty(pid: int, gen: int, species: dict) -> float:
+        """Rough fame heuristic: starters/legendaries/mascots and early gens are easier."""
+        d = float(gen)
+        if pid in FAMOUS:
+            d -= 3
+        if species.get("is_legendary") or species.get("is_mythical"):
+            d -= 1.5
+        if species.get("is_baby"):
+            d += 1
+        return d
+
+
+FAMOUS = {1, 3, 4, 6, 7, 9, 25, 26, 39, 52, 54, 94, 129, 130, 131, 133, 143, 149, 150, 151,
+          152, 155, 158, 172, 175, 196, 197, 249, 250, 252, 255, 258, 282, 384, 445, 448, 658, 778}
 
 STARTERS = [1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501,
             650, 653, 656, 722, 725, 728, 810, 813, 816, 906, 909, 912]

@@ -77,6 +77,11 @@ class State:
             return self.conn.execute("SELECT * FROM episodes WHERE status=? ORDER BY created_at", (status,)).fetchall()
         return self.conn.execute("SELECT * FROM episodes ORDER BY created_at").fetchall()
 
+    def episodes_today(self) -> int:
+        start = time.time() - (time.time() % 86400)   # UTC midnight is fine for a cap
+        return self.conn.execute("SELECT COUNT(*) FROM episodes WHERE created_at>=? AND status!='failed'",
+                                 (start,)).fetchone()[0]
+
     def recent_themes(self, pack: str, n: int = 10) -> list[str]:
         rows = self.conn.execute(
             "SELECT theme FROM episodes WHERE pack=? ORDER BY created_at DESC LIMIT ?", (pack, n)

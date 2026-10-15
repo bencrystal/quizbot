@@ -46,5 +46,8 @@ class FixturePack(Pack):
                 d.ellipse((340, 220, 400, 280), fill=(20, 20, 20, 255))
                 img.save(png)
             items.append(QuizItem(id=f"fixture:{i}", answer=name, prompt_audio=wav,
-                                  reveal_image=png, fact=fact, subtitle=f"#{i:03d}  ·  {hz} Hz"))
+                                  reveal_image=png, fact=fact, subtitle=f"#{i:03d}  ·  {hz} Hz",
+                                  hints=[f"its pitch is {'above' if hz >= 300 else 'below'} 300 hertz",
+                                         f"its name starts with {name[0]}"],
+                                  difficulty=abs(hz - 440) / 100))
         return items

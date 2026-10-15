@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Entry point for launchd/cron. Fully self-contained: no shell profile assumed.
-#   scripts/run.sh pokemon            render + (if settings.upload) upload one episode
-#   scripts/run.sh pokemon --upload   force upload
+# Entry point for launchd/cron. Self-contained: no shell profile assumed.
+#   scripts/run.sh short            daily Short
+#   scripts/run.sh long             weekly long-form
+#   scripts/run.sh long --theme gen1 --upload
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -10,13 +11,19 @@ mkdir -p state
 exec >> state/quizbot.log 2>&1
 echo "=== $(date '+%F %T') run $* ==="
 
-# single-instance lock so an overlapping schedule can't double-render
-exec 9>state/.lock
-flock -n 9 || { echo "another run in progress, exiting"; exit 0; }
+# single-instance lock so overlapping schedules can't double-render (flock is in Homebrew `util-linux` on macOS;
+# falls back to a plain lock dir if missing)
+if command -v flock >/dev/null; then
+  exec 9>state/.lock
+  flock -n 9 || { echo "another run in progress, exiting"; exit 0; }
+else
+  mkdir state/.lockdir 2>/dev/null || { echo "another run in progress, exiting"; exit 0; }
+  trap 'rmdir state/.lockdir' EXIT
+fi
 
 PY=.venv/bin/python
 [ -x "$PY" ] || PY=python3
 
-PACK="${1:-pokemon}"; shift || true
+FORMAT="${1:-short}"; shift || true
 "$PY" -m quizbot retry-uploads || true     # drain anything that rendered but failed to upload last time
-"$PY" -m quizbot run --pack "$PACK" "$@"
+"$PY" -m quizbot run --format "$FORMAT" "$@"

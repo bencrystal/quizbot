@@ -1,12 +1,13 @@
 """quizbot CLI.
 
-  python -m quizbot run  --pack pokemon            plan → tts → render → (upload) → record
-  python -m quizbot run  --pack pokemon --theme gen1 --upload
-  python -m quizbot test                           offline smoke test with the fixture pack
-  python -m quizbot auth                           one-time YouTube OAuth
-  python -m quizbot status                         list episodes and their state
-  python -m quizbot themes --pack pokemon          list available themes
-  python -m quizbot retry-uploads                  upload any rendered-but-not-uploaded episodes
+  python -m quizbot run --format short                     one 9:16 Short (daily)
+  python -m quizbot run --format long                      one 16:9 10-round episode (weekly)
+  python -m quizbot run --pack pokemon --theme gen1 --mechanic choice --upload
+  python -m quizbot test                                   offline smoke test, both formats, fixture pack
+  python -m quizbot auth                                   one-time YouTube OAuth
+  python -m quizbot status                                 list episodes and their state
+  python -m quizbot themes --pack pokemon
+  python -m quizbot retry-uploads                          upload any rendered-but-not-uploaded episodes
 """
 from __future__ import annotations
 
@@ -25,9 +26,12 @@ from .tts import TTS
 
 def cmd_run(args, settings: Settings) -> int:
     state = State(settings.state_dir / "quizbot.db")
+    if not args.force and state.episodes_today() >= settings.max_episodes_per_day:
+        notify(settings, f"⏸ daily cap reached ({settings.max_episodes_per_day}); not rendering. Use --force to override.")
+        return 0
     pack = get_pack(args.pack, settings)
     ep = plan_episode(pack, settings, state, seed=args.seed, theme_id=args.theme)
-    print(f"[plan] {ep.slug}: {len(ep.items)} rounds → {', '.join(i.answer for i in ep.items)}")
+    print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned")
     state.mark_used(ep.pack, [i.id for i in ep.items], ep.slug)
     try:
@@ -39,15 +43,14 @@ def cmd_run(args, settings: Settings) -> int:
         return 1
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "rendered",
                          video_path=str(result.video), thumbnail_path=str(result.thumbnail))
-    msg = f"🎬 rendered {ep.slug} ({result.duration_seconds:.0f}s) → {result.video}"
+    msg = f"🎬 {ep.format} rendered: {ep.title}  ({result.duration_seconds:.0f}s)\n{result.video}"
 
     if args.upload or settings.upload:
         try:
             from .upload import upload
             vid = upload(settings, ep, result)
             state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "uploaded", youtube_id=vid)
-            msg += f"\n📺 https://youtu.be/{vid} ({settings.youtube_privacy}"
-            msg += f", publishes in {settings.schedule_hours_ahead}h)" if settings.schedule_hours_ahead else ")"
+            msg += f"\n📺 https://youtu.be/{vid} ({settings.youtube_privacy})"
         except Exception:
             state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "rendered", error=traceback.format_exc()[-2000:])
             msg += f"\n❌ upload failed (will retry next run):\n{traceback.format_exc()[-800:]}"
@@ -59,9 +62,9 @@ def cmd_run(args, settings: Settings) -> int:
 
 def cmd_retry_uploads(args, settings: Settings) -> int:
     import json
+    from pathlib import Path
     from .models import Episode, QuizItem, RenderResult
     from .upload import upload
-    from pathlib import Path
 
     state = State(settings.state_dir / "quizbot.db")
     rc = 0
@@ -71,7 +74,7 @@ def cmd_retry_uploads(args, settings: Settings) -> int:
             continue
         m = json.loads(meta_path.read_text())
         ep = Episode(slug=m["slug"], pack=m["pack"], title=m["title"], description=m["description"],
-                     tags=m["tags"], intro="", outro="", theme=m["theme"],
+                     tags=m["tags"], intro="", outro="", theme=m["theme"], format=m.get("format", "long"),
                      items=[QuizItem(id=i["id"], answer=i["answer"], prompt_audio=Path(), fact=i["fact"]) for i in m["items"]])
         res = RenderResult(video=Path(row["video_path"]), thumbnail=Path(row["thumbnail_path"]), duration_seconds=0)
         try:
@@ -88,7 +91,7 @@ def cmd_status(args, settings: Settings) -> int:
     state = State(settings.state_dir / "quizbot.db")
     for r in state.episodes():
         yt = f"https://youtu.be/{r['youtube_id']}" if r["youtube_id"] else ""
-        print(f"{r['status']:9} {r['slug']:50} {yt}")
+        print(f"{r['status']:9} {r['slug']:60} {yt}")
     return 0
 
 
@@ -104,17 +107,30 @@ def cmd_auth(args, settings: Settings) -> int:
     return 0
 
 
+def cmd_test(args, settings: Settings) -> int:
+    settings.tts_provider, settings.planner, settings.upload = "dev", "template", False
+    settings.stage_seconds = 2
+    rc = 0
+    for fmt, mech, rounds in (("short", "ladder", 1), ("long", "ladder", 2), ("long", "choice", 1)):
+        settings.format, settings.mechanic, settings.rounds_per_episode = fmt, mech, rounds
+        a = argparse.Namespace(pack="fixture", theme=None, seed=rounds, upload=False, force=True)
+        rc |= cmd_run(a, settings)
+    return rc
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="quizbot")
     sub = p.add_subparsers(dest="cmd", required=True)
-
     r = sub.add_parser("run")
     r.add_argument("--pack", default="pokemon")
+    r.add_argument("--format", choices=["long", "short"])
+    r.add_argument("--mechanic", choices=["ladder", "choice", "cold"])
     r.add_argument("--theme", help="theme id (see `themes`); random if omitted")
+    r.add_argument("--rounds", type=int)
     r.add_argument("--seed", type=int)
-    r.add_argument("--upload", action="store_true", help="upload after render (overrides settings)")
-
-    t = sub.add_parser("test")
+    r.add_argument("--upload", action="store_true")
+    r.add_argument("--force", action="store_true", help="ignore the daily cap")
+    sub.add_parser("test")
     sub.add_parser("auth")
     sub.add_parser("status")
     sub.add_parser("retry-uploads")
@@ -123,15 +139,14 @@ def main(argv=None) -> int:
 
     args = p.parse_args(argv)
     settings = Settings.load()
-    if args.cmd == "test":
-        settings.tts_provider = "dev"
-        settings.planner = "template"
-        settings.rounds_per_episode = 3
-        settings.countdown_seconds = 3
-        settings.upload = False
-        args.pack, args.theme, args.seed, args.upload = "fixture", None, 1, False
-        return cmd_run(args, settings)
-    return {"run": cmd_run, "auth": cmd_auth, "status": cmd_status, "themes": cmd_themes,
+    if args.cmd == "run":
+        if args.format:
+            settings.format = args.format
+        if args.mechanic:
+            settings.mechanic = args.mechanic
+        if args.rounds:
+            settings.rounds_per_episode = args.rounds
+    return {"run": cmd_run, "test": cmd_test, "auth": cmd_auth, "status": cmd_status, "themes": cmd_themes,
             "retry-uploads": cmd_retry_uploads}[args.cmd](args, settings)
 
 

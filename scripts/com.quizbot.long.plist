@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Weekly long-form: Saturday 07:30 local (publishes Sunday at publish_time). Install with scripts/install-launchd.sh -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.quizbot.long</string>
+  <key>ProgramArguments</key>
+  <array><string>/bin/bash</string><string>__REPO__/scripts/run.sh</string><string>long</string></array>
+  <key>WorkingDirectory</key><string>__REPO__</string>
+  <key>StartCalendarInterval</key>
+  <dict><key>Weekday</key><integer>6</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>30</integer></dict>
+  <key>StandardOutPath</key><string>__REPO__/state/launchd.out.log</string>
+  <key>StandardErrorPath</key><string>__REPO__/state/launchd.err.log</string>
+  <key>Nice</key><integer>10</integer>
+</dict>
+</plist>
