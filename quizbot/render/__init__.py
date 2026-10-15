@@ -17,6 +17,7 @@ import subprocess
 from pathlib import Path
 
 from ..config import Settings
+from ..music import bed_for
 from ..models import Episode, QuizItem, RenderResult
 from ..packs import Pack
 from ..tts import TTS
@@ -231,12 +232,19 @@ class Renderer:
         lst = work / "segments.txt"
         lst.write_text("".join(f"file '{p.resolve()}'\n" for p in segs))
         final = self.s.out_dir / ep.slug / f"{ep.slug}.mp4"
-        bed = self.s.asset("music_bed")
+        bed = bed_for(self.s, ep.slug, work)
         if bed:
+            # Sidechain: the bed is compressed by the voice/quiz-sound track, so it dips hard whenever anything
+            # else is playing and swells back in the silences between rounds.
+            ratio = 10 ** (-self.s.music_duck_db / 20)   # -14 dB → ratio ≈ 5
+            graph = (
+                "[0:a]asplit=2[v][sc];"
+                f"[1:a]volume={self.s.music_bed_db}dB[b];"
+                f"[b][sc]sidechaincompress=threshold=0.01:ratio={ratio:.1f}:attack=15:release=600:makeup=1[bd];"
+                "[v][bd]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]"
+            )
             run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-stream_loop", "-1", "-i", str(bed),
-                   "-filter_complex",
-                   f"[1:a]volume={self.s.music_bed_db}dB[bed];[0:a][bed]amix=inputs=2:duration=first:normalize=0,"
-                   f"loudnorm=I=-16:TP=-1.5:LRA=11[a]",
+                   "-filter_complex", graph,
                    "-map", "0:v", "-map", "[a]", "-c:v", "copy", *AUD, "-movflags", "+faststart", str(final)))
         else:
             run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",

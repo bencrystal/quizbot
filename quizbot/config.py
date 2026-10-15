@@ -45,9 +45,13 @@ class Settings:
     stage_seconds: int = 0               # 0 = format default
     fps: int = 30
 
-    # Audio assets (all optional; synthesized fallbacks exist)
-    music_bed: str = ""                  # loopable bed under the whole video
-    music_bed_db: float = -20.0
+    # Music
+    music_provider: str = "procedural"   # procedural | file | elevenlabs | none
+    music_bed: str = ""                  # for provider=file: loopable bed
+    music_bed_db: float = -18.0          # bed level before ducking
+    music_duck_db: float = -14.0         # extra ducking while voice / quiz sounds play (sidechain)
+    music_prompt: str = ("calm lo-fi hip hop instrumental, soft electric piano, light drums, warm, "
+                         "loopable, no vocals, background music for a quiz show")
     sting: str = ""                      # plays on reveal
     tick: str = ""                       # one-shot per second of thinking time
 

@@ -1,6 +1,6 @@
 # quizbot settings. Any key can be overridden by env var QUIZBOT_<KEY> (see .env.example) or CLI flags.
 
-channel_name: "Audio Quiz"      # shown on cards; replace with your channel name
+channel_name: "Play It By Ear"
 
 # Game -----------------------------------------------------------------------
 format: long                    # long (16:9, 10 rounds) | short (9:16, 1 round). Scheduler passes --format.
@@ -9,9 +9,12 @@ rounds_per_episode: 0           # 0 = format default (10 long / 1 short)
 stage_seconds: 0                # thinking time per stage; 0 = format default (4 long / 3 short)
 fps: 30
 
-# Your audio (drop files in assets/music/). All optional; placeholders are synthesized if missing.
-music_bed: assets/music/bed.wav       # loopable, ~30-60s, instrumental
-music_bed_db: -20
+# Music ----------------------------------------------------------------------
+music_provider: procedural      # procedural (new royalty-free loop per episode) | file | elevenlabs | none
+music_bed: assets/music/bed.wav # only for provider: file
+music_bed_db: -18               # bed level under narration
+music_duck_db: -14              # extra sidechain ducking whenever voice or a quiz sound is playing
+music_prompt: "calm lo-fi hip hop instrumental, soft electric piano, light drums, warm, loopable, no vocals"
 sting: assets/music/sting.wav         # ~0.5s reveal hit
 tick: assets/music/tick.wav           # ~0.1s per-second blip during thinking time
 

@@ -60,15 +60,18 @@ With `ANTHROPIC_API_KEY`, Claude writes the title, description, intro/outro, a f
 ("A classic. Everyone got that one."), and rewrites each Pokédex entry to sound good read aloud, constrained to the source
 text. Any failure falls back to template copy so a scheduled run never dies here.
 
-## 3. Your audio
+## 3. Music — hands-off by default
 
-Drop files into `assets/music/` — names are in `settings.yaml`:
+`music_provider: procedural` synthesizes a new royalty-free-by-construction bed for every episode (seeded from the
+episode, so the channel has a consistent sound without repeating): soft pad on a 4-chord loop, plucked arpeggio,
+light kick/hat, 84–108 BPM, random key. It sits at `music_bed_db` and is **sidechain-ducked** a further
+`music_duck_db` whenever the narrator or a quiz sound plays (measured: ~15 dB dip within 15 ms, ~0.6 s recovery),
+so cries are never masked.
 
-- `bed.wav` — loopable instrumental, 30–60 s, mixed in at `music_bed_db` (−20 dB default) under everything
-- `sting.wav` — ~0.5 s reveal hit
-- `tick.wav` — ~0.1 s blip, played once per second of thinking time (the final second uses a higher synthesized blip)
+Other options: `file` (your own `assets/music/bed.wav`), `elevenlabs` (generated from `music_prompt`; needs a plan
+that licenses commercial use — verify the endpoint in their docs; falls back to procedural), `none`.
 
-Missing files get synthesized placeholders, so nothing blocks on this.
+`sting.wav` (reveal hit) and `tick.wav` (per-second blip) in `assets/music/` are optional; synthesized if missing.
 
 ## 4. YouTube (one-time, ~10 min)
 
@@ -101,7 +104,14 @@ Safety rails for leaving it alone: `max_episodes_per_day` (default 2) is a hard 
 never re-rendered; every run posts one line to `notify_webhook` (Slack/Discord) or `state/quizbot.log`.
 Point `out_dir`/`cache_dir` at an external drive if you want: `QUIZBOT_OUT_DIR=/Volumes/Drive/quizbot/out`.
 
-### GitHub Actions (no hardware at all)
+### GitHub Actions + Claude supervisor (recommended: fully hands-off)
+
+The pipeline runs on GitHub Actions; a scheduled Claude task reads `SUPERVISOR.md` and checks on it weekly —
+failed runs, stuck uploads, pronunciation map, spoiler-y hints — fixing what it can by commit and reporting the rest.
+Claude's own cloud environment can't reach PokéAPI or YouTube directly (network allowlist), which is why the
+rendering lives in Actions and Claude supervises through GitHub.
+
+### GitHub Actions (details)
 
 `.github/workflows/daily.yml` — add the secrets listed at the top of the file. Kokoro runs on the free CPU runners.
 The ledger lives in the Actions cache so items don't repeat. Set repo *variables* `QUIZBOT_TTS_PROVIDER` /
