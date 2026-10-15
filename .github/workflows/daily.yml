@@ -23,7 +23,9 @@ jobs:
       - run: pip install -r requirements.txt kokoro soundfile
       - uses: actions/cache@v4
         with:
-          path: state
+          path: |
+            state/quizbot.db
+            state/cache
           key: quizbot-state-${{ github.run_id }}
           restore-keys: quizbot-state-
       - name: secrets → files
