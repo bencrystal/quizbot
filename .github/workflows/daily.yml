@@ -11,6 +11,7 @@ on:
     inputs:
       format: { default: short, type: choice, options: [short, long] }
       theme: { default: "" }
+      force: { default: false, type: boolean, description: "ignore the daily cap (manual test runs)" }
 
 permissions:
   contents: read
@@ -58,7 +59,17 @@ jobs:
           set -o pipefail
           (python -m quizbot retry-uploads || true) 2>&1 | tee -a state/run.log
           python -m quizbot run --format ${{ steps.fmt.outputs.format }} \
-            ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }} 2>&1 | tee -a state/run.log
+            ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }} \
+            ${{ github.event.inputs.force == 'true' && '--force' || '' }} 2>&1 | tee -a state/run.log
+      - name: post result to the "Episode log" issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LINE=$(grep -E "🎬|📺|⏸|❌" state/run.log | tail -3 | sed 's/^/    /')
+          BODY="[run ${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) · ${{ steps.fmt.outputs.format }} · $(date -u +%FT%TZ)"$'\n'"$LINE"
+          N=$(gh issue list -R ${{ github.repository }} --search "Episode log in:title" --state open --json number --jq '.[0].number')
+          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Episode log" --body "$BODY"; else gh issue comment -R ${{ github.repository }} "$N" --body "$BODY"; fi
       - name: report failure to the "Run failures" issue
         if: failure()
         env:
