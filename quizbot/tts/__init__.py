@@ -33,10 +33,12 @@ class TTS:
         self.cache.mkdir(parents=True, exist_ok=True)
         self.chars_this_run = 0
 
-    # Provider-specific spoken-form fixes. On-screen text is never touched.
+    # Provider-specific spoken-form fixes, applied AFTER the pack's respellings. Kokoro accepts inline
+    # phoneme overrides ([word](/phonemes/)), which is the only reliable way to force a pronunciation.
     SPOKEN = {
-        "kokoro": {"Pokémon": "Pokeymon", "Pokédex": "Pokeydex"},
-        "piper": {"Pokémon": "Pokeymon", "Pokédex": "Pokeydex"},
+        "kokoro": {"Pokeymon": "[Pokémon](/pˈoʊkimɑn/)", "Pokeydex": "[Pokédex](/pˈoʊkidɛks/)"},
+        "piper": {},
+        "openai": {"Pokeymon": "POH-kee-mon", "Pokeydex": "POH-kee-dex"},
     }
 
     def say(self, text: str) -> Path:

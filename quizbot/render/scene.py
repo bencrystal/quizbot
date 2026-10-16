@@ -93,6 +93,14 @@ class Scene:
             lines.append(cur)
         return lines
 
+    def wrap_fit(self, s, size, max_width, max_lines, bold=False, min_size=26):
+        """Wrap, shrinking the font until the paragraph fits in max_lines. Returns (lines, size)."""
+        while True:
+            lines = self.wrap(s, size, max_width, bold)
+            if len(lines) <= max_lines or size <= min_size:
+                return lines[:max_lines], size
+            size -= 2
+
     def glow(self) -> Image.Image:
         """White radial glow, tinted at paste time. Rendered once at low res."""
         if self._glow is None:
@@ -145,7 +153,7 @@ class Scene:
             disc = Image.new("L", (box, box), 0)
             r = int(box * 0.36)
             ImageDraw.Draw(disc).ellipse((box // 2 - r, box // 2 - r, box // 2 + r, box // 2 + r), fill=255)
-            blur = box * 0.06
+            blur = box * 0.035
             self._art[k] = (np.asarray(disc.filter(ImageFilter.GaussianBlur(blur)), dtype=np.float32),
                             np.asarray(self.art(path, box, "mask").filter(ImageFilter.GaussianBlur(blur)), dtype=np.float32))
         a, b = self._art[k]
@@ -222,7 +230,13 @@ class Scene:
                 self.paste_center(img, layer, cx, cy)
             elif st["shape_p"] > 0:
                 p = ease(st["shape_p"])
-                mask = self.art(art, box, "mask") if p >= 1 else self.morph_mask(art, box, p)
+                exact = self.art(art, box, "mask")
+                if p >= 1:
+                    mask = exact
+                else:
+                    mask = self.morph_mask(art, box, min(1.0, p / 0.75))
+                    if p > 0.65:                       # crossfade the blobby morph into the crisp silhouette
+                        mask = Image.blend(mask, exact, (p - 0.65) / 0.35)
                 self.paste_center(img, Image.new("RGB", (box, box), (10, 10, 14)), cx, cy, mask)
                 d = ImageDraw.Draw(img)
                 if st["shape_p"] < 0.5:
@@ -232,11 +246,19 @@ class Scene:
                 d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(10, 10, 14))
                 self.text(d, (cx, cy), "?", int(box * 0.45), fill=accent)
             # progress arc hugging the disc: fills over the whole round (stages + thinking time)
-            if st["reveal_p"] == 0 and st["arc"] > 0:
+            if st["reveal_p"] == 0 and st["points"] is not None:
                 r = int(box * 0.36) + int(22 * self.u)
                 w = int(10 * self.u)
-                d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=(50, 52, 66), width=w)
-                d.arc((cx - r, cy - r, cx + r, cy + r), start=-90, end=-90 + 360 * st["arc"], fill=accent, width=w)
+                bb = (cx - r, cy - r, cx + r, cy + r)
+                d.ellipse(bb, outline=(50, 52, 66), width=w)
+                if st["arc"] > 0:
+                    d.arc(bb, start=-90, end=-90 + 360 * st["arc"], fill=accent, width=w)
+                # notches at each stage boundary so the stops are legible
+                for k in range(st["stages"]):
+                    ang = math.radians(-90 + 360 * k / st["stages"])
+                    nx, ny = cx + r * math.cos(ang), cy + r * math.sin(ang)
+                    nr = int(7 * self.u)
+                    d.ellipse((nx - nr, ny - nr, nx + nr, ny + nr), fill=bg, outline=accent if 360 * k / st["stages"] <= 360 * st["arc"] else (90, 92, 110), width=max(1, int(2 * self.u)))
             # hint dots
             if st["reveal_p"] == 0 and st["stages"] > 1:
                 dx_, dy_ = g["dots"]
@@ -267,25 +289,30 @@ class Scene:
         if st["reveal_p"] > 0:
             y = g["name_y"]
             a = ease_out(st["reveal_p"] / 0.4)
-            self.text(d, (x, y), st["answer"], 104, anchor=anchor, max_width=g["text_w"], alpha=a)
+            rx_, ranchor = (g["art"][0], "mm") if self.portrait else (x, anchor)
+            self.text(d, (rx_, y), st["answer"], 104, anchor=ranchor, max_width=g["text_w"], alpha=a)
             y += int(84 * self.u)
-            self.text(d, (x, y), st["subtitle"], 40, fill=accent, bold=False, anchor=anchor, alpha=a)
+            self.text(d, (rx_, y), st["subtitle"], 40, fill=accent, bold=False, anchor=ranchor, alpha=a)
             y += int(84 * self.u)
-            for ln in self.wrap(st["fact"], 36, g["text_w"])[:8]:
-                self.text(d, (x, y), ln, 36, fill=(230, 230, 238), bold=False, anchor=anchor, alpha=a)
+            for ln in self.wrap(st["fact"], 36, g["text_w"])[:6]:
+                self.text(d, (rx_, y), ln, 36, fill=(230, 230, 238), bold=False, anchor=ranchor, alpha=a)
                 y += int(50 * self.u)
         else:
-            if st["status"]:
-                self.text(d, (x, y), st["status"], 40, fill=(200, 202, 214), bold=False, anchor=anchor)
-                y += int(74 * self.u)
+            if st["status"] and not st["hints"]:
+                self.text(d, (g["art"][0], y), st["status"], 40, fill=(200, 202, 214), bold=False, anchor="mm")
+            budget = 9                                   # total lines available in the hint column
+            sizes = []
             for i, (hint, age) in enumerate(st["hints"]):
+                s_ = hint[0].upper() + hint[1:]
+                lines, size = self.wrap_fit(s_, 40, g["text_w"], max_lines=max(2, budget - 2 * (len(st["hints"]) - 1 - i)) if i == len(st["hints"]) - 1 else 2, bold=(i == 0))
+                sizes.append((lines, size, age, i))
+            for lines, size, age, i in sizes:
                 a = ease_out(age / 0.45)
                 dx = int((1 - a) * 60 * self.u)
-                s = hint[0].upper() + hint[1:]
-                for j, ln in enumerate(self.wrap(s, 40, g["text_w"], bold=(i == 0))[:5]):
-                    self.text(d, (x + dx, y), ln, 40, bold=(i == 0), anchor=anchor, alpha=a)
-                    y += int(56 * self.u)
-                y += int(18 * self.u)
+                for ln in lines:
+                    self.text(d, (x + dx, y), ln, size, bold=(i == 0), anchor=anchor, alpha=a)
+                    y += int(size * 1.4 * self.u)
+                y += int(16 * self.u)
 
         return img
 

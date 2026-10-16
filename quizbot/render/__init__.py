@@ -120,8 +120,13 @@ class Renderer:
         out = work / f"{name}.wav"
         if not out.exists():
             t = np.arange(int(secs * SR)) / SR
-            sig = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * 4) for f in freqs) / len(freqs)
-            sig *= vol * np.minimum(1, t * 200)
+            sig = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * 5) for f in freqs) / len(freqs)
+            n = len(t)
+            env = np.ones(n)
+            fi, fo = int(0.001 * SR), int(0.015 * SR)          # 1 ms in, 15 ms out — no transient click
+            env[:fi] = np.linspace(0, 1, fi)
+            env[-fo:] = np.linspace(1, 0, fo)
+            sig *= vol * env
             sf.write(str(out), np.stack([sig, sig], axis=1).astype(np.float32), SR)
         return out
 
@@ -268,9 +273,16 @@ class Renderer:
                         wave[k] = max(wave[k], env[idx])
         if st["reveal_p"] == 0:
             st["wave"] = wave
-        # progress arc around the disc: completed stages + progress through the current thinking time
-        think = st["think"] if st["think"] is not None else (1.0 if st["stage"] > 0 or st["points"] is not None else 0.0)
-        st["arc"] = min(1.0, (st["stage"] + think) / st["stages"]) if st["points"] is not None else 0.0
+        # progress arc around the disc: each thinking stage sweeps one segment; between stages it holds
+        done, cur = 0, 0.0
+        for ev in T.events:
+            if ev.kind != "think" or ev.at > t:
+                continue
+            if t >= ev.at + ev.dur:
+                done += 1
+            else:
+                cur = (t - ev.at) / ev.dur
+        st["arc"] = min(1.0, (done + cur) / st["stages"]) if st["points"] is not None else 0.0
         if st["choices"]:
             st["hints"] = [(f"{'ABCD'[k]}   {c}", 9) for k, c in enumerate(st["choices"])]
         return st
