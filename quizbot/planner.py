@@ -63,7 +63,7 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
         desc = (f"{pack.channel_blurb}\n\nOne round. Three hints. How fast did you get it?\n"
                 f"Full {n if n > 1 else 10}-round quizzes every week.\n\nAnswer: {items[0].answer}\n\n{hashtags}")
         intro = pack.opening_line
-        outro = "How many points did you get? Ten rounds every Sunday."
+        outro = "How many points did you get?"
     else:
         title = f"{pack.display_name}: {theme['label']} ({n} Rounds)"
         desc = (f"{pack.channel_blurb}\n\n{n} rounds of {theme['label']}. Guess after the sound for 3 points, "

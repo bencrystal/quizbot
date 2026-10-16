@@ -298,7 +298,11 @@ class Scene:
                 self.text(d, (rx_, y), ln, 36, fill=(230, 230, 238), bold=False, anchor=ranchor, alpha=a)
                 y += int(50 * self.u)
         else:
-            if st["status"] and not st["hints"]:
+            if st["caption"] and not st["hints"]:
+                for ln in self.wrap_fit(st["caption"], 56, g["text_w"], 3, bold=True)[0]:
+                    self.text(d, (x, y), ln, 56, anchor=anchor)
+                    y += int(72 * self.u)
+            elif st["status"] and not st["hints"]:
                 self.text(d, (g["art"][0], y), st["status"], 40, fill=(200, 202, 214), bold=False, anchor="mm")
             budget = 9                                   # total lines available in the hint column
             sizes = []

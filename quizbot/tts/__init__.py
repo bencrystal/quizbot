@@ -103,8 +103,8 @@ class TTS:
             model=os.environ.get("QUIZBOT_OPENAI_TTS_MODEL", "gpt-4o-mini-tts"),
             voice=self.voice or "ash", input=text, response_format="wav",
             instructions=os.environ.get("QUIZBOT_TTS_STYLE",
-                "Warm, friendly quiz-show host. Clear and natural, lightly playful, never shouty. "
-                "Pronounce Pokémon as 'POH-kay-mon'. Short pauses between sentences."),
+                "Calm, curious narrator, like a nature documentary. Warm, unhurried, natural; no game-show energy, "
+                "no exclamation. Pronounce Pokémon as 'POH-kee-mon' (stress on POH). Brief pauses between sentences."),
         ) as r:
             r.stream_to_file(out)
 

@@ -158,7 +158,9 @@ class Renderer:
 
         T.mark("status", text="Listen")
         if short:
+            T.mark("caption", text=self.pack.opening_line)
             say_part(self.pack.opening_line)
+            T.mark("caption", text="")
         else:
             say_part(self.pack.question_line.format(n=i))
         T.add(None, 0.3)
@@ -203,8 +205,9 @@ class Renderer:
 
         T.mark("reveal")
         T.add(self.sting(work), 0.9)
+        T.mark("caption", text=self.pack.reveal_line.format(answer=it.answer))
         say_part(self.pack.reveal_line.format(answer=it.answer))
-        reaction = ep.banter.get(i) or (rng.choice(self.pack.reactions) if total > 1 else "")
+        reaction = ep.banter.get(i) or (rng.choice(self.pack.reactions) if total > 1 and self.pack.reactions else "")
         if reaction:
             T.add(None, 0.15)
             say_part(reaction)
@@ -212,10 +215,12 @@ class Renderer:
         T.add(snd, snd_d, "sound")
         T.add(None, 0.3)
         say_part(it.fact)
-        T.add(None, 0.5 if short else 0.9)
         if short:
+            T.add(None, 0.3)
             say_part(ep.outro)
-            T.add(None, 0.6)
+            T.add(None, 1.5)
+        else:
+            T.add(None, 0.9)
         return T
 
     def build_card(self, text: str, title: str, sub: str, foot: str, lead: float, tail: float) -> Timeline:
@@ -232,7 +237,7 @@ class Renderer:
         st = dict(t=t, card=None, header=f"ROUND {i} / {total}" if total > 1 else self.s.channel_name.upper(),
                   points=None, points_age=99.0, tint=it.tint if it else None, tint_p=0.0, stage=0, stages=1, arc=0.0,
                   art=it.reveal_image if it else None, shape_p=0.0, reveal_p=0.0, wave=None, think=None,
-                  status="", hints=[], answer=it.answer if it else "", subtitle=it.subtitle if it else "",
+                  status="", caption="", hints=[], answer=it.answer if it else "", subtitle=it.subtitle if it else "",
                   fact=it.fact if it else "", choices=None)
         wave = np.zeros(28)
         for ev in T.events:
@@ -243,6 +248,8 @@ class Renderer:
                 st["card"] = (ev.data["title"], ev.data["sub"], ev.data["foot"])
             elif ev.kind == "status":
                 st["status"] = ev.data["text"]
+            elif ev.kind == "caption":
+                st["caption"] = ev.data["text"]
             elif ev.kind == "points":
                 st["points"], st["points_age"] = ev.data["value"], age
             elif ev.kind == "tint":

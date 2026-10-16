@@ -71,8 +71,7 @@ class Pack(ABC):
         for k in sorted(self.spoken_replacements, key=len, reverse=True):
             text = re.sub(rf"\b{re.escape(k)}\b", self.spoken_replacements[k], text)
         return text
-    reactions: list[str] = ["Classic.", "Tricky one.", "If you got that from the sound alone, respect.",
-                            "That one fools a lot of people.", "Easy if you know, impossible if you don't.", ""]
+    reactions: list[str] = []          # post-reveal host lines; empty = none
     choice_line: str = "Is it {choices}?"
 
 
