@@ -61,8 +61,9 @@ class Pack(ABC):
         return others[:k]
 
     # Narration hooks a pack may override
-    hint_line: str = "Hint: {hint}."
-    listen_again_line: str = "Listen again."
+    hint_lines: list[str] = ["Hint one: {hint}.", "Hint two: {hint}.", "Last chance. Here's its shape."]
+    reactions: list[str] = ["Classic.", "Tricky one.", "If you got that from the sound alone, respect.",
+                            "That one fools a lot of people.", "Easy if you know, impossible if you don't.", ""]
     choice_line: str = "Is it {choices}?"
 
 

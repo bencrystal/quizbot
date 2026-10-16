@@ -33,8 +33,16 @@ class TTS:
         self.cache.mkdir(parents=True, exist_ok=True)
         self.chars_this_run = 0
 
+    # Provider-specific spoken-form fixes. On-screen text is never touched.
+    SPOKEN = {
+        "kokoro": {"Pokémon": "Pokeymon", "Pokédex": "Pokeydex"},
+        "piper": {"Pokémon": "Pokeymon", "Pokédex": "Pokeydex"},
+    }
+
     def say(self, text: str) -> Path:
         text = " ".join(text.split())
+        for a, b in self.SPOKEN.get(self.provider, {}).items():
+            text = text.replace(a, b)
         key = hashlib.sha1(f"{self.provider}|{self.voice}|{text}".encode()).hexdigest()[:20]
         out = self.cache / f"{key}.wav"
         if out.exists():
@@ -80,7 +88,10 @@ class TTS:
         client = OpenAI()
         with client.audio.speech.with_streaming_response.create(
             model=os.environ.get("QUIZBOT_OPENAI_TTS_MODEL", "gpt-4o-mini-tts"),
-            voice=self.voice or "alloy", input=text, response_format="wav",
+            voice=self.voice or "ash", input=text, response_format="wav",
+            instructions=os.environ.get("QUIZBOT_TTS_STYLE",
+                "Warm, friendly quiz-show host. Clear and natural, lightly playful, never shouty. "
+                "Pronounce Pokémon as 'POH-kay-mon'. Short pauses between sentences."),
         ) as r:
             r.stream_to_file(out)
 

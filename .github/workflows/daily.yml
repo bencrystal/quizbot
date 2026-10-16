@@ -44,8 +44,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          QUIZBOT_TTS_PROVIDER: ${{ vars.QUIZBOT_TTS_PROVIDER || 'kokoro' }}
-          QUIZBOT_TTS_VOICE: ${{ vars.QUIZBOT_TTS_VOICE || 'am_michael' }}
+          # OpenAI voice when the key is present, Kokoro (free, local) otherwise
+          QUIZBOT_TTS_PROVIDER: ${{ vars.QUIZBOT_TTS_PROVIDER || (secrets.OPENAI_API_KEY && 'openai' || 'kokoro') }}
+          QUIZBOT_TTS_VOICE: ${{ vars.QUIZBOT_TTS_VOICE || (secrets.OPENAI_API_KEY && 'ash' || 'am_michael') }}
           QUIZBOT_PLANNER: ${{ vars.QUIZBOT_PLANNER || 'template' }}
           QUIZBOT_UPLOAD: "true"
           TZ: America/New_York

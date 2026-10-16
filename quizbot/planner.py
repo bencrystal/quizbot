@@ -62,18 +62,18 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
         title = f"Can you name this {theme['label']} from its sound? #shorts"
         desc = (f"{pack.channel_blurb}\n\nOne round. Three hints. How fast did you get it?\n"
                 f"Full {n if n > 1 else 10}-round quizzes every week.\n\nAnswer: {items[0].answer}\n\n{hashtags}")
-        intro = f"{pack.display_name}. Three hints, three points. Ready?"
-        outro = "Full quiz every Sunday. Follow so you don't miss it."
+        intro = "Can you name it from the sound alone? Four points if you get it now."
+        outro = "Ten rounds every Sunday. Follow so you don't miss it."
     else:
         title = f"{pack.display_name}: {theme['label']} ({n} Rounds)"
         desc = (f"{pack.channel_blurb}\n\n{n} rounds of {theme['label']}. Guess after the sound for 3 points, "
                 f"after the first hint for 2, after the second for 1. Play with your eyes closed if you like — "
                 f"every hint is spoken.\n\nAnswers:\n{answers}\n\n{hashtags}")
         intro = (f"Welcome to {pack.display_name}. {n} rounds, easy to hard. "
-                 + ("Guess after the sound for three points, after the first hint for two, after the second for one. "
+                 + ("Four points if you get it from the sound alone, then one less for every hint you need. "
                     if settings.mechanic == "ladder" else "One point per round. ")
                  + f"Today's theme: {theme['label']}. Round one.")
-        outro = (f"That's {n} rounds, {(3 if settings.mechanic == 'ladder' else 1) * n} points possible. "
+        outro = (f"That's {n} rounds, {(4 if settings.mechanic == 'ladder' else 1) * n} points possible. "
                  f"Drop your score in the comments, and subscribe for next week's quiz.")
     tags = ["quiz", "audio quiz", "trivia", "guessing game", pack.name, theme["label"]]
     return Episode(slug=slug, pack=pack.name, title=title[:100], description=desc, tags=tags,

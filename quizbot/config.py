@@ -25,8 +25,8 @@ def _load_env_file(path: Path) -> None:
 _load_env_file(ROOT / ".env")
 
 FORMATS = {
-    "long":  {"width": 1920, "height": 1080, "rounds": 10, "stage_seconds": 4},
-    "short": {"width": 1080, "height": 1920, "rounds": 1,  "stage_seconds": 3},
+    "long":  {"width": 1920, "height": 1080, "rounds": 10, "stage_seconds": 3.5},
+    "short": {"width": 1080, "height": 1920, "rounds": 1,  "stage_seconds": 2.5},
 }
 
 
@@ -42,14 +42,14 @@ class Settings:
     format: str = "long"                 # long | short  (overridden by --format)
     mechanic: str = "ladder"             # ladder | choice | cold
     rounds_per_episode: int = 0          # 0 = format default (10 long / 1 short)
-    stage_seconds: int = 0               # 0 = format default
-    fps: int = 30
+    stage_seconds: float = 0             # 0 = format default
+    fps: int = 24
 
     # Music
     music_provider: str = "procedural"   # procedural | file | elevenlabs | none
     music_bed: str = ""                  # for provider=file: loopable bed
-    music_bed_db: float = -18.0          # bed level before ducking
-    music_duck_db: float = -14.0         # extra ducking while voice / quiz sounds play (sidechain)
+    music_bed_db: float = -26.0          # bed level before ducking
+    music_duck_db: float = -12.0         # extra ducking while voice / quiz sounds play (sidechain)
     music_prompt: str = ("calm lo-fi hip hop instrumental, soft electric piano, light drums, warm, "
                          "loopable, no vocals, background music for a quiz show")
     sting: str = ""                      # plays on reveal

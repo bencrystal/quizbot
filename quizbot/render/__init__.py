@@ -1,46 +1,68 @@
-"""Assemble an Episode into an MP4 with ffmpeg.
+"""Assemble an Episode into an MP4.
 
-Mechanics (per round):
-  ladder  question → sound ×2 → think (3 pts) → hint 1 + sound → think (2 pts) → hint 2 → think (1 pt) → reveal
-  choice  question → sound ×2 → spoken A/B/C/D → think → reveal
-  cold    question → sound ×2 → think → reveal
-Every hint is spoken, so the whole thing works audio-only; on screen the hints appear progressively.
+Each round is ONE timeline: a list of audio parts (narration, the quiz sound, silence) laid end to end,
+with events (hint lands, thinking starts, shape morph, reveal) at known offsets. Frames are drawn from
+that state at `fps` and piped raw into ffmpeg, so motion is per-frame and cheap.
 
-Each segment is an MP4 with identical encoding params so the final concat is a plain -c copy of video;
-audio gets one loudnorm pass at the end, with an optional music bed.
+Ladder (default):  sound ×2 → think (4 pts) → hint 1 + tint → think (3) → hint 2 (Pokédex) → think (2)
+                   → "last chance" + silhouette morph → think (1) → sting → reveal → reaction → sound → fact
+No ticks: the bed swells in the silences (sidechain release) and a soft chime closes each thinking stage.
 """
 from __future__ import annotations
 
 import json
+import random
 import shutil
 import subprocess
 from pathlib import Path
 
+import numpy as np
+import soundfile as sf
+
 from ..config import Settings
-from ..music import bed_for
 from ..models import Episode, QuizItem, RenderResult
+from ..music import bed_for
 from ..packs import Pack
 from ..tts import TTS
-from .cards import Cards
+from .scene import Scene, Event, ease
 
-VID = ["-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
-       "-profile:v", "high", "-level", "4.1"]
+VID = ["-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.1"]
 AUD = ["-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2"]
-THINK_FPS = 10
+SR = 48000
 
 
-def run(cmd: list[str]) -> None:
+def run(cmd):
     subprocess.run(cmd, check=True)
 
 
-def ff(*args: str) -> list[str]:
+def ff(*args):
     return ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", *args]
 
 
 def duration(path: Path) -> float:
-    out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
-                          "-of", "json", str(path)], capture_output=True, text=True, check=True).stdout
+    out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "json", str(path)],
+                         capture_output=True, text=True, check=True).stdout
     return float(json.loads(out)["format"]["duration"])
+
+
+class Timeline:
+    """Audio parts + events for one video segment (a round, or an intro/outro card)."""
+
+    def __init__(self):
+        self.parts: list[tuple[Path | None, float]] = []   # (file or None=silence, seconds)
+        self.events: list[Event] = []
+        self.t = 0.0
+
+    def add(self, path: Path | None, secs: float, kind: str | None = None, **data) -> float:
+        start = self.t
+        if kind:
+            self.events.append(Event(start, kind, secs, data))
+        self.parts.append((path, secs))
+        self.t += secs
+        return start
+
+    def mark(self, kind: str, dur: float = 0.0, **data):
+        self.events.append(Event(self.t, kind, dur, data))
 
 
 class Renderer:
@@ -48,101 +70,233 @@ class Renderer:
         self.s = settings
         self.pack = pack
         self.tts = tts
-        self.cards = Cards(settings, pack.accent_color, pack.bg_color)
+        self.scene = Scene(settings, settings.channel_name)
+        self._dur: dict[str, float] = {}
         self._norm: dict[str, Path] = {}
+        self._env: dict[str, np.ndarray] = {}
 
     # ---- audio helpers --------------------------------------------------------
     def norm(self, src: Path, work: Path) -> Path:
-        """Any audio → 48k stereo pcm wav, cached per render."""
         k = str(src)
         if k not in self._norm:
-            out = work / f"norm-{len(self._norm):03d}.wav"
-            run(ff("-i", str(src), "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", str(out)))
+            out = work / f"n{len(self._norm):03d}.wav"
+            run(ff("-i", str(src), "-ar", str(SR), "-ac", "2", "-c:a", "pcm_s16le", str(out)))
             self._norm[k] = out
         return self._norm[k]
 
-    def silence(self, secs: float, work: Path) -> Path:
-        out = work / f"sil-{secs:.2f}.wav"
-        if not out.exists():
-            run(ff("-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-t", f"{secs:.3f}",
-                   "-c:a", "pcm_s16le", str(out)))
-        return out
+    def dur(self, p: Path) -> float:
+        k = str(p)
+        if k not in self._dur:
+            self._dur[k] = duration(p)
+        return self._dur[k]
 
-    def concat(self, parts: list, out: Path, work: Path) -> Path:
-        """parts: Paths (any audio) or floats (seconds of silence)."""
-        files = [self.silence(float(p), work) if isinstance(p, (int, float)) else self.norm(p, work) for p in parts]
-        lst = work / f"{out.stem}.txt"
-        lst.write_text("".join(f"file '{f.resolve()}'\n" for f in files))
-        run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-c:a", "pcm_s16le", str(out)))
-        return out
+    def envelope(self, p: Path, work: Path) -> np.ndarray:
+        """RMS per 20 ms of the (normalised) file, scaled 0..1."""
+        k = str(p)
+        if k not in self._env:
+            data, _ = sf.read(str(self.norm(p, work)), dtype="float32")
+            mono = data.mean(axis=1) if data.ndim > 1 else data
+            win = SR // 50
+            n = max(1, len(mono) // win)
+            rms = np.sqrt((mono[: n * win].reshape(n, win) ** 2).mean(axis=1))
+            self._env[k] = rms / (rms.max() + 1e-6)
+        return self._env[k]
 
-    def synth(self, name: str, hz: int, secs: float, vol: float, work: Path) -> Path:
+    def synth(self, name: str, freqs: list[float], secs: float, vol: float, work: Path) -> Path:
         out = work / f"{name}.wav"
         if not out.exists():
-            run(ff("-f", "lavfi", "-i", f"sine=frequency={hz}:duration={secs}",
-                   "-af", f"volume={vol},afade=t=out:st={max(0, secs - 0.06):.2f}:d=0.06",
-                   "-ar", "48000", "-ac", "2", str(out)))
+            t = np.arange(int(secs * SR)) / SR
+            sig = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * 4) for f in freqs) / len(freqs)
+            sig *= vol * np.minimum(1, t * 200)
+            sf.write(str(out), np.stack([sig, sig], axis=1).astype(np.float32), SR)
         return out
 
-    def tick(self, work: Path, final: bool) -> Path:
-        custom = self.s.asset("tick")
-        if custom and not final:
-            return custom
-        return self.synth("tick-hi" if final else "tick", 1100 if final else 700, 0.08, 0.22, work)
+    def chime(self, work: Path) -> Path:
+        return self.synth("chime", [880, 1318.5], 0.6, 0.18, work)
 
     def sting(self, work: Path) -> Path:
         custom = self.s.asset("sting")
         if custom:
             return custom
-        # cheap two-note rise as a placeholder reveal sting
-        out = work / "sting.wav"
-        if not out.exists():
-            a = self.synth("sting-a", 523, 0.12, 0.3, work)
-            b = self.synth("sting-b", 784, 0.3, 0.3, work)
-            self.concat([a, b], out, work)
-        return out
+        return self.synth("sting", [523.25, 659.25, 783.99, 1046.5], 0.9, 0.3, work)
 
-    def think_audio(self, secs: int, replay: Path | None, work: Path, tag: str) -> Path:
-        """Ticks each second (+ optional replay of the sound mixed on top), exactly `secs` long."""
-        ticks = self.concat(sum(([self.tick(work, i == secs - 1), 0.92] for i in range(secs)), []),
-                            work / f"ticks-{tag}.wav", work)
-        out = work / f"think-{tag}.wav"
-        if replay:
-            run(ff("-i", str(ticks), "-i", str(self.norm(replay, work)), "-filter_complex",
-                   "[1:a]volume=0.8[r];[0:a][r]amix=inputs=2:duration=first:normalize=0[a]", "-map", "[a]",
-                   "-t", str(secs), "-c:a", "pcm_s16le", str(out)))
+    def say(self, text: str) -> Path:
+        return self.tts.say(text)
+
+    # ---- timeline builders ----------------------------------------------------
+    def build_round(self, i: int, total: int, it: QuizItem, ep: Episode, rng: random.Random, work: Path) -> Timeline:
+        T = Timeline()
+        S = ep.stage_seconds
+        short = ep.format == "short"
+        snd = self.norm(it.prompt_audio, work)
+        snd_d = self.dur(snd)
+        stages = (1 + len(it.hints) + (1 if it.shape_hint and it.reveal_image else 0)) if ep.mechanic == "ladder" else 1
+        pts = stages
+
+        def say_part(text, kind=None, **data):
+            p = self.say(text)
+            return T.add(p, self.dur(p), kind, **data)
+
+        T.mark("status", text="Listen")
+        if short and i == 1:
+            say_part(ep.intro)
         else:
-            run(ff("-i", str(ticks), "-t", str(secs), "-c:a", "pcm_s16le", str(out)))
-        return out
+            say_part(self.pack.question_line.format(n=i))
+        T.add(None, 0.25)
+        T.add(snd, snd_d, "sound")
+        T.add(None, 0.45)
+        T.add(snd, snd_d, "sound")
+        T.mark("points", value=pts)
 
-    # ---- video helpers --------------------------------------------------------
-    def still(self, card: Path, audio: Path, out: Path) -> Path:
-        run(ff("-loop", "1", "-framerate", str(self.s.fps), "-i", str(card), "-i", str(audio),
-               "-shortest", "-r", str(self.s.fps), *VID, "-tune", "stillimage", *AUD, str(out)))
-        return out
+        if ep.mechanic == "ladder":
+            T.add(None, 0.3)
+            T.mark("status", text="Your guess?")
+            T.add(None, S, "think")
+            T.add(self.chime(work), 0.6)
+            for h_i, hint in enumerate(it.hints):
+                pts -= 1
+                T.mark("hint", text=hint, index=h_i)
+                if h_i == 0:
+                    T.mark("tint")
+                say_part(self.pack.hint_lines[h_i].format(hint=hint))
+                T.mark("points", value=pts)
+                if h_i == 0:
+                    T.add(None, 0.2)
+                    T.add(snd, snd_d, "sound")
+                T.add(None, 0.25)
+                T.add(None, S, "think")
+                T.add(self.chime(work), 0.6)
+            if it.shape_hint and it.reveal_image:
+                pts -= 1
+                T.mark("status", text="Last chance")
+                say_part(self.pack.hint_lines[-1])
+                T.mark("points", value=pts)
+                T.add(None, S + 0.6, "think")
+                T.events.append(Event(T.t - S - 0.6, "shape", S + 0.6))
+                T.add(self.chime(work), 0.6)
+        elif ep.mechanic == "choice":
+            spoken = ", ".join(f"{'ABCD'[k]}, {c}" for k, c in enumerate(it.choices[:-1])) + f", or {'ABCD'[len(it.choices)-1]}, {it.choices[-1]}"
+            T.mark("choices", items=it.choices)
+            say_part(self.pack.choice_line.format(choices=spoken))
+            T.add(None, S + 1, "think")
+            T.add(self.chime(work), 0.6)
+        else:
+            T.mark("status", text="Your guess?")
+            T.add(None, S + 1, "think")
+            T.add(self.chime(work), 0.6)
 
-    def frames(self, frames_dir: Path, audio: Path, out: Path) -> Path:
-        run(ff("-framerate", str(THINK_FPS), "-i", str(frames_dir / "%04d.png"), "-i", str(audio),
-               "-shortest", "-r", str(self.s.fps), *VID, *AUD, str(out)))
-        return out
+        # reveal
+        T.mark("reveal")
+        T.add(self.sting(work), 0.9)
+        spoken = it.pronunciation or it.answer
+        say_part(self.pack.reveal_line.format(answer=spoken))
+        reaction = rng.choice(self.pack.reactions) if total > 1 else ""
+        if ep.banter.get(i):
+            reaction = ep.banter[i]
+        if reaction:
+            T.add(None, 0.15)
+            say_part(reaction)
+        T.add(None, 0.3)
+        T.add(snd, snd_d, "sound")
+        T.add(None, 0.35)
+        fact = it.fact if not it.pronunciation else it.fact.replace(it.answer, it.pronunciation)
+        say_part(fact)
+        T.add(None, 0.5 if short else 0.9)
+        if short:
+            T.add(None, 0.1)
+            say_part(ep.outro)
+            T.add(None, 0.6)
+        return T
 
-    def think_segment(self, i: int, total: int, it: QuizItem, secs: int, *, points: int,
-                      hints_shown: list[str], hints_total: int, choices, replay: bool,
-                      work: Path, tag: str) -> Path:
-        fdir = work / f"think-{tag}"
-        fdir.mkdir()
-        n_frames = secs * THINK_FPS
+    def build_card(self, text: str, title: str, sub: str, foot: str, lead: float, tail: float) -> Timeline:
+        T = Timeline()
+        T.mark("card", title=title, sub=sub, foot=foot)
+        T.add(None, lead)
+        p = self.say(text)
+        T.add(p, self.dur(p))
+        T.add(None, tail)
+        return T
+
+    # ---- state at time t ------------------------------------------------------
+    def state(self, T: Timeline, t: float, it: QuizItem | None, i: int, total: int, work: Path) -> dict:
+        st = dict(t=t, card=None, header=f"ROUND {i} / {total}" if total > 1 else self.s.channel_name.upper(),
+                  points=None, points_age=99.0, tint=it.tint if it else None, tint_p=0.0,
+                  art=it.reveal_image if it else None, shape_p=0.0, reveal_p=0.0, wave=None, think=None,
+                  status="", hints=[], answer=it.answer if it else "", subtitle=it.subtitle if it else "",
+                  fact=it.fact if it else "", choices=None)
+        wave = np.zeros(28)
+        for ev in T.events:
+            if ev.at > t:
+                break
+            age = t - ev.at
+            if ev.kind == "card":
+                st["card"] = (ev.data["title"], ev.data["sub"], ev.data["foot"])
+            elif ev.kind == "status":
+                st["status"] = ev.data["text"]
+            elif ev.kind == "points":
+                st["points"], st["points_age"] = ev.data["value"], age
+            elif ev.kind == "tint":
+                st["tint_p"] = ease(age / 0.8)
+            elif ev.kind == "hint":
+                st["hints"].append((ev.data["text"], age))
+                st["status"] = ""
+            elif ev.kind == "choices":
+                st["choices"] = ev.data["items"]
+            elif ev.kind == "think":
+                st["think"] = min(1.0, age / ev.dur) if age < ev.dur else None
+            elif ev.kind == "shape":
+                st["shape_p"] = min(1.0, age / max(0.1, ev.dur - 0.6))
+            elif ev.kind == "reveal":
+                st["reveal_p"] = min(1.0, age)
+                st["status"] = ""
+                st["points"] = None
+        # waveform: scrolling envelope of whichever sound is playing (or decaying silence)
+        for ev in T.events:
+            if ev.kind == "sound" and ev.at - 0.6 <= t <= ev.at + ev.dur + 0.6:
+                env = self.envelope(it.prompt_audio, work)
+                for k in range(28):
+                    tt = t - ev.at - abs(k - 13.5) * 0.03     # radiates outward from the centre
+                    idx = int(tt * 50)
+                    if 0 <= idx < len(env):
+                        wave[k] = max(wave[k], env[idx])
+        if st["reveal_p"] == 0:
+            st["wave"] = wave
+        if st["choices"]:
+            st["hints"] = [(f"{'ABCD'[k]}   {c}", 9) for k, c in enumerate(st["choices"])]
+        return st
+
+    # ---- encode one timeline --------------------------------------------------
+    def encode(self, T: Timeline, it: QuizItem | None, i: int, total: int, work: Path, out: Path) -> Path:
+        # audio
+        lst = work / f"{out.stem}.txt"
+        files = []
+        for p, secs in T.parts:
+            if p is None:
+                sil = work / f"sil-{secs:.3f}.wav"
+                if not sil.exists():
+                    run(ff("-f", "lavfi", "-i", f"anullsrc=r={SR}:cl=stereo", "-t", f"{secs:.3f}", "-c:a", "pcm_s16le", str(sil)))
+                files.append(sil)
+            else:
+                files.append(self.norm(p, work))
+        lst.write_text("".join(f"file '{f.resolve()}'\n" for f in files))
+        audio = work / f"{out.stem}.wav"
+        run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-c:a", "pcm_s16le", str(audio)))
+        total_secs = self.dur(audio)
+
+        # video: raw frames → ffmpeg
+        fps = self.s.fps
+        n_frames = int(total_secs * fps)
+        cmd = ff("-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{self.s.width}x{self.s.height}", "-r", str(fps),
+                 "-i", "-", "-i", str(audio), "-shortest", *VID, *AUD, str(out))
+        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
         for f in range(n_frames):
-            prog = f / n_frames
-            self.cards.question_card(i, total, it.reveal_image, it.silhouette, fdir / f"{f:04d}.png",
-                                     points=points, hints_shown=hints_shown, hints_total=hints_total,
-                                     choices=choices, progress=prog, seconds_left=secs - int(prog * secs),
-                                     status="Your guess?")
-        audio = self.think_audio(secs, it.prompt_audio if replay else None, work, tag)
-        return self.frames(fdir, audio, work / f"{tag}-think.mp4")
-
-    def say_segment(self, card: Path, parts: list, work: Path, tag: str) -> Path:
-        return self.still(card, self.concat(parts, work / f"{tag}.wav", work), work / f"{tag}.mp4")
+            st = self.state(T, f / fps, it, i, total, work)
+            proc.stdin.write(self.scene.draw(st).tobytes())
+        proc.stdin.close()
+        proc.wait()
+        if proc.returncode:
+            raise RuntimeError(f"ffmpeg failed encoding {out}")
+        return out
 
     # ---- main -----------------------------------------------------------------
     def render(self, ep: Episode) -> RenderResult:
@@ -150,115 +304,49 @@ class Renderer:
         if work.exists():
             shutil.rmtree(work)
         work.mkdir(parents=True)
+        rng = random.Random(ep.slug)
         segs: list[Path] = []
         total = len(ep.items)
         short = ep.format == "short"
-        S = ep.stage_seconds
-        say = self.tts.say
 
-        # intro
-        if short:
-            # Shorts: no title card — go straight into the question with the intro line over it
-            first = ep.items[0]
-            self.cards.question_card(1, total, first.reveal_image, first.silhouette, work / "intro.png",
-                                     points=3, hints_shown=[], hints_total=len(first.hints), status="Listen")
-            segs.append(self.say_segment(work / "intro.png", [0.2, say(ep.intro), 0.3], work, "00-intro"))
-        else:
-            self.cards.title_card(self.pack.display_name, ep.theme, work / "intro.png", footer=self.s.channel_name)
-            segs.append(self.say_segment(work / "intro.png", [0.4, say(ep.intro), 0.6], work, "00-intro"))
-
+        if not short:
+            T = self.build_card(ep.intro, self.pack.display_name, ep.theme, self.s.channel_name, 0.4, 0.5)
+            segs.append(self.encode(T, None, 0, total, work, work / "00-intro.mp4"))
         for i, it in enumerate(ep.items, 1):
-            print(f"[render] round {i}/{total}: {it.answer} ({ep.mechanic})")
-            tag = f"{i:02d}"
-            hints_total = len(it.hints) if ep.mechanic == "ladder" else 0
-            choices = None
-            if ep.mechanic == "choice":
-                choices = sorted([it.answer, *it.choices[:3]], key=lambda s: hash((s, ep.slug)))
-            card = lambda name, **kw: self.cards.question_card(   # noqa: E731
-                i, total, it.reveal_image, it.silhouette, work / f"{tag}-{name}.png",
-                hints_total=hints_total, **kw)
+            print(f"[render] round {i}/{total}: {it.answer}")
+            T = self.build_round(i, total, it, ep, rng, work)
+            segs.append(self.encode(T, it, i, total, work, work / f"{i:02d}.mp4"))
+        if not short:
+            maxp = total * (1 + len(ep.items[0].hints) + 1) if ep.mechanic == "ladder" else total
+            T = self.build_card(ep.outro, "How did you do?", f"{maxp} points possible", "Drop your score in the comments", 0.3, 1.2)
+            segs.append(self.encode(T, None, 0, total, work, work / "99-outro.mp4"))
 
-            # question + sound ×2
-            top_points = 3 if ep.mechanic == "ladder" else 1
-            parts = [0.3] if short else [0.3, say(self.pack.question_line.format(n=i)), 0.4]
-            parts += [it.prompt_audio, 0.6, it.prompt_audio, 0.3]
-            card("q", points=top_points, hints_shown=[], status="Listen")
-            segs.append(self.say_segment(work / f"{tag}-q.png", parts, work, f"{tag}a-q"))
-
-            if ep.mechanic == "ladder":
-                shown: list[str] = []
-                segs.append(self.think_segment(i, total, it, S, points=3, hints_shown=shown, hints_total=hints_total,
-                                               choices=None, replay=False, work=work, tag=f"{tag}b"))
-                for h_i, hint in enumerate(it.hints):
-                    points = max(1, 2 - h_i)
-                    shown = shown + [hint]
-                    card(f"h{h_i}", points=points, hints_shown=shown, status="")
-                    segs.append(self.say_segment(work / f"{tag}-h{h_i}.png",
-                                                 [0.2, say(self.pack.hint_line.format(hint=hint)), 0.3],
-                                                 work, f"{tag}c{h_i}-hint"))
-                    segs.append(self.think_segment(i, total, it, S, points=points, hints_shown=shown,
-                                                   hints_total=hints_total, choices=None, replay=(h_i == 0),
-                                                   work=work, tag=f"{tag}d{h_i}"))
-            elif ep.mechanic == "choice":
-                spoken = ", ".join(f"{'ABCD'[k]}, {c}" for k, c in enumerate(choices[:-1])) + f", or {'ABCD'[len(choices)-1]}, {choices[-1]}"
-                card("mc", points=1, hints_shown=[], choices=choices, status="")
-                segs.append(self.say_segment(work / f"{tag}-mc.png",
-                                             [0.2, say(self.pack.choice_line.format(choices=spoken)), 0.2],
-                                             work, f"{tag}c-mc"))
-                segs.append(self.think_segment(i, total, it, S + 1, points=1, hints_shown=[], hints_total=0,
-                                               choices=choices, replay=True, work=work, tag=f"{tag}d"))
-            else:  # cold
-                segs.append(self.think_segment(i, total, it, S + 1, points=1, hints_shown=[], hints_total=0,
-                                               choices=None, replay=True, work=work, tag=f"{tag}d"))
-
-            # reveal
-            self.cards.reveal_card(i, total, it.answer, it.subtitle, it.fact, it.reveal_image, work / f"{tag}-r.png")
-            spoken_name = it.pronunciation or it.answer
-            fact = it.fact if not it.pronunciation else it.fact.replace(it.answer, it.pronunciation)
-            parts = [self.sting(work), 0.1, say(self.pack.reveal_line.format(answer=spoken_name)), 0.3]
-            if ep.banter.get(i):
-                parts += [say(ep.banter[i]), 0.3]
-            parts += [it.prompt_audio, 0.4, say(fact), 0.6 if short else 1.0]
-            segs.append(self.say_segment(work / f"{tag}-r.png", parts, work, f"{tag}e-reveal"))
-
-        # outro
-        if short:
-            segs.append(self.say_segment(work / f"{total:02d}-r.png", [say(ep.outro), 0.8], work, "99-outro"))
-        else:
-            self.cards.score_card(total * (3 if ep.mechanic == "ladder" else 1), work / "outro.png")
-            segs.append(self.say_segment(work / "outro.png", [0.3, say(ep.outro), 1.5], work, "99-outro"))
-
-        # concat video (copy) + final audio pass (loudnorm, optional music bed)
         lst = work / "segments.txt"
         lst.write_text("".join(f"file '{p.resolve()}'\n" for p in segs))
         final = self.s.out_dir / ep.slug / f"{ep.slug}.mp4"
         bed = bed_for(self.s, ep.slug, work)
         if bed:
-            # Sidechain: the bed is compressed by the voice/quiz-sound track, so it dips hard whenever anything
-            # else is playing and swells back in the silences between rounds.
-            ratio = 10 ** (-self.s.music_duck_db / 20)   # -14 dB → ratio ≈ 5
-            graph = (
-                "[0:a]asplit=2[v][sc];"
-                f"[1:a]volume={self.s.music_bed_db}dB[b];"
-                f"[b][sc]sidechaincompress=threshold=0.01:ratio={ratio:.1f}:attack=15:release=600:makeup=1[bd];"
-                "[v][bd]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]"
-            )
+            ratio = 10 ** (-self.s.music_duck_db / 20)
+            graph = ("[0:a]asplit=2[v][sc];"
+                     f"[1:a]volume={self.s.music_bed_db}dB[b];"
+                     f"[b][sc]sidechaincompress=threshold=0.01:ratio={ratio:.1f}:attack=15:release=900:makeup=1[bd];"
+                     "[v][bd]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]")
             run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-stream_loop", "-1", "-i", str(bed),
-                   "-filter_complex", graph,
-                   "-map", "0:v", "-map", "[a]", "-c:v", "copy", *AUD, "-movflags", "+faststart", str(final)))
+                   "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", *AUD,
+                   "-movflags", "+faststart", str(final)))
         else:
             run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
                    "-c:v", "copy", *AUD, "-movflags", "+faststart", str(final)))
 
         thumb = self.s.out_dir / ep.slug / "thumbnail.jpg"
         first = ep.items[0]
-        self.cards.thumbnail(ep.theme if not short else "Name it from the sound", first.reveal_image, thumb,
-                             silhouette=first.silhouette)
+        self.scene.thumbnail("Name it from the sound" if short else ep.theme, first.tint,
+                             self.envelope(first.prompt_audio, work), thumb)
 
         (self.s.out_dir / ep.slug / "episode.json").write_text(json.dumps({
             "slug": ep.slug, "pack": ep.pack, "format": ep.format, "mechanic": ep.mechanic,
             "title": ep.title, "description": ep.description, "tags": ep.tags, "theme": ep.theme,
             "items": [{"id": it.id, "answer": it.answer, "hints": it.hints, "fact": it.fact} for it in ep.items],
         }, indent=2, ensure_ascii=False))
-        shutil.rmtree(work)   # keep the output folder small; cards are cheap to regenerate
+        shutil.rmtree(work)
         return RenderResult(video=final, thumbnail=thumb, duration_seconds=duration(final))

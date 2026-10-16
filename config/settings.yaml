@@ -3,6 +3,7 @@
 channel_name: "Play It By Ear"
 
 # Game -----------------------------------------------------------------------
+# ladder = sound → type hint (+colour) → Pokédex hint → silhouette morph → reveal, 4/3/2/1 pts
 format: long                    # long (16:9, 10 rounds) | short (9:16, 1 round). Scheduler passes --format.
 mechanic: ladder                # ladder (sound → hint → hint, 3/2/1 pts) | choice (spoken A-D) | cold
 rounds_per_episode: 0           # 0 = format default (10 long / 1 short)
@@ -12,9 +13,9 @@ fps: 30
 # Music ----------------------------------------------------------------------
 music_provider: procedural      # procedural (new royalty-free loop per episode) | file | elevenlabs | none
 music_bed: assets/music/bed.wav # only for provider: file
-music_bed_db: -18               # bed level under narration
-music_duck_db: -14              # extra sidechain ducking whenever voice or a quiz sound is playing
-music_prompt: "calm lo-fi hip hop instrumental, soft electric piano, light drums, warm, loopable, no vocals"
+music_bed_db: -26               # bed level under narration
+music_duck_db: -12              # extra sidechain ducking whenever voice or a quiz sound is playing
+music_prompt: "slow ambient pad, warm analog synth chords, no drums, no melody, loopable, calm background"
 sting: assets/music/sting.wav         # ~0.5s reveal hit
 tick: assets/music/tick.wav           # ~0.1s per-second blip during thinking time
 

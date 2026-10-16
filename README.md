@@ -45,7 +45,7 @@ Open the MP4s in `out/`. Layout, timing and mechanics are final; only the voice 
 |----------|-------|-----------|
 | `kokoro` | `pip install kokoro soundfile` (+ `brew install espeak-ng`), `tts_voice: am_michael` / `af_heart` / `bf_emma`… or point `kokoro_url` at a running kokoro-fastapi | free, local, clear narrator |
 | `elevenlabs` | `ELEVENLABS_API_KEY`, `tts_voice: <voice id>` | most expressive; can clone your voice |
-| `openai` | `OPENAI_API_KEY`, `tts_voice: onyx` | cheap, fine |
+| `openai` | `OPENAI_API_KEY`, `tts_voice: ash` (or coral/nova/onyx…) | natural, ~1¢/Short; style via `QUIZBOT_TTS_STYLE` |
 | `piper` | `pip install piper-tts`, `tts_voice: /path/voice.onnx` | free, offline, flatter |
 
 Lines are cached by text hash, so re-renders don't re-bill, and `max_tts_chars_per_run` aborts any run that would

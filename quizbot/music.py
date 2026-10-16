@@ -72,44 +72,45 @@ def _hat(secs: float = 0.05, rng: random.Random | None = None) -> np.ndarray:
 
 
 def procedural_bed(seed: str, out: Path, bars: int = 8) -> Path:
+    """Ambient: slow pad chords with gentle filter movement, no drums. ~45-60 s, loop-friendly."""
     rng = random.Random(int(hashlib.sha1(seed.encode()).hexdigest(), 16))
-    bpm = rng.choice([84, 90, 96, 100, 108])
+    bpm = rng.choice([60, 64, 68, 72])
     key = rng.randint(0, 11)
     prog = rng.choice(PROGRESSIONS)
-    beat = 60 / bpm
-    bar = beat * 4
+    bar = 60 / bpm * 4
     total = int(bars * bar * SR)
     mix = np.zeros(total)
 
-    def add(sig: np.ndarray, at: float) -> None:
-        i = int(at * SR)
-        j = min(total, i + len(sig))
+    def add(sig, at):
+        i = int(at * SR); j = min(total, i + len(sig))
         if i < total:
             mix[i:j] += sig[: j - i]
 
-    arp_pattern = rng.choice([[0, 2, 4, 2], [0, 4, 7, 4], [4, 2, 0, 2], [0, 2, 4, 7]])
     for b in range(bars):
         deg = prog[b % 4]
-        chord = [_note(deg, 3, key), _note(deg + 2, 3, key), _note(deg + 4, 3, key), _note(deg, 4, key)]
-        add(_pad(chord, bar + 0.4), b * bar)
-        for s in range(8):                                   # 8th-note arpeggio
-            if rng.random() < 0.85:
-                add(_pluck(_note(deg + arp_pattern[s % 4], 5, key), 0.6), b * bar + s * beat / 2)
-        for k in (0, 2):                                     # kick on 1 and 3, soft
-            add(_kick() * 0.6, b * bar + k * beat)
-        for h in range(8):                                   # off-beat hats
-            if h % 2 == 1:
-                add(_hat(rng=rng), b * bar + h * beat / 2)
+        chord = [_note(deg, 2, key), _note(deg + 4, 2, key), _note(deg, 3, key), _note(deg + 2, 3, key), _note(deg + 6, 3, key)]
+        n = int((bar + 1.5) * SR)
+        t = np.arange(n) / SR
+        pad = np.zeros(n)
+        for f in chord:
+            for det, amp in ((1.0, 1.0), (1.003, 0.6), (0.997, 0.6), (2.0, 0.12)):
+                pad += amp * np.sin(2 * math.pi * f * det * t + rng.random() * 6.28)
+        env = np.minimum(1, t / 1.2) * np.minimum(1, (n / SR - t) / 1.5)
+        add(pad * env / (len(chord) * 2.5), b * bar)
+        if rng.random() < 0.6:   # occasional high, very soft bell note
+            f = _note(deg + rng.choice([7, 9, 11]), 4, key)
+            tb = np.arange(int(3 * SR)) / SR
+            add(np.sin(2 * math.pi * f * tb) * np.exp(-tb * 1.5) * 0.08, b * bar + rng.random() * bar)
 
-    # gentle low-pass via moving average, normalise, loop-friendly fade at the seam
-    k = 24
+    # slow low-pass sweep: moving-average size modulated over the loop
+    k = int(40 + 30 * (0.5 + 0.5 * math.sin(rng.random() * 6.28)))
     mix = np.convolve(mix, np.ones(k) / k, mode="same")
     mix /= max(1e-6, np.abs(mix).max())
-    fade = int(0.05 * SR)
+    fade = int(0.08 * SR)
     mix[:fade] *= np.linspace(0, 1, fade)
     mix[-fade:] *= np.linspace(1, 0, fade)
-    stereo = np.stack([mix, np.roll(mix, int(0.0004 * SR))], axis=1) * 0.7
-    import soundfile as sf  # noqa  (tiny dep; falls back to wave below)
+    stereo = np.stack([mix, np.roll(mix, int(0.0006 * SR))], axis=1) * 0.6
+    import soundfile as sf
     sf.write(str(out), stereo.astype(np.float32), SR)
     return out
 
