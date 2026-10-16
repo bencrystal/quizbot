@@ -109,7 +109,11 @@ def procedural_bed(seed: str, out: Path, bars: int = 8) -> Path:
     fade = int(0.08 * SR)
     mix[:fade] *= np.linspace(0, 1, fade)
     mix[-fade:] *= np.linspace(1, 0, fade)
-    stereo = np.stack([mix, np.roll(mix, int(0.0006 * SR))], axis=1) * 0.6
+    # balanced stereo: slight mutual detune via a short all-pass-ish spread on each side, no delay offset
+    left = mix + 0.08 * np.roll(mix, int(0.0004 * SR))
+    right = mix + 0.08 * np.roll(mix, -int(0.0004 * SR))
+    peak = max(np.abs(left).max(), np.abs(right).max(), 1e-6)
+    stereo = np.stack([left, right], axis=1) / peak * 0.6
     import soundfile as sf
     sf.write(str(out), stereo.astype(np.float32), SR)
     return out

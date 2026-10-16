@@ -9,6 +9,7 @@ Everything downstream (TTS, render, upload) is pack-agnostic.
 from __future__ import annotations
 
 import random
+import re
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -62,7 +63,14 @@ class Pack(ABC):
         return others[:k]
 
     # Narration hooks a pack may override
-    hint_lines: list[str] = ["Hint one: {hint}.", "Hint two: {hint}.", "Last chance. Here's its shape."]
+    opening_line: str = "How fast can you name this sound?"
+    spoken_replacements: dict = {}
+
+    def spoken(self, text: str) -> str:
+        """Respell proper nouns for the narrator (longest names first so 'Mew' never clobbers 'Mewtwo')."""
+        for k in sorted(self.spoken_replacements, key=len, reverse=True):
+            text = re.sub(rf"\b{re.escape(k)}\b", self.spoken_replacements[k], text)
+        return text
     reactions: list[str] = ["Classic.", "Tricky one.", "If you got that from the sound alone, respect.",
                             "That one fools a lot of people.", "Easy if you know, impossible if you don't.", ""]
     choice_line: str = "Is it {choices}?"

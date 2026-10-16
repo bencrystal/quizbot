@@ -22,11 +22,45 @@ GENERATIONS = {
 TYPES = ["normal", "fire", "water", "grass", "electric", "ice", "fighting", "poison", "ground",
          "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"]
 
-# TTS reads these better than the raw names
+REGIONS = {1: "Kanto", 2: "Johto", 3: "Hoenn", 4: "Sinnoh", 5: "Unova", 6: "Kalos", 7: "Alola", 8: "Galar", 9: "Paldea"}
+
+# Spoken respellings (anime pronunciations). Applied to every spoken line; on-screen text is never touched.
+# Names not listed are read as written, which TTS gets right for most.
 PRONUNCIATIONS = {
-    "Pikachu": "Peeka-choo", "Charizard": "Char-ih-zard", "Gyarados": "Gyar-a-dose",
-    "Arceus": "Ar-kee-us", "Rayquaza": "Ray-kwah-zah", "Lucario": "Loo-car-ee-oh",
-    "Mewtwo": "Mew-two", "Snorlax": "Snore-lax", "Gengar": "Gen-gar", "Ditto": "Ditto",
+    "Pokémon": "Pokeymon", "Pokédex": "Pokeydex",
+    "Arceus": "Ar-kee-us", "Rayquaza": "Ray-kway-zuh", "Gyarados": "Gyar-uh-dose", "Lucario": "Loo-car-ee-oh",
+    "Charizard": "Char-ih-zard", "Pikachu": "Pee-kuh-choo", "Raichu": "Rye-choo", "Mewtwo": "Mew-too",
+    "Articuno": "Ar-tih-koo-no", "Zapdos": "Zap-dose", "Moltres": "Mole-trace", "Dragonite": "Dragon-ite",
+    "Dratini": "Druh-tee-nee", "Dragonair": "Dragon-air", "Kabutops": "Kuh-boo-tops", "Omanyte": "Oh-muh-nite",
+    "Omastar": "Oh-muh-star", "Aerodactyl": "Air-oh-dak-til", "Ninetales": "Nine-tails", "Vulpix": "Vul-pix",
+    "Jynx": "Jinks", "Electabuzz": "Uh-lek-tuh-buzz", "Magmar": "Mag-mar", "Pinsir": "Pin-sir",
+    "Tauros": "Tore-ohs", "Lapras": "Lap-russ", "Ditto": "Dit-toe", "Eevee": "Ee-vee", "Vaporeon": "Vay-por-ee-on",
+    "Jolteon": "Jolt-ee-on", "Flareon": "Flare-ee-on", "Espeon": "Ess-pee-on", "Umbreon": "Um-bree-on",
+    "Leafeon": "Leaf-ee-on", "Glaceon": "Glay-see-on", "Sylveon": "Sil-vee-on", "Porygon": "Por-ee-gon",
+    "Snorlax": "Snore-lax", "Gengar": "Gang-gar", "Haunter": "Haunt-er", "Alakazam": "Al-uh-kuh-zam",
+    "Kadabra": "Kuh-dab-ruh", "Abra": "Ab-ruh", "Machamp": "Muh-champ", "Machoke": "Muh-choke",
+    "Machop": "Muh-chop", "Geodude": "Gee-oh-dude", "Onix": "On-ix", "Steelix": "Steel-ix", "Scyther": "Sy-ther",
+    "Scizor": "Siz-or", "Kangaskhan": "Kang-gus-con", "Rhydon": "Rye-don", "Rhyhorn": "Rye-horn",
+    "Chansey": "Chan-see", "Blissey": "Bliss-ee", "Tangela": "Tan-gel-uh", "Seadra": "See-druh",
+    "Kingdra": "King-druh", "Staryu": "Star-you", "Starmie": "Star-mee", "Magikarp": "Madge-ih-karp",
+    "Mew": "Mew", "Chikorita": "Chick-or-ee-tuh", "Cyndaquil": "Sin-duh-kwill", "Typhlosion": "Tie-flo-zhun",
+    "Totodile": "Toe-toe-dile", "Feraligatr": "Fer-al-ih-gator", "Hoothoot": "Hoot-hoot", "Xatu": "Zah-too",
+    "Ampharos": "Am-fuh-ross", "Azumarill": "Az-you-muh-rill", "Sudowoodo": "Soo-doe-woo-doe",
+    "Politoed": "Pol-ee-toad", "Wobbuffet": "Wob-buh-fet", "Heracross": "Hair-uh-cross", "Houndoom": "Hound-doom",
+    "Tyranitar": "Tie-ran-ih-tar", "Lugia": "Loo-gee-uh", "Ho-Oh": "Ho-oh", "Celebi": "Sell-uh-bee",
+    "Raikou": "Rye-koo", "Entei": "En-tay", "Suicune": "Swee-koon", "Treecko": "Treek-oh", "Sceptile": "Sep-tile",
+    "Torchic": "Tor-chick", "Blaziken": "Blaze-ih-ken", "Mudkip": "Mud-kip", "Swampert": "Swamp-ert",
+    "Gardevoir": "Gar-deh-vwar", "Aggron": "Ag-gron", "Milotic": "My-lo-tick", "Absol": "Ab-sol",
+    "Salamence": "Sal-uh-mence", "Metagross": "Met-uh-gross", "Regice": "Rej-ice", "Regirock": "Rej-ee-rock",
+    "Registeel": "Rej-ee-steel", "Latias": "Lat-ee-us", "Latios": "Lat-ee-ose", "Kyogre": "Kai-oh-gur",
+    "Groudon": "Grow-don", "Jirachi": "Jer-ah-chee", "Deoxys": "Dee-ox-iss", "Turtwig": "Tur-twig",
+    "Chimchar": "Chim-char", "Infernape": "In-fer-nape", "Piplup": "Pip-lup", "Empoleon": "Em-pole-ee-on",
+    "Luxray": "Lux-ray", "Garchomp": "Gar-chomp", "Lopunny": "Lop-bunny", "Dialga": "Dee-al-guh",
+    "Palkia": "Pal-kee-uh", "Giratina": "Gear-uh-tee-nuh", "Darkrai": "Dark-rye", "Uxie": "Yook-see",
+    "Mesprit": "Mess-prit", "Azelf": "Ay-zelf", "Cresselia": "Cress-eel-ee-uh", "Heatran": "Heat-ran",
+    "Regigigas": "Rej-ee-gig-us", "Manaphy": "Man-uh-fee", "Shaymin": "Shay-min", "Greninja": "Gre-nin-ja",
+    "Xerneas": "Zur-nee-us", "Yveltal": "Ee-vel-tall", "Mimikyu": "Mim-ee-kyoo", "Incineroar": "In-sin-er-oar",
+    "Zacian": "Zay-shan", "Zamazenta": "Zam-uh-zen-tuh", "Eternatus": "Ee-ter-nay-tus",
 }
 
 
@@ -34,9 +68,10 @@ class PokemonPack(Pack):
     name = "pokemon"
     display_name = "Guess That Pokémon"
     noun = "Pokémon"
-    question_line = "Round {n}. Who's that Pokémon?"
-    reveal_line = "It's {answer}!"
-    hint_lines = ["Hint one: {hint}.", "Hint two, {hint}", "Last chance. Here's its shape."]
+    question_line = "Round {n}."
+    reveal_line = "It's {answer}."
+    opening_line = "How fast can you name this Pokémon?"
+    spoken_replacements = PRONUNCIATIONS
     channel_blurb = "Can you name the Pokémon from its cry alone?"
     accent_color = (255, 203, 5)
     bg_color = (24, 28, 58)
@@ -120,26 +155,25 @@ class PokemonPack(Pack):
         types = " / ".join(t["type"]["name"].title() for t in poke["types"])
 
         type_names = [t["type"]["name"].title() for t in poke["types"]]
-        type_hint = f"it's a {type_names[0]} type" if len(type_names) == 1 else f"it's a {type_names[0]} and {type_names[1]} type"
+        type_hint = f"It's a {type_names[0]} type." if len(type_names) == 1 else f"It's a {type_names[0]} and {type_names[1]} type."
         gen = next(g for g, (lo, hi) in GENERATIONS.items() if lo <= pid <= hi)
-        # Pokédex entry as hint 2, with the name (and its evolution-line names) swapped for "this Pokémon"
+        # Pokédex entry as hint 2, with the name swapped for "this Pokémon"
         redacted = re.sub(re.escape(name), "this Pokémon", fact, flags=re.I)
         redacted = re.sub(r"\bthis Pokémon's\b", "its", redacted)
-        hints = [type_hint, f"from the Pokédex: {redacted}"]
+        hints = [type_hint, f"From the Pokédex: {redacted}", f"Last hint: it was first seen in the {REGIONS[gen]} region."]
 
         return QuizItem(
             id=f"pokemon:{pid}",
             answer=name,
             prompt_audio=cry,
             reveal_image=art,
-            fact=f"{name}, the {genus}. {fact}" if genus else fact,
+            fact=f"{name}, the {genus}." if genus else f"{name}.",
             subtitle=f"#{pid:03d}  ·  {types}",
             hints=hints,
             tint=TYPE_COLORS.get(type_names[0].lower()),
             difficulty=self._difficulty(pid, gen, species),
             pronunciation=PRONUNCIATIONS.get(name),
-            meta={"dex": pid, "types": types, "genus": genus, "gen": gen,
-                  "short_fact": f"{name}, the {genus}." if genus else f"{name}.",
+            meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact,
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
         )
 

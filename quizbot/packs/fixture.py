@@ -21,6 +21,7 @@ CRITTERS = [
 class FixturePack(Pack):
     name = "fixture"
     display_name = "Guess That Critter"
+    noun = "critter"
     question_line = "Number {n}. Which critter makes this sound?"
     accent_color = (120, 220, 160)
     bg_color = (20, 24, 30)
@@ -47,8 +48,9 @@ class FixturePack(Pack):
                 img.save(png)
             items.append(QuizItem(id=f"fixture:{i}", answer=name, prompt_audio=wav,
                                   reveal_image=png, fact=fact, subtitle=f"#{i:03d}  ·  {hz} Hz",
-                                  hints=[f"its pitch is {'above' if hz >= 300 else 'below'} 300 hertz",
-                                         f"from the field guide: {fact.replace(name, 'this critter')}"],
+                                  hints=[f"Its pitch is {'above' if hz >= 300 else 'below'} 300 hertz.",
+                                         f"From the field guide: {fact.replace(name, 'this critter')}",
+                                         f"Last hint: its name starts with {name[0]}."],
                                   tint=((hz * 7) % 200 + 55, 120, 255 - (hz * 3) % 200),
                                   difficulty=abs(hz - 440) / 100))
         return items

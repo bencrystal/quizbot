@@ -76,11 +76,25 @@ class Renderer:
         self._env: dict[str, np.ndarray] = {}
 
     # ---- audio helpers --------------------------------------------------------
+    TARGET_RMS_DB = -20.0   # every voice line and quiz sound is brought to the same loudness
+
     def norm(self, src: Path, work: Path) -> Path:
         k = str(src)
         if k not in self._norm:
+            tmp = work / f"t{len(self._norm):03d}.wav"
+            run(ff("-i", str(src), "-ar", str(SR), "-ac", "2", "-c:a", "pcm_s16le", str(tmp)))
+            data, _ = sf.read(str(tmp), dtype="float32")
+            mono = data.mean(axis=1)
+            # RMS over the louder 60% of 20 ms windows (ignores leading/trailing silence)
+            win = SR // 50
+            n = max(1, len(mono) // win)
+            w = np.sqrt((mono[: n * win].reshape(n, win) ** 2).mean(axis=1))
+            w = np.sort(w)[int(n * 0.4):]
+            rms = float(np.sqrt((w ** 2).mean())) if len(w) else 1e-4
+            gain = min(10 ** (self.TARGET_RMS_DB / 20) / max(rms, 1e-5), 0.97 / max(1e-5, float(np.abs(data).max())))
             out = work / f"n{len(self._norm):03d}.wav"
-            run(ff("-i", str(src), "-ar", str(SR), "-ac", "2", "-c:a", "pcm_s16le", str(out)))
+            sf.write(str(out), (data * gain).astype(np.float32), SR)
+            tmp.unlink(missing_ok=True)
             self._norm[k] = out
         return self._norm[k]
 
@@ -121,7 +135,7 @@ class Renderer:
         return self.synth("sting", [523.25, 659.25, 783.99, 1046.5], 0.9, 0.3, work)
 
     def say(self, text: str) -> Path:
-        return self.tts.say(text)
+        return self.tts.say(self.pack.spoken(text))
 
     # ---- timeline builders ----------------------------------------------------
     def build_round(self, i: int, total: int, it: QuizItem, ep: Episode, rng: random.Random, work: Path) -> Timeline:
@@ -130,23 +144,24 @@ class Renderer:
         short = ep.format == "short"
         snd = self.norm(it.prompt_audio, work)
         snd_d = self.dur(snd)
-        stages = (1 + len(it.hints) + (1 if it.shape_hint and it.reveal_image else 0)) if ep.mechanic == "ladder" else 1
-        pts = stages
+        n_hints = len(it.hints) if ep.mechanic == "ladder" else 0
+        pts = n_hints + 1
 
         def say_part(text, kind=None, **data):
             p = self.say(text)
             return T.add(p, self.dur(p), kind, **data)
 
         T.mark("status", text="Listen")
-        if short and i == 1:
-            say_part(ep.intro)
+        if short:
+            say_part(self.pack.opening_line)
         else:
             say_part(self.pack.question_line.format(n=i))
-        T.add(None, 0.25)
+        T.add(None, 0.3)
         T.add(snd, snd_d, "sound")
-        T.add(None, 0.45)
+        T.add(None, 0.4)
         T.add(snd, snd_d, "sound")
         T.mark("points", value=pts)
+        T.mark("stage", index=0, count=n_hints + 1)
 
         if ep.mechanic == "ladder":
             T.add(None, 0.3)
@@ -155,24 +170,20 @@ class Renderer:
             T.add(self.chime(work), 0.6)
             for h_i, hint in enumerate(it.hints):
                 pts -= 1
+                last = h_i == len(it.hints) - 1
                 T.mark("hint", text=hint, index=h_i)
                 if h_i == 0:
                     T.mark("tint")
-                say_part(self.pack.hint_lines[h_i].format(hint=hint))
+                if last and it.shape_hint and it.reveal_image:
+                    T.mark("shape", dur=2.2)
+                say_part(hint)
                 T.mark("points", value=pts)
+                T.mark("stage", index=h_i + 1, count=n_hints + 1)
                 if h_i == 0:
                     T.add(None, 0.2)
                     T.add(snd, snd_d, "sound")
                 T.add(None, 0.25)
                 T.add(None, S, "think")
-                T.add(self.chime(work), 0.6)
-            if it.shape_hint and it.reveal_image:
-                pts -= 1
-                T.mark("status", text="Last chance")
-                say_part(self.pack.hint_lines[-1])
-                T.mark("points", value=pts)
-                T.add(None, S + 0.6, "think")
-                T.events.append(Event(T.t - S - 0.6, "shape", S + 0.6))
                 T.add(self.chime(work), 0.6)
         elif ep.mechanic == "choice":
             spoken = ", ".join(f"{'ABCD'[k]}, {c}" for k, c in enumerate(it.choices[:-1])) + f", or {'ABCD'[len(it.choices)-1]}, {it.choices[-1]}"
@@ -185,25 +196,19 @@ class Renderer:
             T.add(None, S + 1, "think")
             T.add(self.chime(work), 0.6)
 
-        # reveal
         T.mark("reveal")
         T.add(self.sting(work), 0.9)
-        spoken = it.pronunciation or it.answer
-        say_part(self.pack.reveal_line.format(answer=spoken))
-        reaction = rng.choice(self.pack.reactions) if total > 1 else ""
-        if ep.banter.get(i):
-            reaction = ep.banter[i]
+        say_part(self.pack.reveal_line.format(answer=it.answer))
+        reaction = ep.banter.get(i) or (rng.choice(self.pack.reactions) if total > 1 else "")
         if reaction:
             T.add(None, 0.15)
             say_part(reaction)
         T.add(None, 0.3)
         T.add(snd, snd_d, "sound")
-        T.add(None, 0.35)
-        fact = it.fact if not it.pronunciation else it.fact.replace(it.answer, it.pronunciation)
-        say_part(fact)
+        T.add(None, 0.3)
+        say_part(it.fact)
         T.add(None, 0.5 if short else 0.9)
         if short:
-            T.add(None, 0.1)
             say_part(ep.outro)
             T.add(None, 0.6)
         return T
@@ -220,7 +225,7 @@ class Renderer:
     # ---- state at time t ------------------------------------------------------
     def state(self, T: Timeline, t: float, it: QuizItem | None, i: int, total: int, work: Path) -> dict:
         st = dict(t=t, card=None, header=f"ROUND {i} / {total}" if total > 1 else self.s.channel_name.upper(),
-                  points=None, points_age=99.0, tint=it.tint if it else None, tint_p=0.0,
+                  points=None, points_age=99.0, tint=it.tint if it else None, tint_p=0.0, stage=0, stages=1, arc=0.0,
                   art=it.reveal_image if it else None, shape_p=0.0, reveal_p=0.0, wave=None, think=None,
                   status="", hints=[], answer=it.answer if it else "", subtitle=it.subtitle if it else "",
                   fact=it.fact if it else "", choices=None)
@@ -242,10 +247,12 @@ class Renderer:
                 st["status"] = ""
             elif ev.kind == "choices":
                 st["choices"] = ev.data["items"]
+            elif ev.kind == "stage":
+                st["stage"], st["stages"] = ev.data["index"], ev.data["count"]
             elif ev.kind == "think":
                 st["think"] = min(1.0, age / ev.dur) if age < ev.dur else None
             elif ev.kind == "shape":
-                st["shape_p"] = min(1.0, age / max(0.1, ev.dur - 0.6))
+                st["shape_p"] = min(1.0, age / ev.dur)
             elif ev.kind == "reveal":
                 st["reveal_p"] = min(1.0, age)
                 st["status"] = ""
@@ -261,6 +268,9 @@ class Renderer:
                         wave[k] = max(wave[k], env[idx])
         if st["reveal_p"] == 0:
             st["wave"] = wave
+        # progress arc around the disc: completed stages + progress through the current thinking time
+        think = st["think"] if st["think"] is not None else (1.0 if st["stage"] > 0 or st["points"] is not None else 0.0)
+        st["arc"] = min(1.0, (st["stage"] + think) / st["stages"]) if st["points"] is not None else 0.0
         if st["choices"]:
             st["hints"] = [(f"{'ABCD'[k]}   {c}", 9) for k, c in enumerate(st["choices"])]
         return st
@@ -317,7 +327,7 @@ class Renderer:
             T = self.build_round(i, total, it, ep, rng, work)
             segs.append(self.encode(T, it, i, total, work, work / f"{i:02d}.mp4"))
         if not short:
-            maxp = total * (1 + len(ep.items[0].hints) + 1) if ep.mechanic == "ladder" else total
+            maxp = total * (1 + len(ep.items[0].hints)) if ep.mechanic == "ladder" else total
             T = self.build_card(ep.outro, "How did you do?", f"{maxp} points possible", "Drop your score in the comments", 0.3, 1.2)
             segs.append(self.encode(T, None, 0, total, work, work / "99-outro.mp4"))
 

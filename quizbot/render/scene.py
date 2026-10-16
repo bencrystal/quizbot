@@ -161,14 +161,19 @@ class Scene:
     # ---- layout ---------------------------------------------------------------
     def geom(self):
         if self.portrait:
-            return dict(art=(self.W // 2, int(self.H * 0.36)), box=int(self.W * 0.72),
-                        wave=(self.W // 2, int(self.H * 0.585), int(self.W * 0.6)),
-                        text_x=self.W // 2, text_w=int(self.W * 0.86), text_y=int(self.H * 0.645), center=True,
-                        ring=(self.W // 2, int(self.H * 0.885), int(92 * self.u)), name_y=int(self.H * 0.64))
+            # Shorts safe area: YouTube overlays the right ~18% (like/comment/share) from ~40% down,
+            # and the bottom ~22% (title/subscribe). Everything important lives above y=0.74H, left of x=0.80W.
+            cx = int(self.W * 0.44)
+            return dict(art=(cx, int(self.H * 0.30)), box=int(self.W * 0.62),
+                        wave=(cx, int(self.H * 0.505), int(self.W * 0.52)),
+                        dots=(cx, int(self.H * 0.465)),
+                        text_x=int(self.W * 0.08), text_w=int(self.W * 0.70), text_y=int(self.H * 0.56), center=False,
+                        name_y=int(self.H * 0.56))
         return dict(art=(int(self.W * 0.72), int(self.H * 0.44)), box=int(self.H * 0.6),
-                    wave=(int(self.W * 0.72), int(self.H * 0.80), int(self.W * 0.3)),
+                    wave=(int(self.W * 0.72), int(self.H * 0.82), int(self.W * 0.3)),
+                    dots=(int(self.W * 0.72), int(self.H * 0.77)),
                     text_x=int(self.W * 0.065), text_w=int(self.W * 0.46), text_y=int(self.H * 0.26), center=False,
-                    ring=(int(self.W * 0.16), int(self.H * 0.80), int(90 * self.u)), name_y=int(self.H * 0.28))
+                    name_y=int(self.H * 0.28))
 
     # ---- frame ----------------------------------------------------------------
     def draw(self, st: dict) -> Image.Image:
@@ -179,6 +184,7 @@ class Scene:
         img = self.background(bg, accent, st["t"])
         d = ImageDraw.Draw(img)
         m = int(64 * self.u)
+        right = self.W - m - (int(self.W * 0.16) if self.portrait else 0)
 
         if st["card"]:                               # intro / outro / score card
             title, sub, foot = st["card"]
@@ -200,8 +206,8 @@ class Scene:
             f = self.font(int(36 * pop))
             w = f.getlength(label) + int(44 * self.u * pop)
             h = int(62 * self.u * pop)
-            d.rounded_rectangle((self.W - m - w, m - h // 2, self.W - m, m + h // 2), radius=h // 2, fill=accent)
-            self.text(d, (self.W - m - w / 2, m), label, int(36 * pop), fill=bg)
+            d.rounded_rectangle((right - w, m - h // 2, right, m + h // 2), radius=h // 2, fill=accent)
+            self.text(d, (right - w / 2, m), label, int(36 * pop), fill=bg)
 
         # art region
         cx, cy = g["art"]
@@ -215,7 +221,8 @@ class Scene:
                     layer = layer.resize((int(box * sc), int(box * sc)), Image.BILINEAR)
                 self.paste_center(img, layer, cx, cy)
             elif st["shape_p"] > 0:
-                mask = self.morph_mask(art, box, ease(st["shape_p"]))
+                p = ease(st["shape_p"])
+                mask = self.art(art, box, "mask") if p >= 1 else self.morph_mask(art, box, p)
                 self.paste_center(img, Image.new("RGB", (box, box), (10, 10, 14)), cx, cy, mask)
                 d = ImageDraw.Draw(img)
                 if st["shape_p"] < 0.5:
@@ -224,6 +231,24 @@ class Scene:
                 r = int(box * 0.36)
                 d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(10, 10, 14))
                 self.text(d, (cx, cy), "?", int(box * 0.45), fill=accent)
+            # progress arc hugging the disc: fills over the whole round (stages + thinking time)
+            if st["reveal_p"] == 0 and st["arc"] > 0:
+                r = int(box * 0.36) + int(22 * self.u)
+                w = int(10 * self.u)
+                d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=(50, 52, 66), width=w)
+                d.arc((cx - r, cy - r, cx + r, cy + r), start=-90, end=-90 + 360 * st["arc"], fill=accent, width=w)
+            # hint dots
+            if st["reveal_p"] == 0 and st["stages"] > 1:
+                dx_, dy_ = g["dots"]
+                n = st["stages"] - 1
+                gap = int(30 * self.u)
+                for k in range(n):
+                    x0 = dx_ + (k - (n - 1) / 2) * gap
+                    rr = int(7 * self.u)
+                    if k < len(st["hints"]):
+                        d.ellipse((x0 - rr, dy_ - rr, x0 + rr, dy_ + rr), fill=accent)
+                    else:
+                        d.ellipse((x0 - rr, dy_ - rr, x0 + rr, dy_ + rr), outline=(90, 92, 110), width=max(1, int(2 * self.u)))
 
         # waveform (listening + thinking)
         if st["reveal_p"] == 0 and st["wave"] is not None:
@@ -255,19 +280,13 @@ class Scene:
                 y += int(74 * self.u)
             for i, (hint, age) in enumerate(st["hints"]):
                 a = ease_out(age / 0.45)
-                dx = int((1 - a) * 60 * self.u) * (0 if g["center"] else 1)
+                dx = int((1 - a) * 60 * self.u)
                 s = hint[0].upper() + hint[1:]
                 for j, ln in enumerate(self.wrap(s, 40, g["text_w"], bold=(i == 0))[:5]):
                     self.text(d, (x + dx, y), ln, 40, bold=(i == 0), anchor=anchor, alpha=a)
                     y += int(56 * self.u)
                 y += int(18 * self.u)
 
-        # ring timer
-        if st["think"] is not None:
-            rx, ry, rr = g["ring"]
-            w = int(16 * self.u)
-            d.ellipse((rx - rr, ry - rr, rx + rr, ry + rr), outline=(55, 57, 72), width=w)
-            d.arc((rx - rr, ry - rr, rx + rr, ry + rr), start=-90, end=-90 + 360 * (1 - st["think"]), fill=accent, width=w)
         return img
 
     def thumbnail(self, title: str, tint: tuple | None, wave: np.ndarray, out: Path) -> Path:
