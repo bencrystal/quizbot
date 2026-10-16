@@ -51,7 +51,18 @@ class TTS:
         if self.chars_this_run > self.settings.max_tts_chars_per_run:
             raise TTSBudgetExceeded(f"TTS budget exceeded ({self.chars_this_run} chars > max_tts_chars_per_run)")
         raw = self.cache / f"{key}.raw"
-        getattr(self, f"_{self.provider}")(text, raw)
+        try:
+            getattr(self, f"_{self.provider}")(text, raw)
+        except Exception as e:
+            if self.provider in ("openai", "elevenlabs") and not getattr(self, "_fell_back", False):
+                print(f"[tts] {self.provider} failed ({str(e)[:120]}); falling back to kokoro for this run")
+                self._fell_back = True
+            if not getattr(self, "_fell_back", False):
+                raise
+            self.provider, self.voice = "kokoro", "am_michael"
+            self.cache = self.settings.cache_dir / "tts" / "kokoro"
+            self.cache.mkdir(parents=True, exist_ok=True)
+            return self.say(text)
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw),
                         "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", str(out)], check=True)
         raw.unlink(missing_ok=True)
