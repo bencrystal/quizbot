@@ -12,6 +12,10 @@ on:
       format: { default: short, type: choice, options: [short, long] }
       theme: { default: "" }
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   episode:
     runs-on: ubuntu-latest
@@ -51,9 +55,18 @@ jobs:
           QUIZBOT_UPLOAD: "true"
           TZ: America/New_York
         run: |
-          python -m quizbot retry-uploads || true
+          set -o pipefail
+          (python -m quizbot retry-uploads || true) 2>&1 | tee -a state/run.log
           python -m quizbot run --format ${{ steps.fmt.outputs.format }} \
-            ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }}
+            ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }} 2>&1 | tee -a state/run.log
+      - name: report failure to the "Run failures" issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY="### Run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed ($(date -u +%FT%TZ))\n\n\`\`\`\n$(tail -c 6000 state/run.log 2>/dev/null | sed 's/`/'"'"'/g')\n\`\`\`"
+          N=$(gh issue list -R ${{ github.repository }} --search "Run failures in:title" --state open --json number --jq '.[0].number')
+          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Run failures" --body "$(printf "$BODY")"; else gh issue comment -R ${{ github.repository }} "$N" --body "$(printf "$BODY")"; fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
