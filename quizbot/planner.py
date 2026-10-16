@@ -59,7 +59,9 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
     hashtags = f"#quiz #audioquiz #{slugify(pack.name)}" + (" #shorts" if short else "")
 
     if short:
-        title = f"Can you name this {theme['label']} from its sound? #shorts"
+        for it in items:   # the Pokédex entry was already hint 2; after the reveal keep it to one line
+            it.fact = it.meta.get("short_fact", it.fact)
+        title = f"Can you name this {pack.noun} from its sound? ({theme['label']}) #shorts"
         desc = (f"{pack.channel_blurb}\n\nOne round. Three hints. How fast did you get it?\n"
                 f"Full {n if n > 1 else 10}-round quizzes every week.\n\nAnswer: {items[0].answer}\n\n{hashtags}")
         intro = "Can you name it from the sound alone? Four points if you get it now."

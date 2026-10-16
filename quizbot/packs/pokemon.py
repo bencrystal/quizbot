@@ -33,6 +33,7 @@ PRONUNCIATIONS = {
 class PokemonPack(Pack):
     name = "pokemon"
     display_name = "Guess That Pokémon"
+    noun = "Pokémon"
     question_line = "Round {n}. Who's that Pokémon?"
     reveal_line = "It's {answer}!"
     hint_lines = ["Hint one: {hint}.", "Hint two, {hint}", "Last chance. Here's its shape."]
@@ -138,6 +139,7 @@ class PokemonPack(Pack):
             difficulty=self._difficulty(pid, gen, species),
             pronunciation=PRONUNCIATIONS.get(name),
             meta={"dex": pid, "types": types, "genus": genus, "gen": gen,
+                  "short_fact": f"{name}, the {genus}." if genus else f"{name}.",
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
         )
 
