@@ -38,10 +38,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with: { name: quizbot-analytics, path: out/quizbot-analytics.json, retention-days: 30 }
       - name: commit to the portfolio site
-        if: ${{ secrets.PORTFOLIO_TOKEN != '' }}
         env:
           PORTFOLIO_TOKEN: ${{ secrets.PORTFOLIO_TOKEN }}
         run: |
+          if [ -z "$PORTFOLIO_TOKEN" ]; then echo "::warning::PORTFOLIO_TOKEN not set; JSON is in the run artifact only"; exit 0; fi
           git clone --depth 1 "https://x-access-token:${PORTFOLIO_TOKEN}@github.com/bencrystal/portfolio_website" site
           mkdir -p site/public/quizbot
           cp out/quizbot-analytics.json site/public/quizbot/data.json
