@@ -56,6 +56,9 @@ for k in range(0, len(ids), 50):
         title = f"{packs[pack].display_name} ({'Shorts' if short else 'Long Form'})"
         if title in filed.get(v["id"], set()):
             continue
-        add_to_playlist(yt, v["id"], title)
-        moved += 1
+        try:
+            add_to_playlist(yt, v["id"], title)
+            moved += 1
+        except Exception as e:
+            print(f"could not file {v['id']} ({sn['title']}): {str(e)[:120]}")
 print(f"filed {moved} video(s); {len(ids)} on the channel")

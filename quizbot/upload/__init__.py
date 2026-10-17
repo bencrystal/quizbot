@@ -125,6 +125,14 @@ def add_to_playlist(yt, video_id: str, title: str) -> None:
             "status": {"privacyStatus": "public"}}).execute()
         pid = r["id"]
         print(f"[upload] created playlist '{title}'")
-    yt.playlistItems().insert(part="snippet", body={
-        "snippet": {"playlistId": pid, "resourceId": {"kind": "youtube#video", "videoId": video_id}}}).execute()
+    import time
+    for attempt in range(4):             # playlistItems.insert throws spurious 409 SERVICE_UNAVAILABLE; retry
+        try:
+            yt.playlistItems().insert(part="snippet", body={
+                "snippet": {"playlistId": pid, "resourceId": {"kind": "youtube#video", "videoId": video_id}}}).execute()
+            break
+        except Exception as e:
+            if attempt == 3 or "409" not in str(e):
+                raise
+            time.sleep(3 * (attempt + 1))
     print(f"[upload] added to playlist '{title}'")
