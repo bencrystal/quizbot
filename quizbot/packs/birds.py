@@ -239,8 +239,8 @@ class BirdsPack(Pack):
         r = requests.get(XC_API, params={"query": q, "key": key}, headers=UA, timeout=60)
         r.raise_for_status()
         recs = r.json().get("recordings", [])
-        if len(recs) < 3:                      # fall back to quality B and any country
-            r = requests.get(XC_API, params={"query": f'en:"{name}" q:B', "key": key}, headers=UA, timeout=60)
+        if len(recs) < 3:                      # fall back to any quality and any country
+            r = requests.get(XC_API, params={"query": f'en:"{name}"', "key": key}, headers=UA, timeout=60)
             r.raise_for_status()
             recs += r.json().get("recordings", [])
 
@@ -253,7 +253,7 @@ class BirdsPack(Pack):
         ok = [x for x in recs if any(t in (x.get("lic") or "") for t in OK_LICENSES)
               and 4 <= secs(x) <= 40 and x.get("file")
               and "nd" not in (x.get("lic") or "").split("/")[-3:-1]]
-        ok.sort(key=lambda x: (x.get("q", "Z"), -secs(x)))          # A before B, longer first
+        ok.sort(key=lambda x: (x.get("q", "Z"), -secs(x)))          # best quality first, longer first
         best = ok[0] if ok else None
         p.write_text(json.dumps(best))
         return best
@@ -271,7 +271,7 @@ class BirdsPack(Pack):
         return keep
 
     def _audio(self, rec: dict, name: str) -> Path:
-        """Download, trim to the first 7 s of the recording, fade, 48 kHz."""
+        """Download, trim to the first 5 s of the recording, fade, 48 kHz."""
         out = self.cache / f"call-{slug(name)}.wav"
         if out.exists():
             return out
@@ -280,8 +280,8 @@ class BirdsPack(Pack):
             r = requests.get(rec["file"], headers=UA, timeout=120)
             r.raise_for_status()
             raw.write_bytes(r.content)
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-t", "7",
-                        "-af", "highpass=f=250,afade=t=in:d=0.05,afade=t=out:st=6.6:d=0.4",
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-t", "5",
+                        "-af", "highpass=f=250,afade=t=in:d=0.05,afade=t=out:st=4.6:d=0.4",
                         "-ar", "48000", "-ac", "2", str(out)], check=True)
         return out
 
