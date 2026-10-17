@@ -225,7 +225,8 @@ class Scene:
         if art:
             if st["reveal_p"] > 0:
                 layer = self.art(art, box, "color")
-                sc = 0.62 + 0.30 * ease_out(st["reveal_p"] / 0.6)      # grows out of the silhouette size
+                # grows out of the silhouette size; landscape has room for a big hero image
+                sc = 0.62 + (0.60 if not self.portrait else 0.30) * ease_out(st["reveal_p"] / 0.6)
                 layer = layer.resize((max(1, int(box * sc)), max(1, int(box * sc))), Image.BILINEAR)
                 self.paste_center(img, layer, cx, cy)
             elif st["shape_p"] > 0:
@@ -291,13 +292,18 @@ class Scene:
         x, y, anchor = g["text_x"], g["text_y"], ("mm" if g["center"] else "lm")
         if st["reveal_p"] > 0:
             y = g["name_y"]
+            # landscape: bigger type, plus the Pokédex entry under the one-liner so the column isn't empty
+            name_sz, fact_sz, entry_sz = (104, 36, 0) if self.portrait else (124, 44, 32)
+            fact_lines = self.wrap(st["fact"], fact_sz, g["text_w"])[:4]
+            entry_lines = self.wrap(st["entry"], entry_sz, g["text_w"])[:6] if entry_sz and st["entry"] else []
             if not self.portrait:
-                n_fact = len(self.wrap(st["fact"], 36, g["text_w"])[:6])
-                y = g["art"][1] - (int(180 * self.u) + n_fact * int(50 * self.u)) // 2 + int(20 * self.u)
+                block = (int(100 * self.u) + int(100 * self.u) + len(fact_lines) * int(fact_sz * 1.4 * self.u)
+                         + (int(30 * self.u) + len(entry_lines) * int(entry_sz * 1.45 * self.u) if entry_lines else 0))
+                y = g["art"][1] - block // 2 + int(30 * self.u)
             a = ease_out(st["reveal_p"] / 0.4)
             rx_, ranchor = (g["art"][0], "mm") if self.portrait else (x, anchor)
-            self.text(d, (rx_, y), st["answer"], 104, anchor=ranchor, max_width=g["text_w"], alpha=a)
-            y += int(90 * self.u)
+            self.text(d, (rx_, y), st["answer"], name_sz, anchor=ranchor, max_width=g["text_w"], alpha=a)
+            y += int((90 if self.portrait else 100) * self.u)
             label = st["subtitle"]
             f = self.font(34)
             w = f.getlength(label) + int(44 * self.u)
@@ -306,10 +312,15 @@ class Scene:
             d.rounded_rectangle((px, y - h // 2, px + w, y + h // 2), radius=h // 2,
                                 fill=tuple(int(c * a) for c in accent))
             self.text(d, (px + w / 2, y), label, 34, fill=bg, alpha=a)
-            y += int(90 * self.u)
-            for ln in self.wrap(st["fact"], 36, g["text_w"])[:6]:
-                self.text(d, (rx_, y), ln, 36, fill=(230, 230, 238), bold=False, anchor=ranchor, alpha=a)
-                y += int(50 * self.u)
+            y += int((90 if self.portrait else 100) * self.u)
+            for ln in fact_lines:
+                self.text(d, (rx_, y), ln, fact_sz, fill=(230, 230, 238), bold=False, anchor=ranchor, alpha=a)
+                y += int(fact_sz * 1.4 * self.u)
+            if entry_lines:
+                y += int(30 * self.u)
+                for ln in entry_lines:
+                    self.text(d, (rx_, y), ln, entry_sz, fill=(175, 178, 196), bold=False, anchor=ranchor, alpha=a)
+                    y += int(entry_sz * 1.45 * self.u)
         else:
             if st["caption"] and not st["hints"]:
                 lines = self.wrap_fit(st["caption"], 56, g["text_w"], 3, bold=True)[0]

@@ -102,12 +102,15 @@ class TTS:
         client = OpenAI()
         with client.audio.speech.with_streaming_response.create(
             model=os.environ.get("QUIZBOT_OPENAI_TTS_MODEL", "gpt-4o-mini-tts"),
-            voice=self.voice or "ash", input=text, response_format="wav",
+            voice=self.voice or "coral", input=text, response_format="wav",
             speed=float(os.environ.get("QUIZBOT_TTS_SPEED", "1.22")),
             instructions=os.environ.get("QUIZBOT_TTS_STYLE",
-                "Friendly, engaged quiz host: warm, upbeat and brisk, clearly enjoying it; never bored, never shouting. "
-                "Pronounce Pokémon as 'POH-kee-mon' with the stress on POH. Hyphenated words are single spoken words "
-                "written phonetically, e.g. 'Ar-kee-uss' is one name — never spell letters out.")
+                "Game-show host energy: bright, upbeat and quick, with a smile in the voice and a little showman "
+                "flair, like announcing the next round to a live audience. Natural and conversational, never cheesy, "
+                "never shouting. Keep a steady, flowing pace with no long pauses mid-sentence. "
+                "Pronounce Pokémon as 'POH-kee-mon' with the stress on POH. Hyphenated words are single names "
+                "written phonetically (capitals mark the stressed syllable), e.g. 'LOO-gee-uh' is one name said "
+                "smoothly — never spell letters out, never pause before them.")
                 + (" " + getattr(self, "_style", "") if getattr(self, "_style", "") else ""),
         ) as r:
             r.stream_to_file(out)

@@ -24,44 +24,38 @@ TYPES = ["normal", "fire", "water", "grass", "electric", "ice", "fighting", "poi
 
 REGIONS = {1: "Kanto", 2: "Johto", 3: "Hoenn", 4: "Sinnoh", 5: "Unova", 6: "Kalos", 7: "Alola", 8: "Galar", 9: "Paldea"}
 
-# Spoken respellings (anime pronunciations). Applied to every spoken line; on-screen text is never touched.
-# Names not listed are read as written, which TTS gets right for most.
-PRONUNCIATIONS = {
-    "Pokémon": "Pokeymon", "Pokédex": "Pokeydex",
-    "Arceus": "Ar-kee-uss", "Rayquaza": "Ray-kway-zuh", "Gyarados": "Gyar-uh-dose", "Lucario": "Loo-car-ee-oh",
-    "Charizard": "Char-ih-zard", "Pikachu": "Pee-kuh-choo", "Raichu": "Rye-choo", "Mewtwo": "Mew-too",
-    "Articuno": "Ar-tih-koo-noh", "Zapdos": "Zap-dose", "Moltres": "Mole-trace", "Dragonite": "Dragon-ite",
-    "Dratini": "Druh-tee-nee", "Dragonair": "Dragon-air", "Kabutops": "Kuh-boo-tops", "Omanyte": "Oh-muh-nite",
-    "Omastar": "Oh-muh-star", "Aerodactyl": "Air-oh-dak-til", "Ninetales": "Nine-tails", "Vulpix": "Vul-pix",
-    "Jynx": "Jinks", "Electabuzz": "Uh-lek-tuh-buzz", "Magmar": "Mag-mar", "Pinsir": "Pin-sir",
-    "Tauros": "Tore-ohs", "Lapras": "Lap-russ", "Ditto": "Dit-toe", "Eevee": "Ee-vee", "Vaporeon": "Vay-por-ee-onn",
-    "Jolteon": "Jolt-ee-onn", "Flareon": "Flare-ee-onn", "Espeon": "Ess-pee-onn", "Umbreon": "Um-bree-onn",
-    "Leafeon": "Leaf-ee-onn", "Glaceon": "Glay-see-onn", "Sylveon": "Sil-vee-onn", "Porygon": "Por-ee-gon",
-    "Snorlax": "Snore-lax", "Gengar": "Gang-gar", "Haunter": "Haunt-er", "Alakazam": "Al-uh-kuh-zam",
-    "Kadabra": "Kuh-dab-ruh", "Abra": "Ab-ruh", "Machamp": "Muh-champ", "Machoke": "Muh-choke",
-    "Machop": "Muh-chop", "Geodude": "Gee-oh-dude", "Onix": "On-ix", "Steelix": "Steel-ix", "Scyther": "Sy-ther",
-    "Scizor": "Siz-orr", "Kangaskhan": "Kang-gus-con", "Rhydon": "Rye-don", "Rhyhorn": "Rye-horn",
-    "Chansey": "Chan-see", "Blissey": "Bliss-ee", "Tangela": "Tan-gel-uh", "Seadra": "See-druh",
-    "Kingdra": "King-druh", "Staryu": "Star-you", "Starmie": "Star-mee", "Magikarp": "Madge-ih-karp",
-    "Mew": "Mew", "Chikorita": "Chick-orr-ee-tuh", "Cyndaquil": "Sin-duh-kwill", "Typhlosion": "Tie-flo-zhun",
-    "Totodile": "Toe-toe-dile", "Feraligatr": "Fer-al-ih-gator", "Hoothoot": "Hoot-hoot", "Xatu": "Zah-too",
-    "Ampharos": "Am-fuh-ross", "Azumarill": "Az-you-muh-rill", "Sudowoodo": "Soo-doe-woo-doe",
-    "Politoed": "Pol-ee-toad", "Wobbuffet": "Wob-buh-fet", "Heracross": "Hair-uh-cross", "Houndoom": "Hound-doom",
-    "Tyranitar": "Tie-ran-ih-tar", "Lugia": "Loo-gee-uh", "Ho-Oh": "Ho-oh", "Celebi": "Sell-uh-bee",
-    "Raikou": "Rye-koo", "Entei": "En-tay", "Suicune": "Swee-koon", "Treecko": "Treek-oh", "Sceptile": "Sep-tile",
-    "Torchic": "Tor-chick", "Blaziken": "Blaze-ih-ken", "Mudkip": "Mud-kip", "Swampert": "Swamp-ert",
-    "Gardevoir": "Gar-deh-vwar", "Aggron": "Ag-gron", "Milotic": "My-lo-tick", "Absol": "Ab-sol",
-    "Salamence": "Sal-uh-mence", "Metagross": "Met-uh-gross", "Regice": "Rej-ice", "Regirock": "Rej-ee-rock",
-    "Registeel": "Rej-ee-steel", "Latias": "Lat-ee-uss", "Latios": "Lat-ee-ose", "Kyogre": "Kai-oh-gur",
-    "Groudon": "Grow-don", "Jirachi": "Jer-ah-chee", "Deoxys": "Dee-ox-iss", "Turtwig": "Tur-twig",
-    "Chimchar": "Chim-char", "Infernape": "In-fer-nape", "Piplup": "Pip-lup", "Empoleon": "Em-pole-ee-onn",
-    "Luxray": "Lux-ray", "Garchomp": "Gar-chomp", "Lopunny": "Lop-bunny", "Dialga": "Dee-al-guh",
-    "Palkia": "Pal-kee-uh", "Giratina": "Gear-uh-tee-nuh", "Darkrai": "Dark-rye", "Uxie": "Yook-see",
-    "Mesprit": "Mess-prit", "Azelf": "Ay-zelf", "Cresselia": "Cress-eel-ee-uh", "Heatran": "Heat-ran",
-    "Regigigas": "Rej-ee-gig-uss", "Manaphy": "Man-uh-fee", "Shaymin": "Shay-min", "Greninja": "Gre-nin-ja",
-    "Xerneas": "Zur-nee-uss", "Yveltal": "Ee-vel-tall", "Mimikyu": "Mim-ee-kyoo", "Incineroar": "In-sin-er-oar",
-    "Zacian": "Zay-shan", "Zamazenta": "Zam-uh-zen-tuh", "Eternatus": "Ee-ter-nay-tus",
-}
+# Spoken respellings. "Pokémon"/"Pokédex" are fixed; every Pokémon name comes from the Pokémon LP Wiki
+# pronunciation guide (assets/pokemon_pronunciations.json, refreshed by scripts/fetch_pronunciations.py before
+# each CI run). Respellings are applied to every spoken line; on-screen text is never touched.
+PRONUNCIATIONS = {"Pokémon": "Pokeymon", "Pokédex": "Pokeydex"}
+GUIDE_PATH = Path(__file__).resolve().parents[2] / "assets" / "pokemon_pronunciations.json"
+
+# Syllables the TTS reads as something else when they stand alone in a hyphenated respelling.
+_SYLLABLE_FIX = {"us": "uss", "a": "uh", "i": "eye", "o": "oh", "e": "ee", "u": "oo", "y": "ee"}
+
+
+def _respell(pron: str) -> str:
+    """Guide format is 'BULL-buh-sohr' (caps = stressed). Strip notes like '(female)' and fix lone syllables."""
+    pron = re.sub(r"\s*\(.*?\)", "", pron).strip()
+    parts = []
+    for word in pron.split():
+        syl = []
+        for s_ in word.split("-"):
+            fix = _SYLLABLE_FIX.get(s_.lower())
+            syl.append((fix.upper() if s_.isupper() else fix) if fix else s_)
+        parts.append("-".join(syl))
+    return " ".join(parts)
+
+
+def load_guide() -> dict[int, str]:
+    """dex number → respelling, or {} if the guide file is missing."""
+    if not GUIDE_PATH.exists():
+        return {}
+    try:
+        raw = json.loads(GUIDE_PATH.read_text())
+    except Exception:
+        return {}
+    return {int(k): _respell(v["pron"]) for k, v in raw.items() if v.get("pron")}
 
 
 class PokemonPack(Pack):
@@ -72,6 +66,13 @@ class PokemonPack(Pack):
     reveal_line = "It's {answer}."
     opening_line = "How fast can you name this Pokémon?"
     spoken_replacements = PRONUNCIATIONS
+
+    def __init__(self, settings):
+        super().__init__(settings)
+        self.guide = load_guide()
+        self.spoken_replacements = dict(PRONUNCIATIONS)
+        if not self.guide:
+            print("  [pokemon] pronunciation guide missing; names will be read as written")
     channel_blurb = "Can you name the Pokémon from its cry alone?"
     accent_color = (255, 203, 5)
     bg_color = (24, 28, 58)
@@ -104,7 +105,7 @@ class PokemonPack(Pack):
             if pid > max_id:
                 continue
             try:
-                item = self._item(pid)
+                item = self._item(pid, theme)
             except Exception as e:  # one bad Pokémon shouldn't kill the run
                 print(f"  [pokemon] skip #{pid}: {e}")
                 continue
@@ -137,7 +138,7 @@ class PokemonPack(Pack):
                 ids.append(int(m.group(1)))
         return sorted(ids)
 
-    def _item(self, pid: int) -> QuizItem | None:
+    def _item(self, pid: int, theme: dict | None = None) -> QuizItem | None:
         poke = self._get(f"{API}/pokemon/{pid}", f"pokemon-{pid}.json")
         species = self._get(poke["species"]["url"], f"species-{pid}.json")
 
@@ -167,7 +168,16 @@ class PokemonPack(Pack):
         redacted = re.sub(rf"\b(a|an|the)\s+{n}\b", "this Pokémon", redacted, flags=re.I)
         redacted = re.sub(rf"\b{n}\b", "this Pokémon", redacted, flags=re.I)
         redacted = re.sub(r"(^|[.!?]\s+)(its|this Pokémon)", lambda m: m.group(1) + m.group(2)[0].upper() + m.group(2)[1:], redacted)
-        hints = [type_hint, f"It was first seen in the {REGIONS[gen]} region.", f"Last hint, from the Pokédex: {redacted}"]
+        region_hint = f"It was first seen in the {REGIONS[gen]} region."
+        hints = [type_hint, region_hint, f"Last hint, from the Pokédex: {redacted}"]
+        theme = theme or {}
+        if "gen" in theme:          # a Generation episode already tells you the region
+            hints.remove(region_hint)
+        elif "type" in theme:       # a Type episode already tells you (at least one) type
+            hints.remove(type_hint)
+        pron = self.guide.get(pid)
+        if pron:
+            self.spoken_replacements[name] = pron
 
         return QuizItem(
             id=f"pokemon:{pid}",
@@ -179,7 +189,7 @@ class PokemonPack(Pack):
             hints=hints,
             tint=TYPE_COLORS.get(type_names[0].lower()),
             difficulty=self._difficulty(pid, gen, species),
-            pronunciation=PRONUNCIATIONS.get(name),
+            pronunciation=pron,
             meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact,
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
         )

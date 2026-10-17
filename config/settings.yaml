@@ -18,8 +18,8 @@ music_loop_end: 59.02           # seconds: 22 bars later, on the bar line
 music_highpass_hz: 70           # corrective EQ: tame the sub so it doesn't mud up phone speakers
 music_lowpass_hz: 11000         # sit behind the voice
 music_notch_hz: 15800           # constant whine in the source
-music_bed_db: -26               # bed level under narration (track is dense and mastered hot)
-music_duck_db: -9               # extra sidechain ducking whenever voice or a quiz sound is playing
+music_bed_db: -24               # bed level between lines (track is dense and mastered hot)
+music_duck_db: -10              # extra sidechain ducking whenever voice or a quiz sound is playing
 music_prompt: "cozy, cheerful, Animal Crossing-style background loop, soft marimba and warm pads, major key, no drums, gentle"
 sting: assets/music/sting.wav         # ~0.5s reveal hit
 tick: assets/music/tick.wav           # ~0.1s per-second blip during thinking time

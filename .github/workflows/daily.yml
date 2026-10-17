@@ -26,6 +26,8 @@ jobs:
         with: { python-version: "3.12" }
       - run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng
       - run: pip install -r requirements.txt kokoro soundfile
+      - name: Refresh pronunciation guide (falls back to the committed copy)
+        run: python scripts/fetch_pronunciations.py || echo "::warning::pronunciation guide fetch failed; using committed copy"
       - uses: actions/cache@v4
         with:
           path: |
@@ -51,7 +53,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           # OpenAI voice when the key is present, Kokoro (free, local) otherwise
           QUIZBOT_TTS_PROVIDER: ${{ vars.QUIZBOT_TTS_PROVIDER || (secrets.OPENAI_API_KEY && 'openai' || 'kokoro') }}
-          QUIZBOT_TTS_VOICE: ${{ vars.QUIZBOT_TTS_VOICE || (secrets.OPENAI_API_KEY && 'ash' || 'am_michael') }}
+          QUIZBOT_TTS_VOICE: ${{ vars.QUIZBOT_TTS_VOICE || (secrets.OPENAI_API_KEY && 'coral' || 'am_michael') }}
           QUIZBOT_PLANNER: ${{ vars.QUIZBOT_PLANNER || 'template' }}
           QUIZBOT_UPLOAD: "true"
           TZ: America/New_York

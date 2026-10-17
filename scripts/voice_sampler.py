@@ -8,23 +8,31 @@ from quizbot.packs import get_pack
 
 VOICES = (os.environ.get("VOICES") or "ash,coral,nova,echo,sage,ballad").split(",")
 LINES = [
-    ("How fast can you name this Pokémon?", ""),
-    ("It's a Normal type.", ""),
-    ("It was first seen in the Sinnoh region.", ""),
-    ("Last hint, from the Pokédex: It is the heavenly fount from which pours the light that shines across Hisui.", ""),
+    ("Welcome to Guess That Pokémon. 10 rounds, easy to hard. Three points if you get it from the sound alone, then one less for every hint you need. Today's theme: Generation 2.", ""),
+    ("Round 1.", ""),
+    ("It's a Psychic and Flying type.", ""),
+    ("Last hint, from the Pokédex: It is said to be the guardian of the seas. It is rumored to have been seen on the night of a storm.", ""),
+    ("It's Lugia.", "This is the reveal: a little brighter and more delighted, like sharing the answer with a friend."),
+    ("Lugia, the Diving Pokémon.", ""),
+    ("Round 2.", ""),
     ("It's Arceus.", "This is the reveal: a little brighter and more delighted, like sharing the answer with a friend."),
     ("Arceus, the Alpha Pokémon.", ""),
-    ("How many points did you get?", ""),
+    ("That's 10 rounds, 30 points possible. Drop your score in the comments, and subscribe for next week's quiz.", ""),
 ]
 s = Settings.load(); s.tts_provider = "openai"
 pack = get_pack("pokemon", s)
 out = s.out_dir / "voices"; out.mkdir(parents=True, exist_ok=True)
+pack.spoken_replacements.update({"Lugia": pack.guide.get(249, "Lugia"), "Arceus": pack.guide.get(493, "Arceus")})
 for v in VOICES:
+  for variant in ("", "-plain"):
     s.tts_voice = v
     tts = TTS(s)
+    if variant:
+        tts.SPOKEN = {}            # no "POH-kee-mon" respelling either
     parts = []
     for text, style in LINES:
-        parts.append(tts.say(pack.spoken(text), style))
+        parts.append(tts.say(text if variant else pack.spoken(text), style))
+    v = v + variant
     lst = out / f"{v}.txt"
     lst.write_text("".join(f"file '{p.resolve()}'\nfile '{(out / 'gap.wav').resolve()}'\n" for p in parts))
     if not (out / "gap.wav").exists():

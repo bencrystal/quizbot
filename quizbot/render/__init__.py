@@ -239,7 +239,7 @@ class Renderer:
                   points=None, points_age=99.0, tint=it.tint if it else None, tint_p=0.0, stage=0, stages=1, arc=0.0,
                   art=it.reveal_image if it else None, shape_p=0.0, reveal_p=0.0, wave=None, think=None,
                   status="", caption="", hints=[], answer=it.answer if it else "", subtitle=it.subtitle if it else "",
-                  fact=it.fact if it else "", choices=None)
+                  fact=it.fact if it else "", entry=(it.meta.get("entry", "") if it else ""), choices=None)
         wave = np.zeros(28)
         for ev in T.events:
             if ev.at > t:
