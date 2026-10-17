@@ -2,6 +2,9 @@
 name: organize playlists
 on:
   workflow_dispatch:
+permissions:
+  issues: write
+  contents: read
 jobs:
   organize:
     runs-on: ubuntu-latest
@@ -14,4 +17,13 @@ jobs:
           mkdir -p state config
           echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
           echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
-      - run: python scripts/organize_playlists.py
+      - run: python scripts/organize_playlists.py 2>&1 | tee state/run.log
+        shell: bash -o pipefail {0}
+      - name: report failure to the "Run failures" issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY="### Run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed ($(date -u +%FT%TZ))\n\n\`\`\`\n$(tail -c 6000 state/run.log 2>/dev/null | sed 's/`/'"'"'/g')\n\`\`\`"
+          N=$(gh issue list -R ${{ github.repository }} --search "Run failures in:title" --state open --json number --jq '.[0].number')
+          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Run failures" --body "$(printf "$BODY")"; else gh issue comment -R ${{ github.repository }} "$N" --body "$(printf "$BODY")"; fi
