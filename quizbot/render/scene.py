@@ -314,11 +314,15 @@ class Scene:
                     y += int(72 * self.u)
             elif st["status"] and not st["hints"]:
                 self.text(d, (g["art"][0], y), st["status"], 40, fill=(200, 202, 214), bold=False, anchor="mm")
-            budget = 9                                   # total lines available in the hint column
             sizes = []
             for i, (hint, age) in enumerate(st["hints"]):
                 s_ = hint[0].upper() + hint[1:]
-                lines, size = self.wrap_fit(s_, 40, g["text_w"], max_lines=max(2, budget - 2 * (len(st["hints"]) - 1 - i)) if i == len(st["hints"]) - 1 else 2, bold=(i == 0))
+                if i == len(st["hints"]) - 1:
+                    lines, size = self.wrap_fit(s_, 40, g["text_w"], max_lines=7, bold=True)
+                else:   # earlier hints collapse to one dim line
+                    lines, size = self.wrap_fit(s_, 32, g["text_w"], max_lines=1, bold=False)
+                    if lines and not s_.endswith(lines[-1]):
+                        lines[-1] = lines[-1].rstrip(",.;: ") + "…"
                 sizes.append((lines, size, age, i))
             latest = len(sizes) - 1
             for lines, size, age, i in sizes:

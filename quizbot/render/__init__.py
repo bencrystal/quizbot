@@ -174,7 +174,7 @@ class Renderer:
             T.add(None, 0.3)
             T.mark("status", text="Your guess?")
             T.add(None, S, "think")
-            T.add(self.chime(work), 0.6)
+            T.add(None, 0.25)
             for h_i, hint in enumerate(it.hints):
                 pts -= 1
                 last = h_i == len(it.hints) - 1
@@ -191,17 +191,17 @@ class Renderer:
                     T.add(snd, snd_d, "sound")
                 T.add(None, 0.25)
                 T.add(None, S, "think")
-                T.add(self.chime(work), 0.6)
+                T.add(None, 0.25)
         elif ep.mechanic == "choice":
             spoken = ", ".join(f"{'ABCD'[k]}, {c}" for k, c in enumerate(it.choices[:-1])) + f", or {'ABCD'[len(it.choices)-1]}, {it.choices[-1]}"
             T.mark("choices", items=it.choices)
             say_part(self.pack.choice_line.format(choices=spoken))
             T.add(None, S + 1, "think")
-            T.add(self.chime(work), 0.6)
+            T.add(None, 0.25)
         else:
             T.mark("status", text="Your guess?")
             T.add(None, S + 1, "think")
-            T.add(self.chime(work), 0.6)
+            T.add(None, 0.25)
 
         T.mark("reveal")
         T.add(self.sting(work), 0.9)
