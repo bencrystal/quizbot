@@ -62,10 +62,15 @@ class State:
     def upsert_episode(self, slug: str, pack: str, title: str, theme: str, status: str, **kw) -> None:
         now = time.time()
         row = self.conn.execute("SELECT slug FROM episodes WHERE slug=?", (slug,)).fetchone()
+        meta_given = "meta" in kw
         meta = json.dumps(kw.pop("meta", {}))
         if row:
-            sets = ", ".join(f"{k}=?" for k in kw) + (", " if kw else "") + "status=?, updated_at=?, meta=?"
-            self.conn.execute(f"UPDATE episodes SET {sets} WHERE slug=?", (*kw.values(), status, now, meta, slug))
+            sets = ", ".join(f"{k}=?" for k in kw) + (", " if kw else "") + "status=?, updated_at=?"
+            vals = [*kw.values(), status, now]
+            if meta_given:                       # keep existing meta (e.g. the manual flag) unless given
+                sets += ", meta=?"
+                vals.append(meta)
+            self.conn.execute(f"UPDATE episodes SET {sets} WHERE slug=?", (*vals, slug))
         else:
             cols = ["slug", "pack", "title", "theme", "status", "created_at", "updated_at", "meta", *kw]
             vals = [slug, pack, title, theme, status, now, now, meta, *kw.values()]
@@ -79,8 +84,8 @@ class State:
 
     def episodes_today(self) -> int:
         start = time.time() - (time.time() % 86400)   # UTC midnight is fine for a cap
-        return self.conn.execute("SELECT COUNT(*) FROM episodes WHERE created_at>=? AND status!='failed'",
-                                 (start,)).fetchone()[0]
+        return self.conn.execute("SELECT COUNT(*) FROM episodes WHERE created_at>=? AND status!='failed' "
+                                 "AND COALESCE(meta,'') NOT LIKE '%\"manual\": true%'", (start,)).fetchone()[0]
 
     def recent_themes(self, pack: str, n: int = 10) -> list[str]:
         rows = self.conn.execute(

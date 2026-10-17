@@ -177,11 +177,11 @@ class Scene:
                         dots=(cx, int(self.H * 0.465)),
                         text_x=int(self.W * 0.13), text_w=int(self.W * 0.74), text_y=int(self.H * 0.56), center=False,
                         name_y=int(self.H * 0.56))
-        return dict(art=(int(self.W * 0.72), int(self.H * 0.44)), box=int(self.H * 0.6),
-                    wave=(int(self.W * 0.72), int(self.H * 0.82), int(self.W * 0.3)),
-                    dots=(int(self.W * 0.72), int(self.H * 0.77)),
-                    text_x=int(self.W * 0.065), text_w=int(self.W * 0.46), text_y=int(self.H * 0.26), center=False,
-                    name_y=int(self.H * 0.28))
+        return dict(art=(int(self.W * 0.72), int(self.H * 0.46)), box=int(self.H * 0.6),
+                    wave=(int(self.W * 0.72), int(self.H * 0.84), int(self.W * 0.3)),
+                    dots=(int(self.W * 0.72), int(self.H * 0.79)),
+                    text_x=int(self.W * 0.07), text_w=int(self.W * 0.46), text_y=int(self.H * 0.30), center=False,
+                    name_y=int(self.H * 0.30))
 
     # ---- frame ----------------------------------------------------------------
     def draw(self, st: dict) -> Image.Image:
@@ -291,6 +291,9 @@ class Scene:
         x, y, anchor = g["text_x"], g["text_y"], ("mm" if g["center"] else "lm")
         if st["reveal_p"] > 0:
             y = g["name_y"]
+            if not self.portrait:
+                n_fact = len(self.wrap(st["fact"], 36, g["text_w"])[:6])
+                y = g["art"][1] - (int(180 * self.u) + n_fact * int(50 * self.u)) // 2 + int(20 * self.u)
             a = ease_out(st["reveal_p"] / 0.4)
             rx_, ranchor = (g["art"][0], "mm") if self.portrait else (x, anchor)
             self.text(d, (rx_, y), st["answer"], 104, anchor=ranchor, max_width=g["text_w"], alpha=a)
@@ -309,11 +312,17 @@ class Scene:
                 y += int(50 * self.u)
         else:
             if st["caption"] and not st["hints"]:
-                for ln in self.wrap_fit(st["caption"], 56, g["text_w"], 3, bold=True)[0]:
+                lines = self.wrap_fit(st["caption"], 56, g["text_w"], 3, bold=True)[0]
+                if not self.portrait:
+                    y = g["art"][1] - int(36 * self.u) * len(lines)
+                for ln in lines:
                     self.text(d, (x, y), ln, 56, anchor=anchor)
                     y += int(72 * self.u)
             elif st["status"] and not st["hints"]:
-                self.text(d, (g["art"][0], y), st["status"], 40, fill=(200, 202, 214), bold=False, anchor="mm")
+                if self.portrait:
+                    self.text(d, (g["art"][0], y), st["status"], 40, fill=(200, 202, 214), bold=False, anchor="mm")
+                else:
+                    self.text(d, (x, g["art"][1]), st["status"], 44, fill=(200, 202, 214), bold=False, anchor="lm")
             sizes = []
             for i, (hint, age) in enumerate(st["hints"]):
                 s_ = hint[0].upper() + hint[1:]
@@ -325,9 +334,13 @@ class Scene:
                         lines[-1] = lines[-1].rstrip(",.;: ") + "…"
                 sizes.append((lines, size, age, i))
             latest = len(sizes) - 1
+            if not self.portrait and sizes:          # centre the block vertically on the disc
+                total_h = sum(len(l) * int(sz * 1.4 * self.u) + int(16 * self.u) for l, sz, _, _ in sizes)
+                y = max(int(self.H * 0.14), g["art"][1] - total_h // 2)
             for lines, size, age, i in sizes:
-                a = ease_out(age / 0.45) * (1.0 if i == latest else 0.55)
-                dx = int((1 - a) * 60 * self.u)
+                slide = ease_out(age / 0.45)
+                a = slide * (1.0 if i == latest else 0.55)
+                dx = int((1 - slide) * 60 * self.u)
                 for ln in lines:
                     self.text(d, (x + dx, y), ln, size, bold=(i == latest), anchor=anchor, alpha=a)
                     y += int(size * 1.4 * self.u)
