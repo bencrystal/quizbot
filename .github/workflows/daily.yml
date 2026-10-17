@@ -5,14 +5,19 @@
 name: episodes
 on:
   schedule:
-    - cron: "0 11 * * *"      # daily Short   — 07:00 New York (EDT; 06:00 in EST)
+    - cron: "0 11 * * *"      # Short #1 — 07:00 New York (EDT; 06:00 in EST)
+    - cron: "0 23 * * *"      # Short #2 — 19:00 New York
     - cron: "30 11 * * 6"     # weekly long   — Saturday 07:30 New York
   workflow_dispatch:
     inputs:
       format: { default: short, type: choice, options: [short, long] }
       theme: { default: "" }
       force: { default: false, type: boolean, description: "ignore the daily cap (manual test runs)" }
+      cold_open: { default: "auto", type: choice, options: [auto, "true", "false"], description: "Shorts: cry before the question line (auto = alternate)" }
 
+concurrency:
+  group: quizbot-render
+  cancel-in-progress: false
 permissions:
   contents: read
   issues: write
@@ -56,6 +61,7 @@ jobs:
           QUIZBOT_TTS_VOICE: ${{ vars.QUIZBOT_TTS_VOICE || (secrets.OPENAI_API_KEY && 'coral' || 'am_michael') }}
           QUIZBOT_PLANNER: ${{ vars.QUIZBOT_PLANNER || 'template' }}
           QUIZBOT_UPLOAD: "true"
+          QUIZBOT_SHORTS_COLD_OPEN: ${{ github.event.inputs.cold_open || 'auto' }}
           TZ: America/New_York
         run: |
           set -o pipefail

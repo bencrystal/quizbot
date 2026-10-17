@@ -31,10 +31,16 @@ def cmd_run(args, settings: Settings) -> int:
         return 0
     pack = get_pack(args.pack, settings)
     ep = plan_episode(pack, settings, state, seed=args.seed, theme_id=args.theme)
+    if ep.format == "short":
+        mode = str(settings.shorts_cold_open).lower()
+        cold = (state.count_episodes("short") % 2 == 0) if mode == "auto" else mode in ("1", "true", "yes")
+        ep.meta["cold_open"] = cold
+        ep.tags.append("coldopen" if cold else "announce")
+        ep.slug += "-cold" if cold else "-ann"
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned", meta={"manual": bool(args.force)})
-    if settings.track_used:
-        state.mark_used(ep.pack, [i.id for i in ep.items], ep.slug)
+    if str(settings.track_used).lower() in (ep.format, "all", "true"):
+        state.mark_used(ep.pack, ep.format, [i.id for i in ep.items], ep.slug)
     try:
         result = Renderer(settings, pack, TTS(settings)).render(ep)
     except Exception:
@@ -44,7 +50,8 @@ def cmd_run(args, settings: Settings) -> int:
         return 1
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "rendered",
                          video_path=str(result.video), thumbnail_path=str(result.thumbnail))
-    msg = f"🎬 {ep.format} rendered: {ep.title}  ({result.duration_seconds:.0f}s)\n{result.video}"
+    variant = (" · cold open" if ep.meta.get("cold_open") else " · announce first") if ep.format == "short" else ""
+    msg = f"🎬 {ep.format} rendered: {ep.title}{variant}  ({result.duration_seconds:.0f}s)\n{result.video}"
 
     if args.upload or settings.upload:
         try:

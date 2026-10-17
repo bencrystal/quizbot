@@ -69,8 +69,8 @@ class Settings:
 
     # Content selection
     shorts_famous_only: bool = True      # Shorts draw from the well-known subset; long-form can go deep
-    shorts_cold_open: bool = True        # Shorts: play the cry once before the opening line (sound first)
-    track_used: bool = False             # False while testing (repeats allowed); True once quality is signed off
+    shorts_cold_open: str = "auto"       # auto (alternate per Short, for A/B) | true | false
+    track_used: str = "short"            # which formats never repeat a Pokémon: short | long | all | none
 
     # Safety rails for unattended runs
     max_episodes_per_day: int = 2

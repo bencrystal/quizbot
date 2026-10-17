@@ -77,9 +77,17 @@ def upload(settings: Settings, ep: Episode, result: RenderResult) -> str:
     }
     media = MediaFileUpload(str(result.video), chunksize=8 * 1024 * 1024, resumable=True, mimetype="video/mp4")
     req = yt.videos().insert(part="snippet,status", body=body, media_body=media)
-    resp = None
+    resp, errors = None, 0
     while resp is None:
-        progress, resp = req.next_chunk()
+        try:
+            progress, resp = req.next_chunk(num_retries=3)
+        except Exception as e:           # resumable upload: a chunk timeout isn't fatal, resume where we were
+            errors += 1
+            if errors > 5:
+                raise
+            print(f"[upload] chunk failed ({str(e)[:80]}); retrying ({errors}/5)")
+            import time; time.sleep(5 * errors)
+            continue
         if progress:
             print(f"[upload] {int(progress.progress() * 100)}%")
     vid = resp["id"]

@@ -33,17 +33,17 @@ claude_model: claude-sonnet-4-5
 
 # Content selection ------------------------------------------------------------
 shorts_famous_only: true        # Shorts use the well-known subset (Gen 1-4 + famous later ones)
-shorts_cold_open: true          # Shorts open on the cry itself, then the question line, then the cry again
-track_used: false               # flip to true once video quality is signed off; then no Pokémon repeats
+shorts_cold_open: auto          # auto = alternate per Short (A/B test) | true | false. Cold open = cry before the question line
+track_used: short               # formats that never repeat a Pokémon: short | long | all | none. Long-form draws freely.
 
 # Safety rails for unattended runs --------------------------------------------
-max_episodes_per_day: 2         # scheduler never renders more than this, whatever happens
+max_episodes_per_day: 3         # scheduler never renders more than this, whatever happens
 max_tts_chars_per_run: 20000    # aborts a run that would blow through a paid TTS tier
 
 # Publishing -----------------------------------------------------------------
-upload: false                   # keep false until you've watched a few renders
-youtube_privacy: private        # private | unlisted | public
-publish_time: "12:00"           # local time episodes go live (public only); render time doesn't matter
+upload: false                   # CI sets QUIZBOT_UPLOAD=true
+youtube_privacy: public         # private | unlisted | public
+publish_time: ""                # "HH:MM" local to schedule; empty = live as soon as the upload finishes
 youtube_category_id: "27"       # Education
 made_for_kids: false
 

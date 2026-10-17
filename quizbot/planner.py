@@ -29,8 +29,9 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     print(f"[plan] format={settings.format} mechanic={settings.mechanic} theme={theme['label']}")
 
     pool = pack.candidates(theme)
-    items = pack.select(pool, state.used_ids(pack.name), settings.rounds, rng,
-                        famous_only=(settings.format == "short" and settings.shorts_famous_only))
+    used = state.used_ids(pack.name, settings.format) if str(settings.track_used).lower() in (settings.format, "all", "true") else set()
+    items = pack.select(pool, used, settings.rounds, rng,
+                        famous_only=(settings.format == "short" and settings.shorts_famous_only), theme=theme)
     if not items:
         raise SystemExit(f"No candidates for theme {theme['label']}")
     if settings.mechanic == "choice":

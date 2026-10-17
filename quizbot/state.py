@@ -16,6 +16,14 @@ CREATE TABLE IF NOT EXISTS used_items (
     used_at REAL NOT NULL,
     PRIMARY KEY (pack, item_id)
 );
+CREATE TABLE IF NOT EXISTS used_by_format (
+    pack TEXT NOT NULL,
+    fmt TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    episode_slug TEXT NOT NULL,
+    used_at REAL NOT NULL,
+    PRIMARY KEY (pack, fmt, item_id)
+);
 CREATE TABLE IF NOT EXISTS episodes (
     slug TEXT PRIMARY KEY,
     pack TEXT NOT NULL,
@@ -41,22 +49,27 @@ class State:
         self.conn.executescript(SCHEMA)
 
     # ---- items -------------------------------------------------------------
-    def used_ids(self, pack: str) -> set[str]:
-        rows = self.conn.execute("SELECT item_id FROM used_items WHERE pack=?", (pack,)).fetchall()
+    def used_ids(self, pack: str, fmt: str) -> set[str]:
+        """Items already featured in this format (Shorts and long-form keep separate lists)."""
+        rows = self.conn.execute("SELECT item_id FROM used_by_format WHERE pack=? AND fmt=?", (pack, fmt)).fetchall()
         return {r["item_id"] for r in rows}
 
-    def mark_used(self, pack: str, item_ids: list[str], slug: str) -> None:
+    def mark_used(self, pack: str, fmt: str, item_ids: list[str], slug: str) -> None:
         now = time.time()
         self.conn.executemany(
-            "INSERT OR REPLACE INTO used_items(pack,item_id,episode_slug,used_at) VALUES (?,?,?,?)",
-            [(pack, i, slug, now) for i in item_ids],
+            "INSERT OR REPLACE INTO used_by_format(pack,fmt,item_id,episode_slug,used_at) VALUES (?,?,?,?,?)",
+            [(pack, fmt, i, slug, now) for i in item_ids],
         )
         self.conn.commit()
 
     def release(self, pack: str, slug: str) -> None:
         """Un-use items if an episode failed so they can be picked again."""
-        self.conn.execute("DELETE FROM used_items WHERE pack=? AND episode_slug=?", (pack, slug))
+        self.conn.execute("DELETE FROM used_by_format WHERE pack=? AND episode_slug=?", (pack, slug))
         self.conn.commit()
+
+    def count_episodes(self, fmt: str) -> int:
+        return self.conn.execute("SELECT COUNT(*) FROM episodes WHERE slug LIKE ? AND status!='failed'",
+                                 (f"%-{fmt}-%",)).fetchone()[0]
 
     # ---- episodes ----------------------------------------------------------
     def upsert_episode(self, slug: str, pack: str, title: str, theme: str, status: str, **kw) -> None:

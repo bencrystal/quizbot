@@ -92,6 +92,20 @@ class PokemonPack(Pack):
     def famous(self, item: QuizItem) -> bool:
         return item.meta.get("gen", 9) <= 4 or item.meta.get("dex") in FAMOUS
 
+    def select(self, items, used, n, rng, famous_only=False, theme=None):
+        chosen = super().select(items, used, n, rng, famous_only, theme)
+        # Type episodes: round 1 is always a Gen 1-3 Pokémon so longtime fans get a foothold; the rest can be any gen.
+        if theme and "type" in theme and n > 1 and chosen and chosen[0].meta.get("gen", 9) > 3:
+            classics = [i for i in items if i.meta.get("gen", 9) <= 3 and i not in chosen and i.id not in used]
+            classics = classics or [i for i in items if i.meta.get("gen", 9) <= 3 and i not in chosen]
+            if classics:
+                chosen[-1] = rng.choice(classics)          # swap the last pick for a classic, then re-sort
+                chosen.sort(key=lambda i: i.difficulty)
+                if chosen[0].meta.get("gen", 9) > 3:        # make sure the classic actually opens
+                    k = next(j for j, i in enumerate(chosen) if i.meta.get("gen", 9) <= 3)
+                    chosen.insert(0, chosen.pop(k))
+        return chosen
+
     def candidates(self, theme: dict) -> list[QuizItem]:
         if "gen" in theme:
             lo, hi = GENERATIONS[theme["gen"]]

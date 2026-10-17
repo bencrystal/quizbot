@@ -50,7 +50,8 @@ class Pack(ABC):
     def famous(self, item: QuizItem) -> bool:   # packs override to define their "well-known" subset
         return True
 
-    def select(self, items: list[QuizItem], used: set[str], n: int, rng: random.Random, famous_only=False) -> list[QuizItem]:
+    def select(self, items: list[QuizItem], used: set[str], n: int, rng: random.Random, famous_only=False,
+               theme: dict | None = None) -> list[QuizItem]:
         if famous_only:
             items = [i for i in items if self.famous(i)] or items
         fresh = [i for i in items if i.id not in used]
