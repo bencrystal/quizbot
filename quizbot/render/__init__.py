@@ -176,6 +176,10 @@ class Renderer:
             return T.add(p, self.dur(p), kind, **data)
 
         T.mark("status", text="Listen")
+        if short and self.s.shorts_cold_open:       # hook: the sound itself is the first thing you hear
+            T.add(None, 0.15)
+            T.add(snd, snd_d, "sound")
+            T.add(None, 0.3)
         if short:
             T.mark("caption", text=self.pack.opening_line)
             say_part(self.pack.opening_line)
@@ -184,8 +188,9 @@ class Renderer:
             say_part(self.pack.question_line.format(n=i))
         T.add(None, 0.3)
         T.add(snd, snd_d, "sound")
-        T.add(None, 0.4)
-        T.add(snd, snd_d, "sound")
+        if not (short and self.s.shorts_cold_open):   # cold-open shorts already had it once; keep it to two plays
+            T.add(None, 0.4)
+            T.add(snd, snd_d, "sound")
         T.mark("points", value=pts)
         T.mark("stage", index=0, count=n_hints + 1)
 

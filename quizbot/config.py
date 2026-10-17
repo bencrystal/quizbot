@@ -69,6 +69,7 @@ class Settings:
 
     # Content selection
     shorts_famous_only: bool = True      # Shorts draw from the well-known subset; long-form can go deep
+    shorts_cold_open: bool = True        # Shorts: play the cry once before the opening line (sound first)
     track_used: bool = False             # False while testing (repeats allowed); True once quality is signed off
 
     # Safety rails for unattended runs

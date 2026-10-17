@@ -33,6 +33,7 @@ claude_model: claude-sonnet-4-5
 
 # Content selection ------------------------------------------------------------
 shorts_famous_only: true        # Shorts use the well-known subset (Gen 1-4 + famous later ones)
+shorts_cold_open: true          # Shorts open on the cry itself, then the question line, then the cry again
 track_used: false               # flip to true once video quality is signed off; then no Pokémon repeats
 
 # Safety rails for unattended runs --------------------------------------------
