@@ -171,11 +171,11 @@ class Scene:
         if self.portrait:
             # Shorts safe area: YouTube overlays the right ~18% (like/comment/share) from ~40% down,
             # and the bottom ~22% (title/subscribe). Everything important lives above y=0.74H, left of x=0.80W.
-            cx = int(self.W * 0.44)
+            cx = self.W // 2
             return dict(art=(cx, int(self.H * 0.30)), box=int(self.W * 0.62),
                         wave=(cx, int(self.H * 0.505), int(self.W * 0.52)),
                         dots=(cx, int(self.H * 0.465)),
-                        text_x=int(self.W * 0.08), text_w=int(self.W * 0.70), text_y=int(self.H * 0.56), center=False,
+                        text_x=int(self.W * 0.13), text_w=int(self.W * 0.74), text_y=int(self.H * 0.56), center=False,
                         name_y=int(self.H * 0.56))
         return dict(art=(int(self.W * 0.72), int(self.H * 0.44)), box=int(self.H * 0.6),
                     wave=(int(self.W * 0.72), int(self.H * 0.82), int(self.W * 0.3)),
@@ -192,7 +192,7 @@ class Scene:
         img = self.background(bg, accent, st["t"])
         d = ImageDraw.Draw(img)
         m = int(64 * self.u)
-        right = self.W - m - (int(self.W * 0.16) if self.portrait else 0)
+        right = self.W - m
 
         if st["card"]:                               # intro / outro / score card
             title, sub, foot = st["card"]

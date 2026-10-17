@@ -139,8 +139,8 @@ class Renderer:
             return custom
         return self.synth("sting", [523.25, 659.25, 783.99, 1046.5], 0.9, 0.3, work)
 
-    def say(self, text: str) -> Path:
-        return self.tts.say(self.pack.spoken(text))
+    def say(self, text: str, style: str = "") -> Path:
+        return self.tts.say(self.pack.spoken(text), style)
 
     # ---- timeline builders ----------------------------------------------------
     def build_round(self, i: int, total: int, it: QuizItem, ep: Episode, rng: random.Random, work: Path) -> Timeline:
@@ -152,8 +152,8 @@ class Renderer:
         n_hints = len(it.hints) if ep.mechanic == "ladder" else 0
         pts = n_hints + 1
 
-        def say_part(text, kind=None, **data):
-            p = self.say(text)
+        def say_part(text, kind=None, style="", **data):
+            p = self.say(text, style)
             return T.add(p, self.dur(p), kind, **data)
 
         T.mark("status", text="Listen")
@@ -206,7 +206,8 @@ class Renderer:
         T.mark("reveal")
         T.add(self.sting(work), 0.9)
         T.mark("caption", text=self.pack.reveal_line.format(answer=it.answer))
-        say_part(self.pack.reveal_line.format(answer=it.answer))
+        say_part(self.pack.reveal_line.format(answer=it.answer),
+                 style="This is the reveal: a little brighter and more delighted, like sharing the answer with a friend.")
         reaction = ep.banter.get(i) or (rng.choice(self.pack.reactions) if total > 1 and self.pack.reactions else "")
         if reaction:
             T.add(None, 0.15)
