@@ -38,6 +38,7 @@ jobs:
           path: |
             state/quizbot.db
             state/cache
+            out
           key: quizbot-state-${{ github.run_id }}
           restore-keys: quizbot-state-
       - name: secrets → files

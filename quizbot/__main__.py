@@ -59,6 +59,7 @@ def cmd_run(args, settings: Settings) -> int:
             vid = upload(settings, ep, result)
             state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "uploaded", youtube_id=vid)
             msg += f"\n📺 https://youtu.be/{vid} ({settings.youtube_privacy})"
+            result.video.unlink(missing_ok=True)      # keep the cache small; episode.json + thumbnail stay
         except Exception:
             state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "rendered", error=traceback.format_exc()[-2000:])
             msg += f"\n❌ upload failed (will retry next run):\n{traceback.format_exc()[-800:]}"
@@ -78,7 +79,7 @@ def cmd_retry_uploads(args, settings: Settings) -> int:
     rc = 0
     for row in state.episodes("rendered"):
         meta_path = Path(row["video_path"]).parent / "episode.json"
-        if not meta_path.exists():
+        if not meta_path.exists() or not Path(row["video_path"]).exists():
             continue
         m = json.loads(meta_path.read_text())
         ep = Episode(slug=m["slug"], pack=m["pack"], title=m["title"], description=m["description"],
@@ -89,6 +90,7 @@ def cmd_retry_uploads(args, settings: Settings) -> int:
             vid = upload(settings, ep, res)
             state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "uploaded", youtube_id=vid)
             notify(settings, f"📺 (retry) https://youtu.be/{vid} for {ep.slug}")
+            res.video.unlink(missing_ok=True)
         except Exception:
             notify(settings, f"❌ retry upload failed for {ep.slug}: {traceback.format_exc()[-500:]}")
             rc = 1
