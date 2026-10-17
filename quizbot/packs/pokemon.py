@@ -161,8 +161,12 @@ class PokemonPack(Pack):
         type_hint = f"It's a {type_names[0]} type." if len(type_names) == 1 else f"It's a {type_names[0]} and {type_names[1]} type."
         gen = next(g for g, (lo, hi) in GENERATIONS.items() if lo <= pid <= hi)
         # Pokédex entry as hint 2, with the name swapped for "this Pokémon"
-        redacted = re.sub(re.escape(name), "this Pokémon", fact, flags=re.I)
-        redacted = re.sub(r"\bthis Pokémon's\b", "its", redacted)
+        n = re.escape(name)
+        redacted = re.sub(rf"\b(a|an|the)\s+{n}'s\b", "its", fact, flags=re.I)
+        redacted = re.sub(rf"\b{n}'s\b", "its", redacted, flags=re.I)
+        redacted = re.sub(rf"\b(a|an|the)\s+{n}\b", "this Pokémon", redacted, flags=re.I)
+        redacted = re.sub(rf"\b{n}\b", "this Pokémon", redacted, flags=re.I)
+        redacted = re.sub(r"(^|[.!?]\s+)(its|this Pokémon)", lambda m: m.group(1) + m.group(2)[0].upper() + m.group(2)[1:], redacted)
         hints = [type_hint, f"It was first seen in the {REGIONS[gen]} region.", f"Last hint, from the Pokédex: {redacted}"]
 
         return QuizItem(

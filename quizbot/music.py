@@ -71,13 +71,22 @@ def _hat(secs: float = 0.05, rng: random.Random | None = None) -> np.ndarray:
     return noise * np.exp(-np.arange(n) / SR * 120) * 0.05
 
 
+def _pluck(f: float, secs: float, bright: float = 1.0) -> np.ndarray:
+    """Marimba/kalimba-ish: fundamental + soft 4th harmonic, fast decay."""
+    n = int(secs * SR)
+    t = np.arange(n) / SR
+    tone = np.sin(2 * math.pi * f * t) + 0.25 * bright * np.sin(2 * math.pi * f * 4 * t) * np.exp(-t * 18)
+    return tone * np.exp(-t * 5) * 0.5
+
+
 def procedural_bed(seed: str, out: Path, bars: int = 8) -> Path:
-    """Ambient: slow pad chords with gentle filter movement, no drums. ~45-60 s, loop-friendly."""
+    """Cozy, major-key loop: soft pad chords + a gentle pentatonic pluck pattern. No drums. ~40 s."""
     rng = random.Random(int(hashlib.sha1(seed.encode()).hexdigest(), 16))
-    bpm = rng.choice([60, 64, 68, 72])
+    bpm = rng.choice([88, 92, 96, 100])
     key = rng.randint(0, 11)
-    prog = rng.choice(PROGRESSIONS)
-    bar = 60 / bpm * 4
+    prog = rng.choice([[0, 3, 4, 0], [0, 5, 3, 4], [0, 3, 5, 4], [3, 4, 0, 0]])     # bright major progressions
+    beat = 60 / bpm
+    bar = beat * 4
     total = int(bars * bar * SR)
     mix = np.zeros(total)
 
@@ -86,30 +95,37 @@ def procedural_bed(seed: str, out: Path, bars: int = 8) -> Path:
         if i < total:
             mix[i:j] += sig[: j - i]
 
+    penta = [0, 1, 2, 4, 5]      # scale degrees of the major pentatonic
     for b in range(bars):
         deg = prog[b % 4]
-        chord = [_note(deg, 2, key), _note(deg + 4, 2, key), _note(deg, 3, key), _note(deg + 2, 3, key), _note(deg + 6, 3, key)]
-        n = int((bar + 1.5) * SR)
+        chord = [_note(deg, 3, key), _note(deg + 2, 3, key), _note(deg + 4, 3, key), _note(deg, 4, key)]
+        n = int((bar + 0.8) * SR)
         t = np.arange(n) / SR
         pad = np.zeros(n)
         for f in chord:
-            for det, amp in ((1.0, 1.0), (1.003, 0.6), (0.997, 0.6), (2.0, 0.12)):
+            for det, amp in ((1.0, 1.0), (1.004, 0.5), (0.996, 0.5)):
                 pad += amp * np.sin(2 * math.pi * f * det * t + rng.random() * 6.28)
-        env = np.minimum(1, t / 1.2) * np.minimum(1, (n / SR - t) / 1.5)
-        add(pad * env / (len(chord) * 2.5), b * bar)
-        if rng.random() < 0.6:   # occasional high, very soft bell note
-            f = _note(deg + rng.choice([7, 9, 11]), 4, key)
-            tb = np.arange(int(3 * SR)) / SR
-            add(np.sin(2 * math.pi * f * tb) * np.exp(-tb * 1.5) * 0.08, b * bar + rng.random() * bar)
+        env = np.minimum(1, t / 0.6) * np.minimum(1, (n / SR - t) / 0.8)
+        add(pad * env / (len(chord) * 3.2), b * bar)
+        # pluck pattern: 8th notes, mostly on, wandering through the pentatonic near the chord root
+        cur = deg
+        for s8 in range(8):
+            if rng.random() < 0.7:
+                cur = max(deg - 2, min(deg + 9, cur + rng.choice([-2, -1, 0, 1, 1, 2, 3])))
+                # snap to pentatonic relative to the key
+                step = min(penta, key=lambda p_: abs(((cur - p_) % 7)))
+                f = _note(cur - ((cur - step) % 7) + (0 if rng.random() < 0.8 else 7), 5, key)
+                add(_pluck(f, 0.7, bright=0.8) * (0.5 if s8 % 2 else 0.7), b * bar + s8 * beat / 2)
+        # soft bass note on 1 and 3
+        for k in (0, 2):
+            add(_pluck(_note(deg, 2, key), 0.9, bright=0.2) * 0.6, b * bar + k * beat)
 
-    # slow low-pass sweep: moving-average size modulated over the loop
-    k = int(40 + 30 * (0.5 + 0.5 * math.sin(rng.random() * 6.28)))
+    k = 10
     mix = np.convolve(mix, np.ones(k) / k, mode="same")
     mix /= max(1e-6, np.abs(mix).max())
     fade = int(0.08 * SR)
     mix[:fade] *= np.linspace(0, 1, fade)
     mix[-fade:] *= np.linspace(1, 0, fade)
-    # balanced stereo: slight mutual detune via a short all-pass-ish spread on each side, no delay offset
     left = mix + 0.08 * np.roll(mix, int(0.0004 * SR))
     right = mix + 0.08 * np.roll(mix, -int(0.0004 * SR))
     peak = max(np.abs(left).max(), np.abs(right).max(), 1e-6)

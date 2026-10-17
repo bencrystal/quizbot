@@ -131,7 +131,7 @@ class Renderer:
         return out
 
     def chime(self, work: Path) -> Path:
-        return self.synth("chime", [880, 1318.5], 0.6, 0.18, work)
+        return self.synth("chime", [880, 1318.5], 0.6, 0.09, work)
 
     def sting(self, work: Path) -> Path:
         custom = self.s.asset("sting")
@@ -278,7 +278,8 @@ class Renderer:
                     idx = int(tt * 50)
                     if 0 <= idx < len(env):
                         wave[k] = max(wave[k], env[idx])
-        if st["reveal_p"] == 0:
+        playing = any(ev.kind == "sound" and ev.at - 0.2 <= t <= ev.at + ev.dur + 0.7 for ev in T.events)
+        if st["reveal_p"] == 0 and playing:
             st["wave"] = wave
         # progress arc around the disc: each thinking stage sweeps one segment; between stages it holds
         done, cur = 0, 0.0

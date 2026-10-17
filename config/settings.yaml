@@ -13,9 +13,9 @@ fps: 30
 # Music ----------------------------------------------------------------------
 music_provider: procedural      # procedural (new royalty-free loop per episode) | file | elevenlabs | none
 music_bed: assets/music/bed.wav # only for provider: file
-music_bed_db: -26               # bed level under narration
+music_bed_db: -24               # bed level under narration
 music_duck_db: -12              # extra sidechain ducking whenever voice or a quiz sound is playing
-music_prompt: "slow ambient pad, warm analog synth chords, no drums, no melody, loopable, calm background"
+music_prompt: "cozy, cheerful, Animal Crossing-style background loop, soft marimba and warm pads, major key, no drums, gentle"
 sting: assets/music/sting.wav         # ~0.5s reveal hit
 tick: assets/music/tick.wav           # ~0.1s per-second blip during thinking time
 

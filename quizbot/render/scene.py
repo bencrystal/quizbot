@@ -221,23 +221,25 @@ class Scene:
         cx, cy = g["art"]
         box = g["box"]
         art = st["art"]
+        inner = int(box * 0.62)      # silhouette lives fully inside the disc (disc diameter = 0.72 box)
         if art:
             if st["reveal_p"] > 0:
                 layer = self.art(art, box, "color")
-                sc = 0.92 + 0.08 * ease_out(st["reveal_p"] / 0.5)
-                if sc != 1:
-                    layer = layer.resize((int(box * sc), int(box * sc)), Image.BILINEAR)
+                sc = 0.62 + 0.30 * ease_out(st["reveal_p"] / 0.6)      # grows out of the silhouette size
+                layer = layer.resize((max(1, int(box * sc)), max(1, int(box * sc))), Image.BILINEAR)
                 self.paste_center(img, layer, cx, cy)
             elif st["shape_p"] > 0:
                 p = ease(st["shape_p"])
-                exact = self.art(art, box, "mask")
+                exact = self.art(art, inner, "mask")
                 if p >= 1:
                     mask = exact
                 else:
-                    mask = self.morph_mask(art, box, min(1.0, p / 0.75))
+                    mask = self.morph_mask(art, inner, min(1.0, p / 0.75))
                     if p > 0.65:                       # crossfade the blobby morph into the crisp silhouette
                         mask = Image.blend(mask, exact, (p - 0.65) / 0.35)
-                self.paste_center(img, Image.new("RGB", (box, box), (10, 10, 14)), cx, cy, mask)
+                r = int(box * 0.36)
+                d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(10, 10, 14))
+                self.paste_center(img, Image.new("RGB", (inner, inner), (4, 4, 8)), cx, cy, mask)
                 d = ImageDraw.Draw(img)
                 if st["shape_p"] < 0.5:
                     self.text(d, (cx, cy), "?", int(box * 0.45), fill=accent, alpha=1 - st["shape_p"] * 2)
@@ -253,12 +255,13 @@ class Scene:
                 d.ellipse(bb, outline=(50, 52, 66), width=w)
                 if st["arc"] > 0:
                     d.arc(bb, start=-90, end=-90 + 360 * st["arc"], fill=accent, width=w)
-                # notches at each stage boundary so the stops are legible
+                # notches at each stage boundary, centred on the stroke (PIL strokes inward from the bbox)
+                rc = r - w / 2
                 for k in range(st["stages"]):
                     ang = math.radians(-90 + 360 * k / st["stages"])
-                    nx, ny = cx + r * math.cos(ang), cy + r * math.sin(ang)
-                    nr = int(7 * self.u)
-                    d.ellipse((nx - nr, ny - nr, nx + nr, ny + nr), fill=bg, outline=accent if 360 * k / st["stages"] <= 360 * st["arc"] else (90, 92, 110), width=max(1, int(2 * self.u)))
+                    nx, ny = cx + rc * math.cos(ang), cy + rc * math.sin(ang)
+                    nr = int(11 * self.u)
+                    d.ellipse((nx - nr, ny - nr, nx + nr, ny + nr), fill=bg, outline=accent if 360 * k / st["stages"] <= 360 * st["arc"] else (90, 92, 110), width=max(2, int(3 * self.u)))
             # hint dots
             if st["reveal_p"] == 0 and st["stages"] > 1:
                 dx_, dy_ = g["dots"]
@@ -291,9 +294,16 @@ class Scene:
             a = ease_out(st["reveal_p"] / 0.4)
             rx_, ranchor = (g["art"][0], "mm") if self.portrait else (x, anchor)
             self.text(d, (rx_, y), st["answer"], 104, anchor=ranchor, max_width=g["text_w"], alpha=a)
-            y += int(84 * self.u)
-            self.text(d, (rx_, y), st["subtitle"], 40, fill=accent, bold=False, anchor=ranchor, alpha=a)
-            y += int(84 * self.u)
+            y += int(90 * self.u)
+            label = st["subtitle"]
+            f = self.font(34)
+            w = f.getlength(label) + int(44 * self.u)
+            h = int(58 * self.u)
+            px = rx_ - w / 2 if ranchor == "mm" else rx_
+            d.rounded_rectangle((px, y - h // 2, px + w, y + h // 2), radius=h // 2,
+                                fill=tuple(int(c * a) for c in accent))
+            self.text(d, (px + w / 2, y), label, 34, fill=bg, alpha=a)
+            y += int(90 * self.u)
             for ln in self.wrap(st["fact"], 36, g["text_w"])[:6]:
                 self.text(d, (rx_, y), ln, 36, fill=(230, 230, 238), bold=False, anchor=ranchor, alpha=a)
                 y += int(50 * self.u)
@@ -310,11 +320,12 @@ class Scene:
                 s_ = hint[0].upper() + hint[1:]
                 lines, size = self.wrap_fit(s_, 40, g["text_w"], max_lines=max(2, budget - 2 * (len(st["hints"]) - 1 - i)) if i == len(st["hints"]) - 1 else 2, bold=(i == 0))
                 sizes.append((lines, size, age, i))
+            latest = len(sizes) - 1
             for lines, size, age, i in sizes:
-                a = ease_out(age / 0.45)
+                a = ease_out(age / 0.45) * (1.0 if i == latest else 0.55)
                 dx = int((1 - a) * 60 * self.u)
                 for ln in lines:
-                    self.text(d, (x + dx, y), ln, size, bold=(i == 0), anchor=anchor, alpha=a)
+                    self.text(d, (x + dx, y), ln, size, bold=(i == latest), anchor=anchor, alpha=a)
                     y += int(size * 1.4 * self.u)
                 y += int(16 * self.u)
 
