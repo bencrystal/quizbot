@@ -116,7 +116,11 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:              # HttpError bodies carry the real reason (API not enabled, scope missing)
+        print("ERROR:", getattr(e, "content", b"")[:1500].decode(errors="replace") if hasattr(e, "content") else e)
+        raise
 
 # Schema
 # generated: ISO time

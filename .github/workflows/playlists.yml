@@ -31,4 +31,4 @@ jobs:
         run: |
           BODY="### Run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed ($(date -u +%FT%TZ))\n\n\`\`\`\n$(tail -c 6000 state/run.log 2>/dev/null | sed 's/`/'"'"'/g')\n\`\`\`"
           N=$(gh issue list -R ${{ github.repository }} --search "Run failures in:title" --state open --json number --jq '.[0].number')
-          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Run failures" --body "$(printf "$BODY")"; else gh issue comment -R ${{ github.repository }} "$N" --body "$(printf "$BODY")"; fi
+          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Run failures" --body "$(printf '%b' "$BODY")"; else gh issue comment -R ${{ github.repository }} "$N" --body "$(printf '%b' "$BODY")"; fi
