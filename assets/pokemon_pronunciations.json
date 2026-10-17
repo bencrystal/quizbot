@@ -1,0 +1,5127 @@
+{
+"1": {
+"name": "Bulbasaur",
+"pron": "BULL-buh-sohr",
+"ipa": "/ˈbʊlbəsɔːɹ/"
+},
+"2": {
+"name": "Ivysaur",
+"pron": "EYE-vee-sohr",
+"ipa": "/ˈaɪviːsɔːɹ/"
+},
+"3": {
+"name": "Venusaur",
+"pron": "VEE-nuh-sohr",
+"ipa": "/ˈviːnəsɔːɹ/"
+},
+"4": {
+"name": "Charmander",
+"pron": "CHAR-man-der",
+"ipa": "/ˈtʃɑːɹmændɚ/"
+},
+"5": {
+"name": "Charmeleon",
+"pron": "char-MEEL-yuhn",
+"ipa": "/tʃɑːɹˈmiːljən/"
+},
+"6": {
+"name": "Charizard",
+"pron": "CHAR-ih-zard",
+"ipa": "/ˈtʃɑːɹɪzɑːɹd/"
+},
+"7": {
+"name": "Squirtle",
+"pron": "SKWUR-tull",
+"ipa": "/ˈskwɝːɾəl/"
+},
+"8": {
+"name": "Wartortle",
+"pron": "WOR-tor-tull",
+"ipa": "/ˈwɔːɹtɔːɹɾəl/"
+},
+"9": {
+"name": "Blastoise",
+"pron": "BLAST-ois",
+"ipa": "/ˈblæstɔɪs/"
+},
+"10": {
+"name": "Caterpie",
+"pron": "KAT-ur-pee",
+"ipa": "/ˈkæɾɚpiː/"
+},
+"11": {
+"name": "Metapod",
+"pron": "MET-uh-pahd",
+"ipa": "/ˈmɛɾəpɑːd/"
+},
+"12": {
+"name": "Butterfree",
+"pron": "BUT-ur-free",
+"ipa": "/ˈbʌɾɚfɹiː/"
+},
+"13": {
+"name": "Weedle",
+"pron": "WEE-dull",
+"ipa": "/ˈwiːdəl/"
+},
+"14": {
+"name": "Kakuna",
+"pron": "kuh-KOO-nuh",
+"ipa": "/kəˈkuːnə/"
+},
+"15": {
+"name": "Beedrill",
+"pron": "BEE-drill",
+"ipa": "/ˈbiːdɹɪl/"
+},
+"16": {
+"name": "Pidgey",
+"pron": "PID-jee",
+"ipa": "/ˈpɪdʒiː/"
+},
+"17": {
+"name": "Pidgeotto",
+"pron": "PID-jee-OH-toh",
+"ipa": "/ˌpɪdʒiːˈoʊɾoʊ/"
+},
+"18": {
+"name": "Pidgeot",
+"pron": "PID-jee-aht",
+"ipa": "/ˈpɪdʒiːɑːt/"
+},
+"19": {
+"name": "Rattata",
+"pron": "ruh-TA-tuh",
+"ipa": "/ɹəˈtæɾə/"
+},
+"20": {
+"name": "Raticate",
+"pron": "RAT-ih-kate",
+"ipa": "/ˈɹæɾɪkeɪt/"
+},
+"21": {
+"name": "Spearow",
+"pron": "SPEER-oh",
+"ipa": "/ˈspɪɹoʊ/"
+},
+"22": {
+"name": "Fearow",
+"pron": "FEER-oh",
+"ipa": "/ˈfɪɹoʊ/"
+},
+"23": {
+"name": "Ekans",
+"pron": "ECK-ins",
+"ipa": "/ˈɛkənz/"
+},
+"24": {
+"name": "Arbok",
+"pron": "AR-bahk",
+"ipa": "/ˈɑːɹbɑːk/"
+},
+"25": {
+"name": "Pikachu",
+"pron": "PEE-ka-choo",
+"ipa": "/ˈpiːkətʃuː/"
+},
+"26": {
+"name": "Raichu",
+"pron": "RYE-choo",
+"ipa": "/ˈɹaɪtʃuː/"
+},
+"27": {
+"name": "Sandshrew",
+"pron": "SAND-shroo",
+"ipa": "/ˈsændʃɹuː/"
+},
+"28": {
+"name": "Sandslash",
+"pron": "SAND-slash",
+"ipa": "/ˈsændslæʃ/"
+},
+"29": {
+"name": "Nidoran♀",
+"pron": "NEE-doh-ran (female)",
+"ipa": "/ˈniːdoʊɹæn (ˈfiːmeɪl)/"
+},
+"30": {
+"name": "Nidorina",
+"pron": "NEE-doh-REE-nuh",
+"ipa": "/ˌniːdoʊˈɹiːnə/"
+},
+"31": {
+"name": "Nidoqueen",
+"pron": "NEE-doh-kween",
+"ipa": "/ˈniːdoʊkwiːn/"
+},
+"32": {
+"name": "Nidoran♂",
+"pron": "NEE-doh-ran (male)",
+"ipa": "/ˈniːdoʊɹæn (ˈmeɪl)/"
+},
+"33": {
+"name": "Nidorino",
+"pron": "NEE-doh-REE-no",
+"ipa": "/ˌniːdoʊˈɹiːnoʊ/"
+},
+"34": {
+"name": "Nidoking",
+"pron": "NEE-doh-king",
+"ipa": "/ˈniːdoʊkɪŋ/"
+},
+"35": {
+"name": "Clefairy",
+"pron": "cleh-FAIR-ee",
+"ipa": "/klɛˈfɛɹiː/"
+},
+"36": {
+"name": "Clefable",
+"pron": "cleh-FAY-bull",
+"ipa": "/klɛˈfeɪbəl/"
+},
+"37": {
+"name": "Vulpix",
+"pron": "VULL-piks",
+"ipa": "/ˈvʊlpɪks/"
+},
+"38": {
+"name": "Ninetales",
+"pron": "NINE-tales",
+"ipa": "/ˈnaɪnteɪlz/"
+},
+"39": {
+"name": "Jigglypuff",
+"pron": "JIG-lee-puff",
+"ipa": "/ˈdʒɪɡliːpʌf/"
+},
+"40": {
+"name": "Wigglytuff",
+"pron": "WIG-lee-tuff",
+"ipa": "/ˈwɪɡliːtʌf/"
+},
+"41": {
+"name": "Zubat",
+"pron": "ZOO-bat",
+"ipa": "/ˈzuːbæt/"
+},
+"42": {
+"name": "Golbat",
+"pron": "GOHL-bat",
+"ipa": "/ˈɡɔːlbæt/"
+},
+"43": {
+"name": "Oddish",
+"pron": "ODD-ish",
+"ipa": "/ˈɑːdɪʃ/"
+},
+"44": {
+"name": "Gloom",
+"pron": "GLOOM",
+"ipa": "/ˈɡluːm/"
+},
+"45": {
+"name": "Vileplume",
+"pron": "VILE-ploom",
+"ipa": "/ˈvaɪlpluːm/"
+},
+"46": {
+"name": "Paras",
+"pron": "PEHR-iss",
+"ipa": "/ˈpɛɹəs/"
+},
+"47": {
+"name": "Parasect",
+"pron": "PEHR-uh-sekt",
+"ipa": "/ˈpɛɹəsɛkt/"
+},
+"48": {
+"name": "Venonat",
+"pron": "VENN-oh-nat",
+"ipa": "/ˈvɛnoʊnæt/"
+},
+"49": {
+"name": "Venomoth",
+"pron": "VENN-oh-moth",
+"ipa": "/ˈvɛnoʊmɑːθ/"
+},
+"50": {
+"name": "Diglett",
+"pron": "DIG-lit",
+"ipa": "/ˈdɪɡlət/"
+},
+"51": {
+"name": "Dugtrio",
+"pron": "dug-TREE-oh",
+"ipa": "/dʌɡˈtɹiːoʊ/"
+},
+"52": {
+"name": "Meowth",
+"pron": "mee-OWTH",
+"ipa": "/miːˈaʊθ/"
+},
+"53": {
+"name": "Persian",
+"pron": "PURR-zhin",
+"ipa": "/ˈpɝːʒən/"
+},
+"54": {
+"name": "Psyduck",
+"pron": "SYE-duck",
+"ipa": "/ˈsaɪdʌk/"
+},
+"55": {
+"name": "Golduck",
+"pron": "GOHL-duck",
+"ipa": "/ˈɡɔːldʌk/"
+},
+"56": {
+"name": "Mankey",
+"pron": "MANK-ee",
+"ipa": "/ˈmæŋkiː/"
+},
+"57": {
+"name": "Primeape",
+"pron": "PRIME-ape",
+"ipa": "/ˈpɹaɪmeɪp/"
+},
+"58": {
+"name": "Growlithe",
+"pron": "GROWL-ith",
+"ipa": "/ˈɡɹaʊlɪθ/"
+},
+"59": {
+"name": "Arcanine",
+"pron": "AR-kuh-nine",
+"ipa": "/ˈɑːɹkənɑɪn/"
+},
+"60": {
+"name": "Poliwag",
+"pron": "PAHL-ee-wag",
+"ipa": "/ˈpɑːliːwæɡ/"
+},
+"61": {
+"name": "Poliwhirl",
+"pron": "PAHL-ee-wurl",
+"ipa": "/ˈpɑːliːwɝːl/"
+},
+"62": {
+"name": "Poliwrath",
+"pron": "PAHL-ee-rath",
+"ipa": "/ˈpɑːliːɹæθ/"
+},
+"63": {
+"name": "Abra",
+"pron": "AB-ruh",
+"ipa": "/ˈæbɹə/"
+},
+"64": {
+"name": "Kadabra",
+"pron": "kuh-DAB-ruh",
+"ipa": "/kəˈdæbɹə/"
+},
+"65": {
+"name": "Alakazam",
+"pron": "AL-uh-kuh-ZAM",
+"ipa": "/ˌæləkəˈzæm/"
+},
+"66": {
+"name": "Machop",
+"pron": "muh-CHOP",
+"ipa": "/məˈtʃɑːp/"
+},
+"67": {
+"name": "Machoke",
+"pron": "muh-CHOKE",
+"ipa": "/məˈtʃoʊk/"
+},
+"68": {
+"name": "Machamp",
+"pron": "muh-CHAMP",
+"ipa": "/məˈtʃæmp/"
+},
+"69": {
+"name": "Bellsprout",
+"pron": "BELL-sprout",
+"ipa": "/ˈbɛlspɹaʊt/"
+},
+"70": {
+"name": "Weepinbell",
+"pron": "WEEP-in-bell",
+"ipa": "/ˈwiːpɪnbɛl/"
+},
+"71": {
+"name": "Victreebel",
+"pron": "VICK-tree-bell",
+"ipa": "/ˈvɪktriːbɛl/"
+},
+"72": {
+"name": "Tentacool",
+"pron": "TEN-tuh-kool",
+"ipa": "/ˈtɛntəkuːl/"
+},
+"73": {
+"name": "Tentacruel",
+"pron": "TEN-tuh-krool",
+"ipa": "/ˈtɛntəkɹuːl/"
+},
+"74": {
+"name": "Geodude",
+"pron": "JEE-oh-dood",
+"ipa": "/ˈdʒiːoʊduːd/"
+},
+"75": {
+"name": "Graveler",
+"pron": "GRAV-uh-lurr",
+"ipa": "/ˈɡɹævəlɚ/"
+},
+"76": {
+"name": "Golem",
+"pron": "GOHL-um",
+"ipa": "/ˈɡɔːləm/"
+},
+"77": {
+"name": "Ponyta",
+"pron": "POH-nee-tah",
+"ipa": "/ˈpoʊniːtɑː/"
+},
+"78": {
+"name": "Rapidash",
+"pron": "RAP-ih-dash",
+"ipa": "/ˈɹæpɪdæʃ/"
+},
+"79": {
+"name": "Slowpoke",
+"pron": "SLOH-poke",
+"ipa": "/ˈsloʊpoʊk/"
+},
+"80": {
+"name": "Slowbro",
+"pron": "SLOH-bro",
+"ipa": "/ˈsloʊbɹoʊ/"
+},
+"81": {
+"name": "Magnemite",
+"pron": "MAG-nuh-mite",
+"ipa": "/ˈmæɡnəmaɪt/"
+},
+"82": {
+"name": "Magneton",
+"pron": "MAG-nuh-tahn",
+"ipa": "/ˈmæɡnətɑːn/"
+},
+"83": {
+"name": "Farfetch'd",
+"pron": "FAR-fetcht",
+"ipa": "/ˈfɑːɹfɛtʃt/"
+},
+"84": {
+"name": "Doduo",
+"pron": "doh-DOO-oh",
+"ipa": "/doʊˈduːoʊ/"
+},
+"85": {
+"name": "Dodrio",
+"pron": "doh-DREE-oh",
+"ipa": "/doʊˈdɹiːoʊ/"
+},
+"86": {
+"name": "Seel",
+"pron": "SEEL",
+"ipa": "/ˈsiːl/"
+},
+"87": {
+"name": "Dewgong",
+"pron": "DOO-gahng",
+"ipa": "/ˈduːɡɑːŋ/"
+},
+"88": {
+"name": "Grimer",
+"pron": "GRIME-er",
+"ipa": "/ˈɡɹaɪmɚ/"
+},
+"89": {
+"name": "Muk",
+"pron": "MUK",
+"ipa": "/ˈmʌk/"
+},
+"90": {
+"name": "Shellder",
+"pron": "SHELL-dur",
+"ipa": "/ˈʃɛldɚ/"
+},
+"91": {
+"name": "Cloyster",
+"pron": "CLOY-stur",
+"ipa": "/ˈklɔɪstɚ/"
+},
+"92": {
+"name": "Gastly",
+"pron": "GAS-lee",
+"ipa": "/ˈɡæsliː/"
+},
+"93": {
+"name": "Haunter",
+"pron": "HAHN-tur",
+"ipa": "/ˈhɑːntɚ/"
+},
+"94": {
+"name": "Gengar",
+"pron": "GENG-gar",
+"ipa": "/ˈɡɛŋɡɑːɹ/"
+},
+"95": {
+"name": "Onix",
+"pron": "AHN-iks",
+"ipa": "/ˈɑːnɪks/"
+},
+"96": {
+"name": "Drowzee",
+"pron": "DROW-zee",
+"ipa": "/ˈdɹaʊziː/"
+},
+"97": {
+"name": "Hypno",
+"pron": "HIP-noh",
+"ipa": "/ˈhɪpnoʊ/"
+},
+"98": {
+"name": "Krabby",
+"pron": "KRA-bee",
+"ipa": "/ˈkɹæbiː/"
+},
+"99": {
+"name": "Kingler",
+"pron": "KING-ler",
+"ipa": "/ˈkɪŋlɚ/"
+},
+"100": {
+"name": "Voltorb",
+"pron": "VOHL-torb",
+"ipa": "/ˈvɔːltɔːɹb/"
+},
+"101": {
+"name": "Electrode",
+"pron": "ee-LECK-trode",
+"ipa": "/ɪˈlɛktɹoʊd/"
+},
+"102": {
+"name": "Exeggcute",
+"pron": "EGZ-egg-cute",
+"ipa": "/ˈɛɡzəɡkjuːt/"
+},
+"103": {
+"name": "Exeggutor",
+"pron": "egz-EGG-yoo-tohr",
+"ipa": "/ɛɡzˈɛɡjuːtɔːɹ/"
+},
+"104": {
+"name": "Cubone",
+"pron": "KYOO-bohn",
+"ipa": "/ˈkjuːboʊn/"
+},
+"105": {
+"name": "Marowak",
+"pron": "MARE-oh-wak",
+"ipa": "/ˈmɛɹoʊwæk/"
+},
+"106": {
+"name": "Hitmonlee",
+"pron": "HIT-mahn-lee",
+"ipa": "/ˈhɪtmɑːnliː/"
+},
+"107": {
+"name": "Hitmonchan",
+"pron": "HIT-mahn-chan",
+"ipa": "/ˈhɪtmɑːntʃæn/"
+},
+"108": {
+"name": "Lickitung",
+"pron": "LICK-ih-tung",
+"ipa": "/ˈlɪkɪtʌŋ/"
+},
+"109": {
+"name": "Koffing",
+"pron": "KAHF-ing",
+"ipa": "/ˈkɑːfɪŋ/"
+},
+"110": {
+"name": "Weezing",
+"pron": "WEEZ-ing",
+"ipa": "/ˈwiːzɪŋ/"
+},
+"111": {
+"name": "Rhyhorn",
+"pron": "RYE-horn",
+"ipa": "/ˈɹaɪhɔːɹn/"
+},
+"112": {
+"name": "Rhydon",
+"pron": "RYE-dahn",
+"ipa": "/ˈɹaɪdɑːn/"
+},
+"113": {
+"name": "Chansey",
+"pron": "CHAN-see",
+"ipa": "/ˈtʃænsiː/"
+},
+"114": {
+"name": "Tangela",
+"pron": "TANG-guh-luh",
+"ipa": "/ˈtæŋɡələ/"
+},
+"115": {
+"name": "Kangaskhan",
+"pron": "KANG-gus-kahn",
+"ipa": "/ˈkæŋɡəskɑːn/"
+},
+"116": {
+"name": "Horsea",
+"pron": "HOR-see",
+"ipa": "/ˈhɔːɹsiː/"
+},
+"117": {
+"name": "Seadra",
+"pron": "SEE-druh",
+"ipa": "/ˈsiːdɹə/"
+},
+"118": {
+"name": "Goldeen",
+"pron": "gol-DEEN",
+"ipa": "/ɡɔːlˈdiːn/"
+},
+"119": {
+"name": "Seaking",
+"pron": "SEE-king",
+"ipa": "/ˈsiːkɪŋ/"
+},
+"120": {
+"name": "Staryu",
+"pron": "STAR-yoo",
+"ipa": "/ˈstɑːɹjuː/"
+},
+"121": {
+"name": "Starmie",
+"pron": "STAR-mee",
+"ipa": "/ˈstɑːɹmiː/"
+},
+"122": {
+"name": "Mr. Mime",
+"pron": "MISS-tur-MIME",
+"ipa": "/ˌmɪstɚˈmaɪm/"
+},
+"123": {
+"name": "Scyther",
+"pron": "SYE-ther",
+"ipa": "/ˈsaɪθɚ/"
+},
+"124": {
+"name": "Jynx",
+"pron": "JINKS",
+"ipa": "/ˈdʒɪŋks/"
+},
+"125": {
+"name": "Electabuzz",
+"pron": "ee-LECK-tuh-buzz",
+"ipa": "/əˈlɛktəbʌz/"
+},
+"126": {
+"name": "Magmar",
+"pron": "MAG-mar",
+"ipa": "/ˈmæɡmɑːɹ/"
+},
+"127": {
+"name": "Pinsir",
+"pron": "PIN-sur",
+"ipa": "/ˈpɪnsɚ/"
+},
+"128": {
+"name": "Tauros",
+"pron": "TOHR-ohs",
+"ipa": "/ˈtɔːɹoʊs/"
+},
+"129": {
+"name": "Magikarp",
+"pron": "MAJ-ih-karp",
+"ipa": "/ˈmædʒɪkɑːɹp/"
+},
+"130": {
+"name": "Gyarados",
+"pron": "GARE-uh-dos",
+"ipa": "/ˈɡɛɹədoʊs/"
+},
+"131": {
+"name": "Lapras",
+"pron": "LAP-ris",
+"ipa": "/ˈlæpɹəs/"
+},
+"132": {
+"name": "Ditto",
+"pron": "DIH-toh",
+"ipa": "/ˈdɪtoʊ/"
+},
+"133": {
+"name": "Eevee",
+"pron": "EE-vee",
+"ipa": "/ˈiːviː/"
+},
+"134": {
+"name": "Vaporeon",
+"pron": "vay-POHR-ee-ahn",
+"ipa": "/veɪˈpɔːɹiːɑːn/"
+},
+"135": {
+"name": "Jolteon",
+"pron": "JOHL-tee-ahn",
+"ipa": "/ˈdʒɔːltiːɑːn/"
+},
+"136": {
+"name": "Flareon",
+"pron": "FLARE-ee-ahn",
+"ipa": "/ˈflɛɹiːɑːn/"
+},
+"137": {
+"name": "Porygon",
+"pron": "POHR-ee-gahn",
+"ipa": "/ˈpɔːɹiːɡɑːn/"
+},
+"138": {
+"name": "Omanyte",
+"pron": "AHM-uh-nite",
+"ipa": "/ˈɑːmənɑɪt/"
+},
+"139": {
+"name": "Omastar",
+"pron": "AHM-uh-star",
+"ipa": "/ˈɑːməstɑːɹ/"
+},
+"140": {
+"name": "Kabuto",
+"pron": "kuh-BOO-toh",
+"ipa": "/kəˈbuːtoʊ/"
+},
+"141": {
+"name": "Kabutops",
+"pron": "KAH-boo-tahps",
+"ipa": "/ˈkɑːbuːtɑːps/"
+},
+"142": {
+"name": "Aerodactyl",
+"pron": "AIR-uh-DAK-tull",
+"ipa": "/ɛɹəˈdæktəl/"
+},
+"143": {
+"name": "Snorlax",
+"pron": "SNORE-lax",
+"ipa": "/ˈsnɔːɹlæks/"
+},
+"144": {
+"name": "Articuno",
+"pron": "AR-ti-KOO-noh",
+"ipa": "/ˌɑːɹɾɪˈkuːnoʊ/"
+},
+"145": {
+"name": "Zapdos",
+"pron": "ZAP-dohs",
+"ipa": "/ˈzæpdoʊs/"
+},
+"146": {
+"name": "Moltres",
+"pron": "MOHL-trace",
+"ipa": "/ˈmɔːltɹeɪs/"
+},
+"147": {
+"name": "Dratini",
+"pron": "druh-TEE-nee",
+"ipa": "/dɹəˈtiːniː/"
+},
+"148": {
+"name": "Dragonair",
+"pron": "DRAG-uh-nair",
+"ipa": "/ˈdɹæɡənɛɹ/"
+},
+"149": {
+"name": "Dragonite",
+"pron": "DRAG-uh-nite",
+"ipa": "/ˈdɹæɡənaɪt/"
+},
+"150": {
+"name": "Mewtwo",
+"pron": "MYOO-too",
+"ipa": "/ˈmjuːtuː/"
+},
+"151": {
+"name": "Mew",
+"pron": "MYOO",
+"ipa": "/ˈmjuː/"
+},
+"152": {
+"name": "Chikorita",
+"pron": "CHIK-or-EE-tuh",
+"ipa": "/ˌtʃɪkɔːɹˈiːɾə/"
+},
+"153": {
+"name": "Bayleef",
+"pron": "BAY-leef",
+"ipa": "/ˈbeɪliːf/"
+},
+"154": {
+"name": "Meganium",
+"pron": "muh-GAY-nee-uhm",
+"ipa": "/məˈɡeɪniːəm/"
+},
+"155": {
+"name": "Cyndaquil",
+"pron": "SIN-duh-kwil",
+"ipa": "/ˈsɪndəkwɪl/"
+},
+"156": {
+"name": "Quilava",
+"pron": "kwi-LAH-vuh",
+"ipa": "/kwɪˈlɑːvə/"
+},
+"157": {
+"name": "Typhlosion",
+"pron": "tye-FLOH-zhun",
+"ipa": "/taɪˈfloʊʒən/"
+},
+"158": {
+"name": "Totodile",
+"pron": "TOH-tuh-dile",
+"ipa": "/ˈtoʊɾədaɪl/"
+},
+"159": {
+"name": "Croconaw",
+"pron": "KROK-uh-naw",
+"ipa": "/ˈkɹɑːkənɑː/"
+},
+"160": {
+"name": "Feraligatr",
+"pron": "fur-AL-ih-gay-tur",
+"ipa": "/fɚˈæləɡeɪɾɚ/"
+},
+"161": {
+"name": "Sentret",
+"pron": "SEN-trit",
+"ipa": "/ˈsɛntɹət/"
+},
+"162": {
+"name": "Furret",
+"pron": "FUR-it",
+"ipa": "/ˈfɝːət/"
+},
+"163": {
+"name": "Hoothoot",
+"pron": "HOOT-hoot",
+"ipa": "/ˈhuːtˌhuːt/"
+},
+"164": {
+"name": "Noctowl",
+"pron": "NAHK-towl",
+"ipa": "/ˈnɑːktaʊl/"
+},
+"165": {
+"name": "Ledyba",
+"pron": "LED-ee-buh",
+"ipa": "/ˈlɛdiːbə/"
+},
+"166": {
+"name": "Ledian",
+"pron": "LED-ee-ahn",
+"ipa": "/ˈlɛdiːɑːn/"
+},
+"167": {
+"name": "Spinarak",
+"pron": "SPIN-uh-rak",
+"ipa": "/ˈspɪnəɹæk/"
+},
+"168": {
+"name": "Ariados",
+"pron": "EHR-ee-uh-dos",
+"ipa": "/ˈɛɹiːədoʊs/"
+},
+"169": {
+"name": "Crobat",
+"pron": "KROH-bat",
+"ipa": "/ˈkɹoʊbæt/"
+},
+"170": {
+"name": "Chinchou",
+"pron": "CHIN-chow",
+"ipa": "/ˈtʃɪntʃaʊ/"
+},
+"171": {
+"name": "Lanturn",
+"pron": "LAN-turn",
+"ipa": "/ˈlæntɚn/"
+},
+"172": {
+"name": "Pichu",
+"pron": "PEE-choo",
+"ipa": "/ˈpiːtʃu/"
+},
+"173": {
+"name": "Cleffa",
+"pron": "CLEH-fuh",
+"ipa": "/ˈklɛfə/"
+},
+"174": {
+"name": "Igglybuff",
+"pron": "IGG-lee-buff",
+"ipa": "/ˈɪɡliːbʌf/"
+},
+"175": {
+"name": "Togepi",
+"pron": "TOH-guh-pee",
+"ipa": "/ˈtoʊgəpiː/"
+},
+"176": {
+"name": "Togetic",
+"pron": "TOH-guh-tik",
+"ipa": "/ˈtoʊɡətɪk/"
+},
+"177": {
+"name": "Natu",
+"pron": "NAH-too",
+"ipa": "/ˈnɑːtuː/"
+},
+"178": {
+"name": "Xatu",
+"pron": "ZAH-too",
+"ipa": "/ˈzɑːtuː/"
+},
+"179": {
+"name": "Mareep",
+"pron": "muh-REEP",
+"ipa": "/məˈɹiːp/"
+},
+"180": {
+"name": "Flaaffy",
+"pron": "FLA-fee",
+"ipa": "/ˈflæfiː/"
+},
+"181": {
+"name": "Ampharos",
+"pron": "AM-fuh-rahs",
+"ipa": "/ˈæmfəɹɑːs/"
+},
+"182": {
+"name": "Bellossom",
+"pron": "bell-AH-sum",
+"ipa": "/bɛlˈɑːsəm/"
+},
+"183": {
+"name": "Marill",
+"pron": "MEHR-ull",
+"ipa": "/ˈmɛɹəl/"
+},
+"184": {
+"name": "Azumarill",
+"pron": "uh-ZOO-muh-rill",
+"ipa": "/əˈzuːməɹɪl/"
+},
+"185": {
+"name": "Sudowoodo",
+"pron": "SOO-doh-WOO-doh",
+"ipa": "/ˌsuːdoʊˈwuːdoʊ/"
+},
+"186": {
+"name": "Politoed",
+"pron": "PAHL-ee-tohd",
+"ipa": "/ˈpɑːliːtoʊd/"
+},
+"187": {
+"name": "Hoppip",
+"pron": "HOP-ip",
+"ipa": "/ˈhɑːpɪp/"
+},
+"188": {
+"name": "Skiploom",
+"pron": "SKIP-loom",
+"ipa": "/ˈskɪpluːm/"
+},
+"189": {
+"name": "Jumpluff",
+"pron": "JUMP-luff",
+"ipa": "/ˈdʒʌmplʌf/"
+},
+"190": {
+"name": "Aipom",
+"pron": "AY-pahm",
+"ipa": "/ˈeɪpɑːm/"
+},
+"191": {
+"name": "Sunkern",
+"pron": "SUN-kurn",
+"ipa": "/ˈsʌŋkɚn/"
+},
+"192": {
+"name": "Sunflora",
+"pron": "sun-FLOHR-uh",
+"ipa": "/ˌsʌnˈflɔːɹə/"
+},
+"193": {
+"name": "Yanma",
+"pron": "YAN-muh",
+"ipa": "/ˈjænmə/"
+},
+"194": {
+"name": "Wooper",
+"pron": "WOO-pur",
+"ipa": "/ˈwuːpɚ/"
+},
+"195": {
+"name": "Quagsire",
+"pron": "KWAG-sire",
+"ipa": "/ˈkwæɡsaɪɚ/"
+},
+"196": {
+"name": "Espeon",
+"pron": "ES-pee-ahn",
+"ipa": "/ˈɛspiːɑːn/"
+},
+"197": {
+"name": "Umbreon",
+"pron": "UM-bree-ahn",
+"ipa": "/ˈʌmbɹiːɑːn/"
+},
+"198": {
+"name": "Murkrow",
+"pron": "MURR-kroh",
+"ipa": "/ˈmɝːkɹoʊ/"
+},
+"199": {
+"name": "Slowking",
+"pron": "SLOH-king",
+"ipa": "/ˈsloʊkɪŋ/"
+},
+"200": {
+"name": "Misdreavus",
+"pron": "miss-DREE-vis",
+"ipa": "/mɪsˈdɹiːvəs/"
+},
+"201": {
+"name": "Unown",
+"pron": "uh-NOHN",
+"ipa": "/ʌˈnoʊn/"
+},
+"202": {
+"name": "Wobbuffet",
+"pron": "WOBB-uh-fet",
+"ipa": "/ˈwɑːbəfɛt/"
+},
+"203": {
+"name": "Girafarig",
+"pron": "jer-AF-uh-rig",
+"ipa": "/dʒɚːˈæfəɹɪɡ/"
+},
+"204": {
+"name": "Pineco",
+"pron": "PINE-koh",
+"ipa": "/ˈpaɪnkoʊ/"
+},
+"205": {
+"name": "Forretress",
+"pron": "FOHR-ih-triss",
+"ipa": "/ˈfɔːɹətɹəs/"
+},
+"206": {
+"name": "Dunsparce",
+"pron": "DUN-sparce",
+"ipa": "/ˈdʌnspɑːɹs/"
+},
+"207": {
+"name": "Gligar",
+"pron": "GLYE-gar",
+"ipa": "/ˈɡlaɪɡɑːɹ/"
+},
+"208": {
+"name": "Steelix",
+"pron": "STEEL-iks",
+"ipa": "/ˈstiːlɪks/"
+},
+"209": {
+"name": "Snubbull",
+"pron": "SNUH-bull",
+"ipa": "/ˈsnʌbʊl/"
+},
+"210": {
+"name": "Granbull",
+"pron": "GRAN-bull",
+"ipa": "/ˈɡɹænbʊl/"
+},
+"211": {
+"name": "Qwilfish",
+"pron": "KWIL-fish",
+"ipa": "/ˈkwɪlfɪʃ/"
+},
+"212": {
+"name": "Scizor",
+"pron": "SIZ-or",
+"ipa": "/ˈsɪzɔːɹ/"
+},
+"213": {
+"name": "Shuckle",
+"pron": "SHUCK-uhl",
+"ipa": "/ˈʃʌkəl/"
+},
+"214": {
+"name": "Heracross",
+"pron": "HEHR-uh-cross",
+"ipa": "/ˈhɛɹəkɹɑːs/"
+},
+"215": {
+"name": "Sneasel",
+"pron": "SNEE-zull",
+"ipa": "/ˈsniːzəl/"
+},
+"216": {
+"name": "Teddiursa",
+"pron": "ted-ee-UR-suh",
+"ipa": "/tɛdiːˈɝːsə/"
+},
+"217": {
+"name": "Ursaring",
+"pron": "UR-suh-ring",
+"ipa": "/ˈɝːsəɹɪŋ/"
+},
+"218": {
+"name": "Slugma",
+"pron": "SLUG-muh",
+"ipa": "/ˈslʌgmə/"
+},
+"219": {
+"name": "Magcargo",
+"pron": "mag-KAR-goh",
+"ipa": "/mæɡˈkɑːɹɡoʊ/"
+},
+"220": {
+"name": "Swinub",
+"pron": "SWYE-nub",
+"ipa": "/ˈswaɪnʌb/"
+},
+"221": {
+"name": "Piloswine",
+"pron": "PYE-loh-swine",
+"ipa": "/ˈpaɪloʊˌswaɪn/"
+},
+"222": {
+"name": "Corsola",
+"pron": "KOR-suh-luh",
+"ipa": "/ˈkɔːɹsələ/"
+},
+"223": {
+"name": "Remoraid",
+"pron": "REM-or-aid",
+"ipa": "/ˈɹɛməɹeɪd/"
+},
+"224": {
+"name": "Octillery",
+"pron": "ahk-TILL-er-ee",
+"ipa": "/ɑːkˈtɪlɚiː/"
+},
+"225": {
+"name": "Delibird",
+"pron": "DELL-ee-bird",
+"ipa": "/ˈdɛliːbɚd/"
+},
+"226": {
+"name": "Mantine",
+"pron": "MAN-teen",
+"ipa": "/ˈmæntiːn/"
+},
+"227": {
+"name": "Skarmory",
+"pron": "SKAR-muh-ree",
+"ipa": "/ˈskɑːɹmɚiː/"
+},
+"228": {
+"name": "Houndour",
+"pron": "HOUN-dow-er",
+"ipa": "/ˈhaʊndaʊɚ/"
+},
+"229": {
+"name": "Houndoom",
+"pron": "HOUN-doom",
+"ipa": "/ˈhaʊnduːm/"
+},
+"230": {
+"name": "Kingdra",
+"pron": "KING-druh",
+"ipa": "/ˈkɪŋdɹə/"
+},
+"231": {
+"name": "Phanpy",
+"pron": "FAN-pee",
+"ipa": "/ˈfænpiː/"
+},
+"232": {
+"name": "Donphan",
+"pron": "DON-fan",
+"ipa": "/ˈdɑːnfæn/"
+},
+"233": {
+"name": "Porygon2",
+"pron": "POR-ee-gahn-TOO",
+"ipa": "/ˌpɔːɹiːɡɑːnˈtuː/"
+},
+"234": {
+"name": "Stantler",
+"pron": "STANT-ler",
+"ipa": "/ˈstæntlɚ/"
+},
+"235": {
+"name": "Smeargle",
+"pron": "SMEER-gull",
+"ipa": "/ˈsmɪɹɡəl/"
+},
+"236": {
+"name": "Tyrogue",
+"pron": "TYE-rohg",
+"ipa": "/ˈtaɪɹoʊɡ/"
+},
+"237": {
+"name": "Hitmontop",
+"pron": "HIT-mahn-tahp",
+"ipa": "/ˈhɪtmɑːntɑːp/"
+},
+"238": {
+"name": "Smoochum",
+"pron": "SMOO-chum",
+"ipa": "/ˈsmuːtʃəm/"
+},
+"239": {
+"name": "Elekid",
+"pron": "EL-uh-kid",
+"ipa": "/ˈɛləkɪd/"
+},
+"240": {
+"name": "Magby",
+"pron": "MAG-bee",
+"ipa": "/ˈmægbiː/"
+},
+"241": {
+"name": "Miltank",
+"pron": "MILL-tank",
+"ipa": "/ˈmɪltæŋk/"
+},
+"242": {
+"name": "Blissey",
+"pron": "BLISS-ee",
+"ipa": "/ˈblɪsiː/"
+},
+"243": {
+"name": "Raikou",
+"pron": "RYE-koh",
+"ipa": "/ˈɹaɪkoʊ/"
+},
+"244": {
+"name": "Entei",
+"pron": "EN-tay",
+"ipa": "/ˈɛnteɪ/"
+},
+"245": {
+"name": "Suicune",
+"pron": "SWEE-koon",
+"ipa": "/ˈswiːkuːn/"
+},
+"246": {
+"name": "Larvitar",
+"pron": "LAR-vih-tar",
+"ipa": "/ˈlɑːɹvətɑːɹ/"
+},
+"247": {
+"name": "Pupitar",
+"pron": "PYOO-pih-tar",
+"ipa": "/ˈpjuːpətɑːɹ/"
+},
+"248": {
+"name": "Tyranitar",
+"pron": "tye-RAN-ih-tar",
+"ipa": "/taɪˈɹænətɑːɹ/"
+},
+"249": {
+"name": "Lugia",
+"pron": "LOO-gee-uh",
+"ipa": "/ˈluːɡiːə/"
+},
+"250": {
+"name": "Ho-Oh",
+"pron": "HO-oh",
+"ipa": "/ˈhoʊʔoʊ/"
+},
+"251": {
+"name": "Celebi",
+"pron": "SEL-uh-bee",
+"ipa": "/ˈsɛləbiː/"
+},
+"252": {
+"name": "Treecko",
+"pron": "TREE-koh",
+"ipa": "/ˈtɹiːkoʊ/"
+},
+"253": {
+"name": "Grovyle",
+"pron": "GROH-vile",
+"ipa": "/ˈɡɹoʊvaɪl/"
+},
+"254": {
+"name": "Sceptile",
+"pron": "SEP-tile",
+"ipa": "/ˈsɛptaɪl/"
+},
+"255": {
+"name": "Torchic",
+"pron": "TOR-chick",
+"ipa": "/ˈtɔːɹtʃɪk/"
+},
+"256": {
+"name": "Combusken",
+"pron": "kum-BUS-kin",
+"ipa": "/kəmˈbʌskən/"
+},
+"257": {
+"name": "Blaziken",
+"pron": "BLAYZ-ih-kin",
+"ipa": "/ˈbleɪzəkən/"
+},
+"258": {
+"name": "Mudkip",
+"pron": "MUD-kip",
+"ipa": "/ˈmʌdkɪp/"
+},
+"259": {
+"name": "Marshtomp",
+"pron": "MARSH-tahmp",
+"ipa": "/ˈmɑːɹʃtɑːmp/"
+},
+"260": {
+"name": "Swampert",
+"pron": "SWAHM-purt",
+"ipa": "/ˈswɑːmpɚt/"
+},
+"261": {
+"name": "Poochyena",
+"pron": "POO-chee-YEN-uh",
+"ipa": "/ˌpuːtʃiːˈjɛnə/"
+},
+"262": {
+"name": "Mightyena",
+"pron": "MY-tee-YEN-uh",
+"ipa": "/ˌmaɪtiːˈjɛnə/"
+},
+"263": {
+"name": "Zigzagoon",
+"pron": "zig-zuh-GOON",
+"ipa": "/zɪɡzəˈɡuːn/"
+},
+"264": {
+"name": "Linoone",
+"pron": "lie-NOON",
+"ipa": "/laɪˈnuːn/"
+},
+"265": {
+"name": "Wurmple",
+"pron": "WURM-pull",
+"ipa": "/ˈwɝːmpəl/"
+},
+"266": {
+"name": "Silcoon",
+"pron": "SILL-koon",
+"ipa": "/ˈsɪlkuːn/"
+},
+"267": {
+"name": "Beautifly",
+"pron": "BYOO-tih-fly",
+"ipa": "/ˈbjuːtəflaɪ/"
+},
+"268": {
+"name": "Cascoon",
+"pron": "KASS-koon",
+"ipa": "/ˈkæskuːn/"
+},
+"269": {
+"name": "Dustox",
+"pron": "DUS-tahks",
+"ipa": "/ˈdʌstɑːks/"
+},
+"270": {
+"name": "Lotad",
+"pron": "LOH-tad",
+"ipa": "/ˈloʊtæd/"
+},
+"271": {
+"name": "Lombre",
+"pron": "LAHM-bray",
+"ipa": "/ˈlɑːmbɹeɪ/"
+},
+"272": {
+"name": "Ludicolo",
+"pron": "LOO-dee-KOH-loh",
+"ipa": "/ˌluːdiːˈkoʊloʊ/"
+},
+"273": {
+"name": "Seedot",
+"pron": "SEE-daht",
+"ipa": "/ˈsiːdɑːt/"
+},
+"274": {
+"name": "Nuzleaf",
+"pron": "NUZ-leef",
+"ipa": "/ˈnʌzliːf/"
+},
+"275": {
+"name": "Shiftry",
+"pron": "SHIF-tree",
+"ipa": "/ˈʃɪftɹiː/"
+},
+"276": {
+"name": "Taillow",
+"pron": "TAY-loh",
+"ipa": "/ˈteɪloʊ/"
+},
+"277": {
+"name": "Swellow",
+"pron": "SWELL-oh",
+"ipa": "/ˈswɛloʊ/"
+},
+"278": {
+"name": "Wingull",
+"pron": "WING-gull",
+"ipa": "/ˈwɪŋɡəl/"
+},
+"279": {
+"name": "Pelipper",
+"pron": "PELL-ih-pur",
+"ipa": "/ˈpɛlɪpɚ/"
+},
+"280": {
+"name": "Ralts",
+"pron": "RAHLTS",
+"ipa": "/ˈɹɑːlts/"
+},
+"281": {
+"name": "Kirlia",
+"pron": "KUR-lee-uh",
+"ipa": "/ˈkɝːliːə/"
+},
+"282": {
+"name": "Gardevoir",
+"pron": "GAR-dih-vwar",
+"ipa": "/ˈɡɑːɹdəvwɑːɹ/"
+},
+"283": {
+"name": "Surskit",
+"pron": "SUR-skit",
+"ipa": "/ˈsɝːskɪt/"
+},
+"284": {
+"name": "Masquerain",
+"pron": "mass-kur-AIN",
+"ipa": "/mæskɚˈeɪn/"
+},
+"285": {
+"name": "Shroomish",
+"pron": "SHROO-mish",
+"ipa": "/ˈʃɹuːmɪʃ/"
+},
+"286": {
+"name": "Breloom",
+"pron": "BREH-loom",
+"ipa": "/ˈbɹɛluːm/"
+},
+"287": {
+"name": "Slakoth",
+"pron": "SLAK-ahth",
+"ipa": "/ˈslækɑːθ/"
+},
+"288": {
+"name": "Vigoroth",
+"pron": "VIG-ur-ahth",
+"ipa": "/ˈvɪɡɚɑːθ/"
+},
+"289": {
+"name": "Slaking",
+"pron": "SLAK-ing",
+"ipa": "/ˈslækɪŋ/"
+},
+"290": {
+"name": "Nincada",
+"pron": "nin-KAH-duh",
+"ipa": "/nɪnˈkɑːdə/"
+},
+"291": {
+"name": "Ninjask",
+"pron": "NIN-jask",
+"ipa": "/ˈnɪndʒæsk/"
+},
+"292": {
+"name": "Shedinja",
+"pron": "shed-IN-juh",
+"ipa": "/ʃɛdˈɪndʒə/"
+},
+"293": {
+"name": "Whismur",
+"pron": "WHISS-mur",
+"ipa": "/ˈhwɪsmɚ/"
+},
+"294": {
+"name": "Loudred",
+"pron": "LOUD-red",
+"ipa": "/ˈlaʊdɹɛd/"
+},
+"295": {
+"name": "Exploud",
+"pron": "ek-SPLOWD",
+"ipa": "/ɛkˈsplaʊd/"
+},
+"296": {
+"name": "Makuhita",
+"pron": "MAH-koo-HEE-tuh",
+"ipa": "/ˌmɑːkuːˈhiːtə/"
+},
+"297": {
+"name": "Hariyama",
+"pron": "HAR-ee-YAH-muh",
+"ipa": "/ˌhɑːɹiːˈjɑːmə/"
+},
+"298": {
+"name": "Azurill",
+"pron": "uh-ZOO-ril",
+"ipa": "/əˈzuːɹɪl/"
+},
+"299": {
+"name": "Nosepass",
+"pron": "NOZE-pass",
+"ipa": "/ˈnoʊzpæs/"
+},
+"300": {
+"name": "Skitty",
+"pron": "SKIT-ee",
+"ipa": "/ˈskɪtiː/"
+},
+"301": {
+"name": "Delcatty",
+"pron": "DEL-kat-ee",
+"ipa": "/ˈdɛlkætiː/"
+},
+"302": {
+"name": "Sableye",
+"pron": "SAY-buh-lye",
+"ipa": "/ˈseɪbəlaɪ/"
+},
+"303": {
+"name": "Mawile",
+"pron": "MAH-wile",
+"ipa": "/ˈmɑːwaɪl/"
+},
+"304": {
+"name": "Aron",
+"pron": "EHR-ahn",
+"ipa": "/ˈɛɹɑːn/"
+},
+"305": {
+"name": "Lairon",
+"pron": "LEHR-ahn",
+"ipa": "/ˈlɛɹɑːn/"
+},
+"306": {
+"name": "Aggron",
+"pron": "AG-rahn",
+"ipa": "/ˈæɡɹɑːn/"
+},
+"307": {
+"name": "Meditite",
+"pron": "MED-ih-tite",
+"ipa": "/ˈmɛdətaɪt/"
+},
+"308": {
+"name": "Medicham",
+"pron": "MED-ih-cham",
+"ipa": "/ˈmɛdətʃæm/"
+},
+"309": {
+"name": "Electrike",
+"pron": "ee-LEK-trike",
+"ipa": "/ɪˈlɛktɹɑɪk/"
+},
+"310": {
+"name": "Manectric",
+"pron": "may-NEK-trik",
+"ipa": "/meɪˈnɛktɹɪk/"
+},
+"311": {
+"name": "Plusle",
+"pron": "PLUS-ull",
+"ipa": "/ˈplʌsəl/"
+},
+"312": {
+"name": "Minun",
+"pron": "MY-nun",
+"ipa": "/ˈmaɪnən/"
+},
+"313": {
+"name": "Volbeat",
+"pron": "VOHL-beet",
+"ipa": "/ˈvoʊlbiːt/"
+},
+"314": {
+"name": "Illumise",
+"pron": "ih-loo-MEE-zay",
+"ipa": "/ɪluˈmiːzeɪ/"
+},
+"315": {
+"name": "Roselia",
+"pron": "roh-ZEL-ee-uh",
+"ipa": "/ɹoʊˈzɛliːə/"
+},
+"316": {
+"name": "Gulpin",
+"pron": "GULL-pin",
+"ipa": "/ˈɡʊlpɪn/"
+},
+"317": {
+"name": "Swalot",
+"pron": "SWAH-laht",
+"ipa": "/ˈswɑːlɑːt/"
+},
+"318": {
+"name": "Carvanha",
+"pron": "kar-VAHN-uh",
+"ipa": "/kɑːɹˈvɑːnə/"
+},
+"319": {
+"name": "Sharpedo",
+"pron": "shar-PEE-doh",
+"ipa": "/ʃɑːɹˈpiːdoʊ/"
+},
+"320": {
+"name": "Wailmer",
+"pron": "WAIL-mur",
+"ipa": "/ˈweɪlmɚ/"
+},
+"321": {
+"name": "Wailord",
+"pron": "WAIL-ord",
+"ipa": "/ˈweɪlɔːɹd/"
+},
+"322": {
+"name": "Numel",
+"pron": "NUM-ull",
+"ipa": "/ˈnʌməl/"
+},
+"323": {
+"name": "Camerupt",
+"pron": "KAM-ur-upt",
+"ipa": "/ˈkæmɚʌpt/"
+},
+"324": {
+"name": "Torkoal",
+"pron": "TOR-kohl",
+"ipa": "/ˈtɔːɹkoʊl/"
+},
+"325": {
+"name": "Spoink",
+"pron": "SPOINK",
+"ipa": "/spɔɪŋk/"
+},
+"326": {
+"name": "Grumpig",
+"pron": "GRUM-pig",
+"ipa": "/ˈɡɹʌmpɪɡ/"
+},
+"327": {
+"name": "Spinda",
+"pron": "SPIN-duh",
+"ipa": "/ˈspɪndə/"
+},
+"328": {
+"name": "Trapinch",
+"pron": "TRA-pinch",
+"ipa": "/ˈtɹæpɪntʃ/"
+},
+"329": {
+"name": "Vibrava",
+"pron": "vye-BRAH-vuh",
+"ipa": "/vaɪˈbɹɑːvə/"
+},
+"330": {
+"name": "Flygon",
+"pron": "FLY-gahn",
+"ipa": "/ˈflaɪɡɑːn/"
+},
+"331": {
+"name": "Cacnea",
+"pron": "KAK-nee-uh",
+"ipa": "/ˈkækniːə/"
+},
+"332": {
+"name": "Cacturne",
+"pron": "KAK-turn",
+"ipa": "/ˈkæktɚn/"
+},
+"333": {
+"name": "Swablu",
+"pron": "SWAHB-loo",
+"ipa": "/ˈswɑːbluː/"
+},
+"334": {
+"name": "Altaria",
+"pron": "ahl-TAHR-ee-uh",
+"ipa": "/ɑːlˈtɑːɹiːə/"
+},
+"335": {
+"name": "Zangoose",
+"pron": "ZANG-goos",
+"ipa": "/ˈzæŋɡus/"
+},
+"336": {
+"name": "Seviper",
+"pron": "suh-VYE-pur",
+"ipa": "/səˈvaɪpɚ/"
+},
+"337": {
+"name": "Lunatone",
+"pron": "LOO-nuh-tohn",
+"ipa": "/ˈluːnətoʊn/"
+},
+"338": {
+"name": "Solrock",
+"pron": "SOHL-rahk",
+"ipa": "/ˈsɔːlɹɑːk/"
+},
+"339": {
+"name": "Barboach",
+"pron": "BAR-bohch",
+"ipa": "/ˈbɑːɹboʊtʃ/"
+},
+"340": {
+"name": "Whiscash",
+"pron": "WHIS-kash",
+"ipa": "/ˈhwɪskæʃ/"
+},
+"341": {
+"name": "Corphish",
+"pron": "KOR-fish",
+"ipa": "/ˈkɔːɹfɪʃ/"
+},
+"342": {
+"name": "Crawdaunt",
+"pron": "KRAH-dawnt",
+"ipa": "/ˈkrɑːdɑːnt/"
+},
+"343": {
+"name": "Baltoy",
+"pron": "BAHL-toy",
+"ipa": "/ˈbɑːltɔɪ/"
+},
+"344": {
+"name": "Claydol",
+"pron": "KLAY-dohl",
+"ipa": "/ˈkleɪdɔl/"
+},
+"345": {
+"name": "Lileep",
+"pron": "lil-EEP",
+"ipa": "/lɪlˈiːp/"
+},
+"346": {
+"name": "Cradily",
+"pron": "cray-DILL-ee",
+"ipa": "/kɹeɪˈdɪliː/"
+},
+"347": {
+"name": "Anorith",
+"pron": "AN-uh-rith",
+"ipa": "/ˈænəɹɪθ/"
+},
+"348": {
+"name": "Armaldo",
+"pron": "ar-MAHL-doh",
+"ipa": "/ɑːɹˈmɑːldoʊ/"
+},
+"349": {
+"name": "Feebas",
+"pron": "FEE-bas",
+"ipa": "/ˈfiːbæs/"
+},
+"350": {
+"name": "Milotic",
+"pron": "MY-loh-tik",
+"ipa": "/ˈmaɪloʊtɪk/"
+},
+"351": {
+"name": "Castform",
+"pron": "KAST-form",
+"ipa": "/ˈkæstfɔːɹm/"
+},
+"352": {
+"name": "Kecleon",
+"pron": "KEK-lee-ahn",
+"ipa": "/ˈkɛkliːɑːn/"
+},
+"353": {
+"name": "Shuppet",
+"pron": "SHUP-it",
+"ipa": "/ˈʃʌpət/"
+},
+"354": {
+"name": "Banette",
+"pron": "bay-NET",
+"ipa": "/beɪˈnɛt/"
+},
+"355": {
+"name": "Duskull",
+"pron": "DUS-kull",
+"ipa": "/ˈdʌskəl/"
+},
+"356": {
+"name": "Dusclops",
+"pron": "DUS-klahps",
+"ipa": "/ˈdʌsklɑːps/"
+},
+"357": {
+"name": "Tropius",
+"pron": "TRAHP-ee-us",
+"ipa": "/ˈtɹɑːpiːəs/"
+},
+"358": {
+"name": "Chimecho",
+"pron": "chye-MEK-oh",
+"ipa": "/tʃaɪˈmɛkoʊ/"
+},
+"359": {
+"name": "Absol",
+"pron": "AB-sohl",
+"ipa": "/ˈæbsɔːl/"
+},
+"360": {
+"name": "Wynaut",
+"pron": "WY-naut",
+"ipa": "/ˈwaɪnɑːt/"
+},
+"361": {
+"name": "Snorunt",
+"pron": "SNOH-runt",
+"ipa": "/ˈsnoʊɹʌnt/"
+},
+"362": {
+"name": "Glalie",
+"pron": "GLAY-lee",
+"ipa": "/ˈɡleɪliː/"
+},
+"363": {
+"name": "Spheal",
+"pron": "SFEEL",
+"ipa": "/ˈsfiːl/"
+},
+"364": {
+"name": "Sealeo",
+"pron": "SEE-lee-oh",
+"ipa": "/ˈsiːliːoʊ/"
+},
+"365": {
+"name": "Walrein",
+"pron": "WAHL-rain",
+"ipa": "/ˈwɑːlɹeɪn/"
+},
+"366": {
+"name": "Clamperl",
+"pron": "KLAM-purl",
+"ipa": "/ˈklæmpɚl/"
+},
+"367": {
+"name": "Huntail",
+"pron": "HUN-tail",
+"ipa": "/ˈhʌnteɪl/"
+},
+"368": {
+"name": "Gorebyss",
+"pron": "GOHR-uh-bis",
+"ipa": "/ˈɡɔːɹəbɪs/"
+},
+"369": {
+"name": "Relicanth",
+"pron": "RELL-ih-kanth",
+"ipa": "/ˈɹɛlɪkænθ/"
+},
+"370": {
+"name": "Luvdisc",
+"pron": "LUV-disk",
+"ipa": "/ˈlʌvdɪsk/"
+},
+"371": {
+"name": "Bagon",
+"pron": "BAY-gahn",
+"ipa": "/ˈbeɪɡɑːn/"
+},
+"372": {
+"name": "Shelgon",
+"pron": "SHEL-gahn",
+"ipa": "/ˈʃɛlɡɑːn/"
+},
+"373": {
+"name": "Salamence",
+"pron": "SAL-uh-mence",
+"ipa": "/ˈsæləmɛns/"
+},
+"374": {
+"name": "Beldum",
+"pron": "BEL-dum",
+"ipa": "/ˈbɛldʌm/"
+},
+"375": {
+"name": "Metang",
+"pron": "muh-TANG",
+"ipa": "/məˈtæŋ/"
+},
+"376": {
+"name": "Metagross",
+"pron": "MEH-tuh-grohs",
+"ipa": "/ˈmɛtəɡroʊs/"
+},
+"377": {
+"name": "Regirock",
+"pron": "REJ-ee-rahk",
+"ipa": "/ˈɹɛdʒiːɹɑːk/"
+},
+"378": {
+"name": "Regice",
+"pron": "REJ-ice",
+"ipa": "/ˈɹɛdʒaɪs/"
+},
+"379": {
+"name": "Registeel",
+"pron": "REJ-ee-steel",
+"ipa": "/ˈɹɛdʒiːstiːl/"
+},
+"380": {
+"name": "Latias",
+"pron": "LAH-tee-ahs",
+"ipa": "/ˈlɑːtiːɑːs/"
+},
+"381": {
+"name": "Latios",
+"pron": "LAH-tee-ohs",
+"ipa": "/ˈlɑːtiːoʊs/"
+},
+"382": {
+"name": "Kyogre",
+"pron": "kye-OH-gur",
+"ipa": "/kaɪˈoʊɡɚ/"
+},
+"383": {
+"name": "Groudon",
+"pron": "GROU-dahn",
+"ipa": "/ˈɡɹaʊdɑːn/"
+},
+"384": {
+"name": "Rayquaza",
+"pron": "ray-KWAY-zuh",
+"ipa": "/ɹeɪˈkweɪzə/"
+},
+"385": {
+"name": "Jirachi",
+"pron": "jur-AH-chee",
+"ipa": "/dʒɚˈɑːtʃiː/"
+},
+"386": {
+"name": "Deoxys",
+"pron": "dee-AHK-sis",
+"ipa": "/diːˈɑːksɪs/"
+},
+"387": {
+"name": "Turtwig",
+"pron": "TUR-twig",
+"ipa": "/ˈtɝːtwɪɡ/"
+},
+"388": {
+"name": "Grotle",
+"pron": "GRAH-tull",
+"ipa": "/ˈɡɹɑːɾəl/"
+},
+"389": {
+"name": "Torterra",
+"pron": "tohr-TEHR-uh",
+"ipa": "/tɔːɹˈtɛɹə/"
+},
+"390": {
+"name": "Chimchar",
+"pron": "CHIM-char",
+"ipa": "/ˈtʃɪmtʃɑːɹ/"
+},
+"391": {
+"name": "Monferno",
+"pron": "mahn-FUR-noh",
+"ipa": "/mɑːnˈfɝːnoʊ/"
+},
+"392": {
+"name": "Infernape",
+"pron": "in-FUR-nape",
+"ipa": "/ɪnˈfɝːneɪp/"
+},
+"393": {
+"name": "Piplup",
+"pron": "PIP-lup",
+"ipa": "/ˈpɪplʌp/"
+},
+"394": {
+"name": "Prinplup",
+"pron": "PRIN-plup",
+"ipa": "/ˈpɹɪnplʌp/"
+},
+"395": {
+"name": "Empoleon",
+"pron": "em-POHL-ee-ahn",
+"ipa": "/ɛmˈpɔːliːɑːn/"
+},
+"396": {
+"name": "Starly",
+"pron": "STAR-lee",
+"ipa": "/ˈstɑːɹliː/"
+},
+"397": {
+"name": "Staravia",
+"pron": "star-AY-vee-uh",
+"ipa": "/stɑːɹˈeɪviːə/"
+},
+"398": {
+"name": "Staraptor",
+"pron": "star-AP-tur",
+"ipa": "/stɑːɹˈæptɚ/"
+},
+"399": {
+"name": "Bidoof",
+"pron": "BEE-doof",
+"ipa": "/ˈbiːduːf/"
+},
+"400": {
+"name": "Bibarel",
+"pron": "BEE-behr-ull",
+"ipa": "/ˈbiːbɛɹəl/"
+},
+"401": {
+"name": "Kricketot",
+"pron": "KRIK-ih-tot",
+"ipa": "/ˈkɹɪkətɑːt/"
+},
+"402": {
+"name": "Kricketune",
+"pron": "KRIK-ih-toon",
+"ipa": "/ˈkɹɪkətuːn/"
+},
+"403": {
+"name": "Shinx",
+"pron": "SHINKS",
+"ipa": "/ˈʃiːŋks/"
+},
+"404": {
+"name": "Luxio",
+"pron": "LUKS-ee-oh",
+"ipa": "/ˈlʌksiːoʊ/"
+},
+"405": {
+"name": "Luxray",
+"pron": "LUKS-ray",
+"ipa": "/ˈlʌksɹeɪ/"
+},
+"406": {
+"name": "Budew",
+"pron": "buh-DOO",
+"ipa": "/bəˈduː/"
+},
+"407": {
+"name": "Roserade",
+"pron": "ROZE-rayd",
+"ipa": "/ˈɹoʊzɹeɪd/"
+},
+"408": {
+"name": "Cranidos",
+"pron": "KRANE-ee-dohs",
+"ipa": "/ˈkɹeɪniːdoʊs/"
+},
+"409": {
+"name": "Rampardos",
+"pron": "ram-PAR-dohs",
+"ipa": "/ræmˈpɑːɹdoʊs/"
+},
+"410": {
+"name": "Shieldon",
+"pron": "SHEEL-dahn",
+"ipa": "/ˈʃiːldɑːn/"
+},
+"411": {
+"name": "Bastiodon",
+"pron": "BAS-tee-oh-dahn",
+"ipa": "/ˈbæstiːoʊdɑːn/"
+},
+"412": {
+"name": "Burmy",
+"pron": "BUR-mee",
+"ipa": "/ˈbɝːmiː/"
+},
+"413": {
+"name": "Wormadam",
+"pron": "WUR-muh-dam",
+"ipa": "/ˈwɝːmədæm/"
+},
+"414": {
+"name": "Mothim",
+"pron": "MAH-thim",
+"ipa": "/ˈmɑːθɪm/"
+},
+"415": {
+"name": "Combee",
+"pron": "COHM-bee",
+"ipa": "/ˈkoʊmbiː/"
+},
+"416": {
+"name": "Vespiquen",
+"pron": "VES-pih-kwen",
+"ipa": "/ˈvɛspɪkwɛn/"
+},
+"417": {
+"name": "Pachirisu",
+"pron": "PAH-chee-REE-soo",
+"ipa": "/pɑːtʃiˈɹiːsuː/"
+},
+"418": {
+"name": "Buizel",
+"pron": "BWEE-zull",
+"ipa": "/ˈbwiːzəl/"
+},
+"419": {
+"name": "Floatzel",
+"pron": "FLOHT-sull",
+"ipa": "/ˈfloʊtsəl/"
+},
+"420": {
+"name": "Cherubi",
+"pron": "chur-OO-bee",
+"ipa": "/tʃɚˈuːbiː/"
+},
+"421": {
+"name": "Cherrim",
+"pron": "CHEHR-im",
+"ipa": "/ˈtʃɛɹɪm/"
+},
+"422": {
+"name": "Shellos",
+"pron": "SHELL-ahs",
+"ipa": "/ˈʃɛlɑːs/"
+},
+"423": {
+"name": "Gastrodon",
+"pron": "GAS-troh-dahn",
+"ipa": "/ˈɡæstɹoʊdɑːn/"
+},
+"424": {
+"name": "Ambipom",
+"pron": "AM-bih-pahm",
+"ipa": "/ˈæmbɪpɑːm/"
+},
+"425": {
+"name": "Drifloon",
+"pron": "DRIF-loon",
+"ipa": "/ˈdɹɪfluːn/"
+},
+"426": {
+"name": "Drifblim",
+"pron": "DRIF-blim",
+"ipa": "/ˈdɹɪfblɪm/"
+},
+"427": {
+"name": "Buneary",
+"pron": "buh-NEER-ee",
+"ipa": "/bəˈnɪɹiː/"
+},
+"428": {
+"name": "Lopunny",
+"pron": "LAH-puh-nee",
+"ipa": "/ˈlɑːpəniː/"
+},
+"429": {
+"name": "Mismagius",
+"pron": "mis-MAG-ee-us",
+"ipa": "/mɪsˈmæɡiːəs/"
+},
+"430": {
+"name": "Honchkrow",
+"pron": "HONCH-krow",
+"ipa": "/ˈhɑːntʃkɹoʊ/"
+},
+"431": {
+"name": "Glameow",
+"pron": "GLAM-ee-ow",
+"ipa": "/ˈɡlæmiːaʊ/"
+},
+"432": {
+"name": "Purugly",
+"pron": "purr-UG-lee",
+"ipa": "/pɚˈʌɡliː/"
+},
+"433": {
+"name": "Chingling",
+"pron": "CHING-ling",
+"ipa": "/ˈtʃɪŋlɪŋ/"
+},
+"434": {
+"name": "Stunky",
+"pron": "STUNK-ee",
+"ipa": "/ˈstʌŋkiː/"
+},
+"435": {
+"name": "Skuntank",
+"pron": "SKUN-tank",
+"ipa": "/ˈskʌntæŋk/"
+},
+"436": {
+"name": "Bronzor",
+"pron": "BRAHN-zor",
+"ipa": "/ˈbɹɑːnzɔːɹ/"
+},
+"437": {
+"name": "Bronzong",
+"pron": "BRAHN-zahng",
+"ipa": "/ˈbɹɑːnzɑːŋ/"
+},
+"438": {
+"name": "Bonsly",
+"pron": "BAHN-sly",
+"ipa": "/ˈbɑːnslaɪ/"
+},
+"439": {
+"name": "Mime Jr.",
+"pron": "mime-JOON-yur",
+"ipa": "/maɪmˈdʒuːnjɚ/"
+},
+"440": {
+"name": "Happiny",
+"pron": "huh-PEE-nee",
+"ipa": "/həˈpiːniː/"
+},
+"441": {
+"name": "Chatot",
+"pron": "CHA-tot",
+"ipa": "/ˈtʃætɑːt/"
+},
+"442": {
+"name": "Spiritomb",
+"pron": "SPEER-ih-toom",
+"ipa": "/ˈspɪɹətuːm/"
+},
+"443": {
+"name": "Gible",
+"pron": "GIBB-ull",
+"ipa": "/ˈɡɪbəl/"
+},
+"444": {
+"name": "Gabite",
+"pron": "guh-BITE",
+"ipa": "/ɡəˈbaɪt/"
+},
+"445": {
+"name": "Garchomp",
+"pron": "GAR-chomp",
+"ipa": "/ˈɡɑːɹtʃɑːmp/"
+},
+"446": {
+"name": "Munchlax",
+"pron": "MUNCH-laks",
+"ipa": "/ˈmʌntʃlæks/"
+},
+"447": {
+"name": "Riolu",
+"pron": "ree-OH-loo",
+"ipa": "/ɹiːˈoʊluː/"
+},
+"448": {
+"name": "Lucario",
+"pron": "loo-KAR-ee-oh",
+"ipa": "/luːˈkɑːɹiːoʊ/"
+},
+"449": {
+"name": "Hippopotas",
+"pron": "HIH-poh-puh-TAHS",
+"ipa": "/hɪpoʊpəˈtɑːs/"
+},
+"450": {
+"name": "Hippowdon",
+"pron": "hih-POW-dahn",
+"ipa": "/hɪˈpaʊdɑːn/"
+},
+"451": {
+"name": "Skorupi",
+"pron": "skor-OO-pee",
+"ipa": "/skɔːɹˈuːpiː/"
+},
+"452": {
+"name": "Drapion",
+"pron": "DRAP-ee-ahn",
+"ipa": "/ˈdɹæpiːɑːn/"
+},
+"453": {
+"name": "Croagunk",
+"pron": "KROH-gunk",
+"ipa": "/ˈkɹoʊɡʌŋk/"
+},
+"454": {
+"name": "Toxicroak",
+"pron": "TOKS-ih-crohk",
+"ipa": "/ˈtɑːksɪkɹoʊk/"
+},
+"455": {
+"name": "Carnivine",
+"pron": "KAR-nih-vine",
+"ipa": "/ˈkɑːɹnɪvaɪn/"
+},
+"456": {
+"name": "Finneon",
+"pron": "FIN-ee-ahn",
+"ipa": "/ˈfɪniːɑːn/"
+},
+"457": {
+"name": "Lumineon",
+"pron": "loo-MIN-ee-ahn",
+"ipa": "/luːˈmɪniːɑːn/"
+},
+"458": {
+"name": "Mantyke",
+"pron": "MAN-tyke",
+"ipa": "/ˈmæntɑɪk/"
+},
+"459": {
+"name": "Snover",
+"pron": "SNOH-vurr",
+"ipa": "/ˈsnoʊvɚ/"
+},
+"460": {
+"name": "Abomasnow",
+"pron": "uh-BAHM-uh-snoh",
+"ipa": "/əˈbɑːməsnoʊ/"
+},
+"461": {
+"name": "Weavile",
+"pron": "WEE-vile",
+"ipa": "/ˈwiːvaɪl/"
+},
+"462": {
+"name": "Magnezone",
+"pron": "MAG-nuh-zohn",
+"ipa": "/ˈmæɡnəzoʊn/"
+},
+"463": {
+"name": "Lickilicky",
+"pron": "LIK-ee-LIK-ee",
+"ipa": "/ˌlɪkiːˈlɪkiː/"
+},
+"464": {
+"name": "Rhyperior",
+"pron": "rye-PEER-ee-urr",
+"ipa": "/ˈɹɑːɪpɪɹiːɚ/"
+},
+"465": {
+"name": "Tangrowth",
+"pron": "TANG-grohth",
+"ipa": "/ˈtæŋɡroʊθ/"
+},
+"466": {
+"name": "Electivire",
+"pron": "ee-LEK-tih-vire",
+"ipa": "/ɪˈlɛktəvɑɪɹ/"
+},
+"467": {
+"name": "Magmortar",
+"pron": "mag-MOHR-turr",
+"ipa": "/mæɡˈmɔːɹtɚ/"
+},
+"468": {
+"name": "Togekiss",
+"pron": "TOH-guh-kiss",
+"ipa": "/ˈtoʊɡəkɪs/"
+},
+"469": {
+"name": "Yanmega",
+"pron": "yan-MEG-uh",
+"ipa": "/jænˈmɛɡə/"
+},
+"470": {
+"name": "Leafeon",
+"pron": "LEE-fee-ahn",
+"ipa": "/ˈliːfiːɑːn/"
+},
+"471": {
+"name": "Glaceon",
+"pron": "GLAY-see-ahn",
+"ipa": "/ˈɡleɪsiːɑːn/"
+},
+"472": {
+"name": "Gliscor",
+"pron": "GLYE-skor",
+"ipa": "/ˈɡlaɪskɔːɹ/"
+},
+"473": {
+"name": "Mamoswine",
+"pron": "MAM-oh-swine",
+"ipa": "/ˈmæmoʊswaɪn/"
+},
+"474": {
+"name": "Porygon-Z",
+"pron": "POR-ee-gahn-ZEE",
+"ipa": "/ˌpɔːɹiːɡɑːnˈziː/"
+},
+"475": {
+"name": "Gallade",
+"pron": "guh-LAID",
+"ipa": "/ɡəˈleɪd/"
+},
+"476": {
+"name": "Probopass",
+"pron": "PROH-boh-pass",
+"ipa": "/ˈpɹoʊboʊpæs/"
+},
+"477": {
+"name": "Dusknoir",
+"pron": "DUSK-nwar",
+"ipa": "/ˈdʌsknwɑːɹ/"
+},
+"478": {
+"name": "Froslass",
+"pron": "FRAHS-lass",
+"ipa": "/ˈfɹɑːslæs/"
+},
+"479": {
+"name": "Rotom",
+"pron": "ROH-tahm",
+"ipa": "/ˈɹoʊtɑːm/"
+},
+"480": {
+"name": "Uxie",
+"pron": "YOOK-see",
+"ipa": "/ˈjuːksiː/"
+},
+"481": {
+"name": "Mesprit",
+"pron": "MESS-prit",
+"ipa": "/ˈmɛspɹɪt/"
+},
+"482": {
+"name": "Azelf",
+"pron": "AZ-elf",
+"ipa": "/ˈæzɛlf/"
+},
+"483": {
+"name": "Dialga",
+"pron": "dee-AHL-guh",
+"ipa": "/diːˈɑːlɡə/"
+},
+"484": {
+"name": "Palkia",
+"pron": "PAHL-kee-uh",
+"ipa": "/ˈpɑːlkiːə/"
+},
+"485": {
+"name": "Heatran",
+"pron": "HEE-tran",
+"ipa": "/ˈhiːtɹæn/"
+},
+"486": {
+"name": "Regigigas",
+"pron": "REJ-ee-GEE-guss",
+"ipa": "/ˌɹɛdʒiːˈɡiːɡəs/"
+},
+"487": {
+"name": "Giratina",
+"pron": "GIRR-uh-TEE-nuh",
+"ipa": "/ˌɡɪɹəˈtiːnə/"
+},
+"488": {
+"name": "Cresselia",
+"pron": "kress-ELL-ee-uh",
+"ipa": "/kɹɛsˈɛliːə/"
+},
+"489": {
+"name": "Phione",
+"pron": "fee-OH-nay",
+"ipa": "/fiːˈoʊneɪ/"
+},
+"490": {
+"name": "Manaphy",
+"pron": "MAN-uh-fee",
+"ipa": "/ˈmænəfiː/"
+},
+"491": {
+"name": "Darkrai",
+"pron": "DARK-rye",
+"ipa": "/ˈdɑːɹkɹaɪ/"
+},
+"492": {
+"name": "Shaymin",
+"pron": "SHAY-min",
+"ipa": "/ˈʃeɪmɪn/"
+},
+"493": {
+"name": "Arceus",
+"pron": "AR-kee-iss",
+"ipa": "/ˈɑːɹkiːəs/"
+},
+"494": {
+"name": "Victini",
+"pron": "vik-TEE-nee",
+"ipa": "/vɪkˈtiːniː/"
+},
+"495": {
+"name": "Snivy",
+"pron": "SNYE-vee",
+"ipa": "/ˈsnaɪviː/"
+},
+"496": {
+"name": "Servine",
+"pron": "SUR-vine",
+"ipa": "/ˈsɝːvaɪn/"
+},
+"497": {
+"name": "Serperior",
+"pron": "sur-PEER-ee-ur",
+"ipa": "/sɚˈpɪɹiːɚ/"
+},
+"498": {
+"name": "Tepig",
+"pron": "TEH-pig",
+"ipa": "/ˈtɛpɪɡ/"
+},
+"499": {
+"name": "Pignite",
+"pron": "pig-NITE",
+"ipa": "/pɪɡˈnaɪt/"
+},
+"500": {
+"name": "Emboar",
+"pron": "EM-bohr",
+"ipa": "/ˈɛmbɔːɹ/"
+},
+"501": {
+"name": "Oshawott",
+"pron": "AH-shuh-waht",
+"ipa": "/ˈɑːʃəwɑːt/"
+},
+"502": {
+"name": "Dewott",
+"pron": "DOO-waht",
+"ipa": "/ˈduwɑːt/"
+},
+"503": {
+"name": "Samurott",
+"pron": "SAM-ur-aht",
+"ipa": "/ˈsæmɚɑːt/"
+},
+"504": {
+"name": "Patrat",
+"pron": "puh-TRAT",
+"ipa": "/pəˈtɹæt/"
+},
+"505": {
+"name": "Watchog",
+"pron": "WAH-chog",
+"ipa": "/ˈwɑːtʃɑːɡ/"
+},
+"506": {
+"name": "Lillipup",
+"pron": "LIL-ee-pup",
+"ipa": "/ˈlɪliːpʌp/"
+},
+"507": {
+"name": "Herdier",
+"pron": "HURD-ee-ur",
+"ipa": "/ˈhɝːdiːɚ/"
+},
+"508": {
+"name": "Stoutland",
+"pron": "STOWT-lind",
+"ipa": "/ˈstaʊtlənd/"
+},
+"509": {
+"name": "Purrloin",
+"pron": "PURR-loin",
+"ipa": "/ˈpɝːlɔɪn/"
+},
+"510": {
+"name": "Liepard",
+"pron": "LYE-purd",
+"ipa": "/ˈlaɪpɚd/"
+},
+"511": {
+"name": "Pansage",
+"pron": "PAN-sayj",
+"ipa": "/ˈpænseɪdʒ/"
+},
+"512": {
+"name": "Simisage",
+"pron": "SIH-mee-sayj",
+"ipa": "/ˈsɪmiːseɪdʒ/"
+},
+"513": {
+"name": "Pansear",
+"pron": "PAN-seer",
+"ipa": "/ˈpænsɪɹ/"
+},
+"514": {
+"name": "Simisear",
+"pron": "SIH-mee-seer",
+"ipa": "/ˈsɪmiːsɪɹ/"
+},
+"515": {
+"name": "Panpour",
+"pron": "PAN-pohr",
+"ipa": "/ˈpænpɔːɹ/"
+},
+"516": {
+"name": "Simipour",
+"pron": "SIH-mee-pohr",
+"ipa": "/ˈsɪmiːpɔːɹ/"
+},
+"517": {
+"name": "Munna",
+"pron": "MOO-nuh",
+"ipa": "/ˈmuːnə/"
+},
+"518": {
+"name": "Musharna",
+"pron": "moo-SHAR-nuh",
+"ipa": "/muːˈʃɑːɹnə/"
+},
+"519": {
+"name": "Pidove",
+"pron": "pee-DUV",
+"ipa": "/piːˈdʌv/"
+},
+"520": {
+"name": "Tranquill",
+"pron": "TRAN-kwil",
+"ipa": "/ˈtɹæŋkwɪl/"
+},
+"521": {
+"name": "Unfezant",
+"pron": "un-FEZ-ent",
+"ipa": "/ʌnˈfɛzənt/"
+},
+"522": {
+"name": "Blitzle",
+"pron": "BLIT-sul",
+"ipa": "/ˈblɪtsəl/"
+},
+"523": {
+"name": "Zebstrika",
+"pron": "zeb-STRYE-kuh",
+"ipa": "/zɛbˈstɹaɪkə/"
+},
+"524": {
+"name": "Roggenrola",
+"pron": "RAH-gen-ROH-luh",
+"ipa": "/ˌɹɑːɡənˈɹoʊlə/"
+},
+"525": {
+"name": "Boldore",
+"pron": "BOHL-dohr",
+"ipa": "/ˈboʊldɔːɹ/"
+},
+"526": {
+"name": "Gigalith",
+"pron": "GIH-guh-lith",
+"ipa": "/ˈɡɪɡəlɪθ/"
+},
+"527": {
+"name": "Woobat",
+"pron": "WOO-bat",
+"ipa": "/ˈwuːbæt/"
+},
+"528": {
+"name": "Swoobat",
+"pron": "SWOO-bat",
+"ipa": "/ˈswuːbæt/"
+},
+"529": {
+"name": "Drilbur",
+"pron": "DRIL-bur",
+"ipa": "/ˈdɹɪlbɚ/"
+},
+"530": {
+"name": "Excadrill",
+"pron": "EKS-kuh-drill",
+"ipa": "/ˈɛksədrɪl/"
+},
+"531": {
+"name": "Audino",
+"pron": "AH-din-oh",
+"ipa": "/ˈɑːdɪnoʊ/"
+},
+"532": {
+"name": "Timburr",
+"pron": "TIM-bur",
+"ipa": "/ˈtɪmbɚ/"
+},
+"533": {
+"name": "Gurdurr",
+"pron": "GUR-dur",
+"ipa": "/ˈɡɝːdɚ/"
+},
+"534": {
+"name": "Conkeldurr",
+"pron": "kong-KELL-dur",
+"ipa": "/kɑːŋˈkɛldɚ/"
+},
+"535": {
+"name": "Tympole",
+"pron": "TIM-pohl",
+"ipa": "/ˈtɪmpɔːl/"
+},
+"536": {
+"name": "Palpitoad",
+"pron": "PAL-pih-tohd",
+"ipa": "/ˈpælpətoʊd/"
+},
+"537": {
+"name": "Seismitoad",
+"pron": "SIZE-mih-tohd",
+"ipa": "/ˈsaɪzmətoʊd/"
+},
+"538": {
+"name": "Throh",
+"pron": "THROH",
+"ipa": "/ˈθɹoʊ/"
+},
+"539": {
+"name": "Sawk",
+"pron": "SAHK",
+"ipa": "/ˈsɑːk/"
+},
+"540": {
+"name": "Sewaddle",
+"pron": "seh-WAHD-ull",
+"ipa": "/səˈwɑːdəl/"
+},
+"541": {
+"name": "Swadloon",
+"pron": "swad-LOON",
+"ipa": "/swɑːdˈluːn/"
+},
+"542": {
+"name": "Leavanny",
+"pron": "lee-VAN-nee",
+"ipa": "/liːˈvæniː/"
+},
+"543": {
+"name": "Venipede",
+"pron": "VEHN-ih-peed",
+"ipa": "/ˈvɛnɪpiːd/"
+},
+"544": {
+"name": "Whirlipede",
+"pron": "WHIR-lih-peed",
+"ipa": "/ˈhwɝːlɪpiːd/"
+},
+"545": {
+"name": "Scolipede",
+"pron": "SKOH-lih-peed",
+"ipa": "/ˈskoʊlɪpiːd/"
+},
+"546": {
+"name": "Cottonee",
+"pron": "KAH-tuh-nee",
+"ipa": "/ˈkɑːʔəniː/"
+},
+"547": {
+"name": "Whimsicott",
+"pron": "WHIM-sih-kaht",
+"ipa": "/ˈhwɪmsɪkɑːt/"
+},
+"548": {
+"name": "Petilil",
+"pron": "PEH-tuh-lil",
+"ipa": "/ˈpɛɾəlɪl/"
+},
+"549": {
+"name": "Lilligant",
+"pron": "LIL-luh-gint",
+"ipa": "/ˈlɪləɡənt/"
+},
+"550": {
+"name": "Basculin",
+"pron": "BASS-kyoo-lin",
+"ipa": "/ˈbæskjuːlɪn/"
+},
+"551": {
+"name": "Sandile",
+"pron": "SAN-dyle",
+"ipa": "/ˈsændaɪl/"
+},
+"552": {
+"name": "Krokorok",
+"pron": "KRAHK-oh-rahk",
+"ipa": "/ˈkɹɑːkoʊɹɑːk/"
+},
+"553": {
+"name": "Krookodile",
+"pron": "KROOK-oh-dyle",
+"ipa": "/ˈkɹʊkoʊdaɪl/"
+},
+"554": {
+"name": "Darumaka",
+"pron": "DAH-roo-MAH-kuh",
+"ipa": "/dɑːɹuːˈmɑːkə/"
+},
+"555": {
+"name": "Darmanitan",
+"pron": "dar-MAN-ih-tan",
+"ipa": "/dɑːɹˈmænɪtæn/"
+},
+"556": {
+"name": "Maractus",
+"pron": "mah-RAK-tis",
+"ipa": "/məˈɹæktəs/"
+},
+"557": {
+"name": "Dwebble",
+"pron": "DWEH-bul",
+"ipa": "/ˈdwɛbəl/"
+},
+"558": {
+"name": "Crustle",
+"pron": "KRUS-tul",
+"ipa": "/ˈkɹʌstəl/"
+},
+"559": {
+"name": "Scraggy",
+"pron": "SKRAG-ee",
+"ipa": "/ˈskɹæɡiː/"
+},
+"560": {
+"name": "Scrafty",
+"pron": "SKRAF-tee",
+"ipa": "/ˈskɹæftiː/"
+},
+"561": {
+"name": "Sigilyph",
+"pron": "SIH-jih-liff",
+"ipa": "/ˈsɪdʒəlɪf/"
+},
+"562": {
+"name": "Yamask",
+"pron": "YAH-mask",
+"ipa": "/ˈjɑːmæsk/"
+},
+"563": {
+"name": "Cofagrigus",
+"pron": "KAHF-uh-GREE-gis",
+"ipa": "/ˌkɑːfəˈɡɹiːɡəs/"
+},
+"564": {
+"name": "Tirtouga",
+"pron": "tirr-TOO-guh",
+"ipa": "/tɪɹˈtuːɡə/"
+},
+"565": {
+"name": "Carracosta",
+"pron": "KAR-ruh-KAHS-tuh",
+"ipa": "/ˌkɑːɹəˈkɑːstə/"
+},
+"566": {
+"name": "Archen",
+"pron": "AR-ken",
+"ipa": "/ˈɑːɹkən/"
+},
+"567": {
+"name": "Archeops",
+"pron": "AR-kee-ahps",
+"ipa": "/ˈɑːɹkiːɑːps/"
+},
+"568": {
+"name": "Trubbish",
+"pron": "TRUB-ish",
+"ipa": "/ˈtɹʌbɪʃ/"
+},
+"569": {
+"name": "Garbodor",
+"pron": "gar-BOH-dur",
+"ipa": "/ɡɑːɹˈboʊdɚ/"
+},
+"570": {
+"name": "Zorua",
+"pron": "ZOHR-oo-uh",
+"ipa": "/ˈzɔːɹuːə/"
+},
+"571": {
+"name": "Zoroark",
+"pron": "ZOHR-oh-ark",
+"ipa": "/ˈzɔːɹoʊɑːɹk/"
+},
+"572": {
+"name": "Minccino",
+"pron": "min-CHEE-noh",
+"ipa": "/mɪnˈtʃiːnoʊ/"
+},
+"573": {
+"name": "Cinccino",
+"pron": "chin-CHEE-noh",
+"ipa": "/tʃɪnˈtʃiːnoʊ/"
+},
+"574": {
+"name": "Gothita",
+"pron": "goth-EE-tuh",
+"ipa": "/ɡɑːθˈiːɾə/"
+},
+"575": {
+"name": "Gothorita",
+"pron": "GOTH-oh-REE-tuh",
+"ipa": "/ˌɡɑːθɔːɹˈiːɾə/"
+},
+"576": {
+"name": "Gothitelle",
+"pron": "GOTH-ih-tell",
+"ipa": "/ˈɡɑːθɪtɛl/"
+},
+"577": {
+"name": "Solosis",
+"pron": "soh-LOH-sis",
+"ipa": "/soʊˈloʊsɪs/"
+},
+"578": {
+"name": "Duosion",
+"pron": "doo-OH-zhun",
+"ipa": "/duːˈoʊʒən/"
+},
+"579": {
+"name": "Reuniclus",
+"pron": "REE-yoo-NEE-klis",
+"ipa": "/ˌɹiːjuːˈniːkləs/"
+},
+"580": {
+"name": "Ducklett",
+"pron": "DUK-lit",
+"ipa": "/ˈdʌklət/"
+},
+"581": {
+"name": "Swanna",
+"pron": "SWAH-nuh",
+"ipa": "/ˈswɑːnə/"
+},
+"582": {
+"name": "Vanillite",
+"pron": "vuh-NIHL-ite",
+"ipa": "/vəˈnɪlaɪt/"
+},
+"583": {
+"name": "Vanillish",
+"pron": "vuh-NIHL-ish",
+"ipa": "/vəˈnɪlɪʃ/"
+},
+"584": {
+"name": "Vanilluxe",
+"pron": "vuh-NIHL-uks",
+"ipa": "/vəˈnɪlʌks/"
+},
+"585": {
+"name": "Deerling",
+"pron": "DEER-ling",
+"ipa": "/ˈdɪɹlɪŋ/"
+},
+"586": {
+"name": "Sawsbuck",
+"pron": "SAWZ-buck",
+"ipa": "/ˈsɑːzbʌk/"
+},
+"587": {
+"name": "Emolga",
+"pron": "ee-MOHL-guh",
+"ipa": "/əˈmɔːlɡə/"
+},
+"588": {
+"name": "Karrablast",
+"pron": "KAHR-uh-blast",
+"ipa": "/ˈkɑːɹəblæst/"
+},
+"589": {
+"name": "Escavalier",
+"pron": "ES-kav-uh-LEER",
+"ipa": "/ˌɛskævəˈlɪɹ/"
+},
+"590": {
+"name": "Foongus",
+"pron": "FOON-gus",
+"ipa": "/ˈfuːŋɡəs/"
+},
+"591": {
+"name": "Amoonguss",
+"pron": "uh-MOON-gus",
+"ipa": "/əˈmuːŋɡəs/"
+},
+"592": {
+"name": "Frillish",
+"pron": "FRILL-ish",
+"ipa": "/ˈfɹɪlɪʃ/"
+},
+"593": {
+"name": "Jellicent",
+"pron": "JELL-ih-sent",
+"ipa": "/ˈdʒɛlɪsənt/"
+},
+"594": {
+"name": "Alomomola",
+"pron": "uh-LOH-muh-MOH-luh",
+"ipa": "/əˌloʊməˈmoʊlə/"
+},
+"595": {
+"name": "Joltik",
+"pron": "JOHL-tik",
+"ipa": "/ˈdʒɔːltɪk/"
+},
+"596": {
+"name": "Galvantula",
+"pron": "gal-VAN-choo-luh",
+"ipa": "/ɡælˈvæntʃuːlə/"
+},
+"597": {
+"name": "Ferroseed",
+"pron": "fer-AH-seed",
+"ipa": "/fɚˈɑːsiːd/"
+},
+"598": {
+"name": "Ferrothorn",
+"pron": "fer-AH-thorn",
+"ipa": "/fɚˈɑːθɔːɹn/"
+},
+"599": {
+"name": "Klink",
+"pron": "KLINK",
+"ipa": "/ˈklɪŋk/"
+},
+"600": {
+"name": "Klang",
+"pron": "KLANG",
+"ipa": "/ˈklæŋ/"
+},
+"601": {
+"name": "Klinklang",
+"pron": "KLING-klang",
+"ipa": "/ˈklɪŋklæŋ/"
+},
+"602": {
+"name": "Tynamo",
+"pron": "TYE-nuh-moh",
+"ipa": "/ˈtaɪnəmoʊ/"
+},
+"603": {
+"name": "Eelektrik",
+"pron": "EE-lek-trik",
+"ipa": "/ˈiːlɛktɹɪk/"
+},
+"604": {
+"name": "Eelektross",
+"pron": "EE-lek-trahs",
+"ipa": "/ˈiːlɛktɹaːs/"
+},
+"605": {
+"name": "Elgyem",
+"pron": "ELL-jee-yem",
+"ipa": "/ˈɛldʒiːjɛm/"
+},
+"606": {
+"name": "Beheeyem",
+"pron": "BEE-hee-yem",
+"ipa": "/ˈbiːhiːjɛm/"
+},
+"607": {
+"name": "Litwick",
+"pron": "LIT-wick",
+"ipa": "/ˈlɪtwɪk/"
+},
+"608": {
+"name": "Lampent",
+"pron": "LAM-pent",
+"ipa": "/ˈlæmpɛnt/"
+},
+"609": {
+"name": "Chandelure",
+"pron": "shan-duh-LOOR",
+"ipa": "/ʃændəˈlʊəɹ/"
+},
+"610": {
+"name": "Axew",
+"pron": "AKS-yoo",
+"ipa": "/ˈæksjuː/"
+},
+"611": {
+"name": "Fraxure",
+"pron": "FRAK-shur",
+"ipa": "/ˈfɹækʃɚ/"
+},
+"612": {
+"name": "Haxorus",
+"pron": "HAKS-or-is",
+"ipa": "/ˈhæksɔːɹəs/"
+},
+"613": {
+"name": "Cubchoo",
+"pron": "KUB-choo",
+"ipa": "/ˈkʌbtʃuː/"
+},
+"614": {
+"name": "Beartic",
+"pron": "BEHR-tick",
+"ipa": "/ˈbɛɹtɪk/"
+},
+"615": {
+"name": "Cryogonal",
+"pron": "krye-AH-guh-nul",
+"ipa": "/kɹaɪˈɑːɡənəl/"
+},
+"616": {
+"name": "Shelmet",
+"pron": "SHEL-mit",
+"ipa": "/ˈʃɛlmət/"
+},
+"617": {
+"name": "Accelgor",
+"pron": "ak-SEL-gohr",
+"ipa": "/ækˈsɛlɡɔːɹ/"
+},
+"618": {
+"name": "Stunfisk",
+"pron": "STUN-fisk",
+"ipa": "/ˈstʌnfɪsk/"
+},
+"619": {
+"name": "Mienfoo",
+"pron": "MEEN-foo",
+"ipa": "/ˈmiːnfuː/"
+},
+"620": {
+"name": "Mienshao",
+"pron": "MEEN-shou",
+"ipa": "/ˈmiːnʃaʊ/"
+},
+"621": {
+"name": "Druddigon",
+"pron": "DRUD-ih-gin",
+"ipa": "/ˈdɹʌdɪɡən/"
+},
+"622": {
+"name": "Golett",
+"pron": "GOH-let",
+"ipa": "/ˈɡɔːlɛt/"
+},
+"623": {
+"name": "Golurk",
+"pron": "GOH-lurk",
+"ipa": "/ˈɡɔːlɚk/"
+},
+"624": {
+"name": "Pawniard",
+"pron": "PAHN-yard",
+"ipa": "/ˈpɑːnjɑːɹd/"
+},
+"625": {
+"name": "Bisharp",
+"pron": "BIH-sharp",
+"ipa": "/ˈbɪʃɑːɹp/"
+},
+"626": {
+"name": "Bouffalant",
+"pron": "BOO-fuh-lahnt",
+"ipa": "/ˈbuːfəlɑːnt/"
+},
+"627": {
+"name": "Rufflet",
+"pron": "RUFF-lit",
+"ipa": "/ˈɹʌflət/"
+},
+"628": {
+"name": "Braviary",
+"pron": "BRAY-vee-ehr-ee",
+"ipa": "/ˈbɹeɪviːɛɹiː/"
+},
+"629": {
+"name": "Vullaby",
+"pron": "VULL-uh-bye",
+"ipa": "/ˈvʌləbaɪ/"
+},
+"630": {
+"name": "Mandibuzz",
+"pron": "MAN-dih-buzz",
+"ipa": "/ˈmændɪbʌz/"
+},
+"631": {
+"name": "Heatmor",
+"pron": "HEET-mohr",
+"ipa": "/ˈhiːʔmɔːɹ/"
+},
+"632": {
+"name": "Durant",
+"pron": "durr-ANT",
+"ipa": "/dɚˈænt/"
+},
+"633": {
+"name": "Deino",
+"pron": "DYE-noh",
+"ipa": "/ˈdaɪnoʊ/"
+},
+"634": {
+"name": "Zweilous",
+"pron": "ZVYE-lis",
+"ipa": "/ˈzvaɪləs/"
+},
+"635": {
+"name": "Hydreigon",
+"pron": "hy-DRYE-gin",
+"ipa": "/̩haɪˈdraɪɡən/"
+},
+"636": {
+"name": "Larvesta",
+"pron": "lar-VES-tuh",
+"ipa": "/lɑːɹˈvɛstə/"
+},
+"637": {
+"name": "Volcarona",
+"pron": "vahl-kuh-ROH-nuh",
+"ipa": "/ˌvɑːlkəˈɹoʊnə/"
+},
+"638": {
+"name": "Cobalion",
+"pron": "koh-BAY-lee-un",
+"ipa": "/koʊˈbeɪliːən/"
+},
+"639": {
+"name": "Terrakion",
+"pron": "tur-AK-ee-in",
+"ipa": "/tɚˈækiːən/"
+},
+"640": {
+"name": "Virizion",
+"pron": "ver-EYE-zee-in",
+"ipa": "/vɚˈaɪziːən/"
+},
+"641": {
+"name": "Tornadus",
+"pron": "tohr-NAY-dis",
+"ipa": "/tɔːɹˈneɪdəs/"
+},
+"642": {
+"name": "Thundurus",
+"pron": "THUN-dur-is",
+"ipa": "/ˈθʌndɚəs/"
+},
+"643": {
+"name": "Reshiram",
+"pron": "RESH-ih-ram",
+"ipa": "/ˈɹɛʃəɹæm/"
+},
+"644": {
+"name": "Zekrom",
+"pron": "ZEK-rahm",
+"ipa": "/ˈzɛkɹɑːm/"
+},
+"645": {
+"name": "Landorus",
+"pron": "LAN-dur-is",
+"ipa": "/ˈlændɚəs/"
+},
+"646": {
+"name": "Kyurem",
+"pron": "KYOO-rem",
+"ipa": "/ˈkjuːɹɛm/"
+},
+"647": {
+"name": "Keldeo",
+"pron": "KEL-dee-oh",
+"ipa": "/ˈkɛldiːoʊ/"
+},
+"648": {
+"name": "Meloetta",
+"pron": "MEH-loh-ET-uh",
+"ipa": "/ˌmɛloʊˈɛɾə/"
+},
+"649": {
+"name": "Genesect",
+"pron": "JEN-uh-sekt",
+"ipa": "/ˈdʒɛnəsɛkt/"
+},
+"650": {
+"name": "Chespin",
+"pron": "CHESS-pin",
+"ipa": "/ˈtʃɛspɪn/"
+},
+"651": {
+"name": "Quilladin",
+"pron": "QUILL-uh-din",
+"ipa": "/ˈkwɪlədɪn/"
+},
+"652": {
+"name": "Chesnaught",
+"pron": "CHESS-naht",
+"ipa": "/ˈtʃɛsnɑːt/"
+},
+"653": {
+"name": "Fennekin",
+"pron": "FEN-uh-kin",
+"ipa": "/ˈfɛnəkɪn/"
+},
+"654": {
+"name": "Braixen",
+"pron": "BRAYK-sin",
+"ipa": "/ˈbɹeɪksɪn/"
+},
+"655": {
+"name": "Delphox",
+"pron": "DELL-fahks",
+"ipa": "/ˈdɛlfɑːks/"
+},
+"656": {
+"name": "Froakie",
+"pron": "FROH-kee",
+"ipa": "/ˈfɹoʊkiː/"
+},
+"657": {
+"name": "Frogadier",
+"pron": "frog-uh-DEER",
+"ipa": "/fɹɑːɡəˈdɪɹ/"
+},
+"658": {
+"name": "Greninja",
+"pron": "gruh-NIN-juh",
+"ipa": "/ɡɹəˈnɪndʒə/"
+},
+"659": {
+"name": "Bunnelby",
+"pron": "BUNN-uhl-bee",
+"ipa": "/ˈbʌnəlbiː/"
+},
+"660": {
+"name": "Diggersby",
+"pron": "DIG-erz-bee",
+"ipa": "/ˈdɪɡɚzbiː/"
+},
+"661": {
+"name": "Fletchling",
+"pron": "FLETCH-ling",
+"ipa": "/ˈflɛtʃlɪŋ/"
+},
+"662": {
+"name": "Fletchinder",
+"pron": "FLETCH-in-dur",
+"ipa": "/ˈflɛtʃɪndɚ/"
+},
+"663": {
+"name": "Talonflame",
+"pron": "TAL-in-flame",
+"ipa": "/ˈtælənfleɪm/"
+},
+"664": {
+"name": "Scatterbug",
+"pron": "SKAT-ur-bug",
+"ipa": "/ˈskætɚbʌɡ/"
+},
+"665": {
+"name": "Spewpa",
+"pron": "SPYOO-puh",
+"ipa": "/ˈspjuːpə/"
+},
+"666": {
+"name": "Vivillon",
+"pron": "VIH-vee-yahn",
+"ipa": "/ˈvɪviːjɑːn/"
+},
+"667": {
+"name": "Litleo",
+"pron": "LIT-lee-oh",
+"ipa": "/ˈlɪtliːoʊ/"
+},
+"668": {
+"name": "Pyroar",
+"pron": "PYE-rohr",
+"ipa": "/ˈpaɪɹɔːɹ/"
+},
+"669": {
+"name": "Flabébé",
+"pron": "fluh-BAY-bay",
+"ipa": "/fləˈbeɪbeɪ/"
+},
+"670": {
+"name": "Floette",
+"pron": "floh-ETT",
+"ipa": "/floʊˈɛt/"
+},
+"671": {
+"name": "Florges",
+"pron": "FLOHR-jiss",
+"ipa": "/ˈflɔːɹdʒɪs/"
+},
+"672": {
+"name": "Skiddo",
+"pron": "skih-DOO",
+"ipa": "/skɪˈduː/"
+},
+"673": {
+"name": "Gogoat",
+"pron": "GOH-goht",
+"ipa": "/ˈɡoʊɡoʊt/"
+},
+"674": {
+"name": "Pancham",
+"pron": "PAN-chum",
+"ipa": "/ˈpæntʃəm/"
+},
+"675": {
+"name": "Pangoro",
+"pron": "PANG-gur-oh",
+"ipa": "/ˈpæŋɡɚoʊ/"
+},
+"676": {
+"name": "Furfrou",
+"pron": "FUR-froo",
+"ipa": "/ˈfɝːfɹuː/"
+},
+"677": {
+"name": "Espurr",
+"pron": "ESS-purr",
+"ipa": "/ˈɛspɚ/"
+},
+"678": {
+"name": "Meowstic",
+"pron": "mee-OW-stik",
+"ipa": "/miˈaʊstɪk/"
+},
+"679": {
+"name": "Honedge",
+"pron": "HOHN-ej",
+"ipa": "/ˈhoʊnɛdʒ/"
+},
+"680": {
+"name": "Doublade",
+"pron": "DUH-blade",
+"ipa": "/ˈdʌbleɪd/"
+},
+"681": {
+"name": "Aegislash",
+"pron": "EE-jih-slash",
+"ipa": "/ˈiːdʒɪslæʃ/"
+},
+"682": {
+"name": "Spritzee",
+"pron": "SPRIT-see",
+"ipa": "/ˈspɹɪtsiː/"
+},
+"683": {
+"name": "Aromatisse",
+"pron": "uh-ROHM-uh-TEES",
+"ipa": "/əɹoʊməˈtiːs/"
+},
+"684": {
+"name": "Swirlix",
+"pron": "SWUR-liks",
+"ipa": "/ˈswɝːlɪks/"
+},
+"685": {
+"name": "Slurpuff",
+"pron": "SLUR-puff",
+"ipa": "/ˈslɝːpʌf/"
+},
+"686": {
+"name": "Inkay",
+"pron": "INK-ay",
+"ipa": "/ˈɪŋkeɪ/"
+},
+"687": {
+"name": "Malamar",
+"pron": "MAL-uh-mar",
+"ipa": "/ˈmæləmɑːɹ/"
+},
+"688": {
+"name": "Binacle",
+"pron": "BYE-nuh-kull",
+"ipa": "/ˈbaɪnəkəl/"
+},
+"689": {
+"name": "Barbaracle",
+"pron": "bar-BEHR-uh-kull",
+"ipa": "/bɑːɹˈbɛɹəkəl/"
+},
+"690": {
+"name": "Skrelp",
+"pron": "SKRELP",
+"ipa": "/ˈskɹɛlp/"
+},
+"691": {
+"name": "Dragalge",
+"pron": "druh-GAL-jee",
+"ipa": "/dɹəˈɡældʒiː/"
+},
+"692": {
+"name": "Clauncher",
+"pron": "KLAHN-chur",
+"ipa": "/ˈklɑːntʃɚ/"
+},
+"693": {
+"name": "Clawitzer",
+"pron": "KLAH-wit-sur",
+"ipa": "/ˈklɑːwɪtsɚ/"
+},
+"694": {
+"name": "Helioptile",
+"pron": "HEE-lee-AHP-tile",
+"ipa": "/hiːliːˈɑːptaɪl/"
+},
+"695": {
+"name": "Heliolisk",
+"pron": "HEE-lee-oh-lisk",
+"ipa": "/ˈhiːliːoʊlɪsk/"
+},
+"696": {
+"name": "Tyrunt",
+"pron": "TYE-runt",
+"ipa": "/ˈtaɪɹʌnt/"
+},
+"697": {
+"name": "Tyrantrum",
+"pron": "tye-RAN-trum",
+"ipa": "/taɪˈɹæntɹʌm/"
+},
+"698": {
+"name": "Amaura",
+"pron": "uh-MOHR-uh",
+"ipa": "/əˈmɔːɹə/"
+},
+"699": {
+"name": "Aurorus",
+"pron": "uh-ROHR-is",
+"ipa": "/əˈɹɔːɹəs/"
+},
+"700": {
+"name": "Sylveon",
+"pron": "SILL-vee-ahn",
+"ipa": "/ˈsɪlviːɑːn/"
+},
+"701": {
+"name": "Hawlucha",
+"pron": "haw-LOO-chuh",
+"ipa": "/hɑːˈluːtʃə/"
+},
+"702": {
+"name": "Dedenne",
+"pron": "deh-DEN-ay",
+"ipa": "/dəˈdɛneɪ/"
+},
+"703": {
+"name": "Carbink",
+"pron": "KAR-bink",
+"ipa": "/ˈkɑːɹbɪŋk/"
+},
+"704": {
+"name": "Goomy",
+"pron": "GOO-mee",
+"ipa": "/ˈɡuːmiː/"
+},
+"705": {
+"name": "Sliggoo",
+"pron": "SLIH-goo",
+"ipa": "/ˈslɪɡuː/"
+},
+"706": {
+"name": "Goodra",
+"pron": "GOO-druh",
+"ipa": "/ˈɡuːdɹə/"
+},
+"707": {
+"name": "Klefki",
+"pron": "KLEF-kee",
+"ipa": "/ˈklɛfkiː/"
+},
+"708": {
+"name": "Phantump",
+"pron": "FAN-tump",
+"ipa": "/ˈfæntʌmp/"
+},
+"709": {
+"name": "Trevenant",
+"pron": "TREV-uh-nint",
+"ipa": "/ˈtɹɛvənɪnt/"
+},
+"710": {
+"name": "Pumpkaboo",
+"pron": "PUMP-kuh-boo",
+"ipa": "/ˈpʌmpkəbuː/"
+},
+"711": {
+"name": "Gourgeist",
+"pron": "GOHR-geist",
+"ipa": "/ˈɡɔːɹɡaɪst/"
+},
+"712": {
+"name": "Bergmite",
+"pron": "BURG-mite",
+"ipa": "/ˈbɝːɡmaɪt/"
+},
+"713": {
+"name": "Avalugg",
+"pron": "AV-uh-lug",
+"ipa": "/ˈævəlʌɡ/"
+},
+"714": {
+"name": "Noibat",
+"pron": "NOY-bat",
+"ipa": "/ˈnɔɪbæt/"
+},
+"715": {
+"name": "Noivern",
+"pron": "NOY-vurn",
+"ipa": "/ˈnɔɪvɚn/"
+},
+"716": {
+"name": "Xerneas",
+"pron": "ZURR-nee-us",
+"ipa": "/ˈzɝːniːəs/"
+},
+"717": {
+"name": "Yveltal",
+"pron": "ee-VELL-tall",
+"ipa": "/iːˈvɛltɑːl/"
+},
+"718": {
+"name": "Zygarde",
+"pron": "ZYE-gard",
+"ipa": "/ˈzaɪɡɑːɹd/"
+},
+"719": {
+"name": "Diancie",
+"pron": "dye-AHN-see",
+"ipa": "/daɪˈɑːnsiː/"
+},
+"720": {
+"name": "Hoopa",
+"pron": "HOO-puh",
+"ipa": "/ˈhuːpə/"
+},
+"721": {
+"name": "Volcanion",
+"pron": "vahl-KAYN-ee-un",
+"ipa": "/vɑːlˈkaɪniːən/"
+},
+"722": {
+"name": "Rowlet",
+"pron": "ROW-let",
+"ipa": "/ˈɹaʊlət/"
+},
+"723": {
+"name": "Dartrix",
+"pron": "DAR-triks",
+"ipa": "/ˈdɑːɹtrɪks/"
+},
+"724": {
+"name": "Decidueye",
+"pron": "dih-SIJ-yoo-eye",
+"ipa": "/dɪˈsɪdʒjuːaɪ/"
+},
+"725": {
+"name": "Litten",
+"pron": "LIT-in",
+"ipa": "/ˈlɪɾən/"
+},
+"726": {
+"name": "Torracat",
+"pron": "TOHR-uh-kat",
+"ipa": "/ˈtɔːɹəkæt/"
+},
+"727": {
+"name": "Incineroar",
+"pron": "in-SIN-uh-rohr",
+"ipa": "/ɪnˈsɪnəɹɔːɹ/"
+},
+"728": {
+"name": "Popplio",
+"pron": "PAHP-lee-oh",
+"ipa": "/ˈpɑːpliːoʊ/"
+},
+"729": {
+"name": "Brionne",
+"pron": "bree-AHN",
+"ipa": "/bɹiːˈɑːn/"
+},
+"730": {
+"name": "Primarina",
+"pron": "PREE-muh-REE-nuh",
+"ipa": "/ˌpɹiːməˈɹinə/"
+},
+"731": {
+"name": "Pikipek",
+"pron": "PIK-ee-pek",
+"ipa": "/ˈpɪkiːpɛk/"
+},
+"732": {
+"name": "Trumbeak",
+"pron": "TRUM-beek",
+"ipa": "/ˈtɹʌmːbiːk/"
+},
+"733": {
+"name": "Toucannon",
+"pron": "too-KAN-in",
+"ipa": "/tuːˈkænən/"
+},
+"734": {
+"name": "Yungoos",
+"pron": "YUNG-goos",
+"ipa": "/ˈjʌŋɡuːs/"
+},
+"735": {
+"name": "Gumshoos",
+"pron": "GUM-shooz",
+"ipa": "/ˈɡʌmʃuːz/"
+},
+"736": {
+"name": "Grubbin",
+"pron": "GRUB-in",
+"ipa": "/ˈɡɹʌbɪn/"
+},
+"737": {
+"name": "Charjabug",
+"pron": "CHAR-juh-bug",
+"ipa": "/ˈtʃɑːɹdʒəbʌɡ/"
+},
+"738": {
+"name": "Vikavolt",
+"pron": "VYE-kuh-volt",
+"ipa": "/ˈvaɪːkəvɔːlt/"
+},
+"739": {
+"name": "Crabrawler",
+"pron": "krab-RAH-lur",
+"ipa": "/kɹæbˈɹɑːlɚ/"
+},
+"740": {
+"name": "Crabominable",
+"pron": "krab-AHM-in-uh-bull",
+"ipa": "/kræbˈɑːmɪnəbəl/"
+},
+"741": {
+"name": "Oricorio",
+"pron": "ohr-ih-KOHR-ee-oh",
+"ipa": "/ˌɔːɹɪˈkɔːɹiːoʊ/"
+},
+"742": {
+"name": "Cutiefly",
+"pron": "KYOO-tee-fly",
+"ipa": "/ˈkjutiːflaɪ/"
+},
+"743": {
+"name": "Ribombee",
+"pron": "rih-BAHM-bee",
+"ipa": "/ɹəˈbɑːmbiː/"
+},
+"744": {
+"name": "Rockruff",
+"pron": "RAHK-ruff",
+"ipa": "/ˈɹɑːkɹʌf/"
+},
+"745": {
+"name": "Lycanroc",
+"pron": "LYE-kin-rahk",
+"ipa": "/ˈlaɪkənɹɑːk/"
+},
+"746": {
+"name": "Wishiwashi",
+"pron": "WISH-ee-wash-ee",
+"ipa": "/ˈwɪʃiːˌwɑːʃi/"
+},
+"747": {
+"name": "Mareanie",
+"pron": "muh-REE-nee",
+"ipa": "/məˈɹiːniː/"
+},
+"748": {
+"name": "Toxapex",
+"pron": "TAHKS-uh-peks",
+"ipa": "/ˈtɑːksəpɛks/"
+},
+"749": {
+"name": "Mudbray",
+"pron": "MUD-bray",
+"ipa": "/ˈmʌdbɹeɪ/"
+},
+"750": {
+"name": "Mudsdale",
+"pron": "MUDZ-dale",
+"ipa": "/ˈmʌdzdeɪl/"
+},
+"751": {
+"name": "Dewpider",
+"pron": "DOO-pih-durr",
+"ipa": "/ˈduːpədɚ/"
+},
+"752": {
+"name": "Araquanid",
+"pron": "uh-RA-kwuh-nid",
+"ipa": "/əˈɹæːkwənɪd/"
+},
+"753": {
+"name": "Fomantis",
+"pron": "foh-MAN-tiss",
+"ipa": "/foʊˈmæntɪs/"
+},
+"754": {
+"name": "Lurantis",
+"pron": "lur-AN-tiss",
+"ipa": "/lɚˈæntɪs/"
+},
+"755": {
+"name": "Morelull",
+"pron": "MOHR-uh-lull",
+"ipa": "/ˈmɔːɹəlʊl/"
+},
+"756": {
+"name": "Shiinotic",
+"pron": "shee-NAH-tik",
+"ipa": "/ʃiːˈnɑːtɪk/"
+},
+"757": {
+"name": "Salandit",
+"pron": "suh-LAN-dit",
+"ipa": "/səˈlændɪt/"
+},
+"758": {
+"name": "Salazzle",
+"pron": "suh-LAZ-ull",
+"ipa": "/səˈlæzəl/"
+},
+"759": {
+"name": "Stufful",
+"pron": "STUH-full",
+"ipa": "/ˈstʌfəl/"
+},
+"760": {
+"name": "Bewear",
+"pron": "buh-WEHR",
+"ipa": "/bəˈwɛɹ/"
+},
+"761": {
+"name": "Bounsweet",
+"pron": "BOWN-sweet",
+"ipa": "/ˈbaʊnswiːt/"
+},
+"762": {
+"name": "Steenee",
+"pron": "STEE-nee",
+"ipa": "/ˈstiːniː/"
+},
+"763": {
+"name": "Tsareena",
+"pron": "zah-REE-nuh",
+"ipa": "/zɑːˈɹiːnə/"
+},
+"764": {
+"name": "Comfey",
+"pron": "KUM-fay",
+"ipa": "/ˈkʌmfeɪ/"
+},
+"765": {
+"name": "Oranguru",
+"pron": "uh-RANG-guh-roo",
+"ipa": "/əˈɹæŋɡəɹuː/"
+},
+"766": {
+"name": "Passimian",
+"pron": "pass-SIM-ee-un",
+"ipa": "/ˌpæˈsɪmiːən/"
+},
+"767": {
+"name": "Wimpod",
+"pron": "WIM-pahd",
+"ipa": "/ˈwɪmpɑːd/"
+},
+"768": {
+"name": "Golisopod",
+"pron": "guh-LYE-soh-pahd",
+"ipa": "/gəˈlaɪsoʊpɑːd/"
+},
+"769": {
+"name": "Sandygast",
+"pron": "SAND-ee-gast",
+"ipa": "/ˈsændiːɡæst/"
+},
+"770": {
+"name": "Palossand",
+"pron": "PAL-uh-sand",
+"ipa": "/ˈpæləsænd/"
+},
+"771": {
+"name": "Pyukumuku",
+"pron": "PYOO-koo-MOO-koo",
+"ipa": "/ˌpjuːkuːˈmuːkuː/"
+},
+"772": {
+"name": "Type: Null",
+"pron": "type-NULL",
+"ipa": "/ˌtaɪpˈnʊl/"
+},
+"773": {
+"name": "Silvally",
+"pron": "sill-VAL-eye",
+"ipa": "/sɪlˈvælaɪː/"
+},
+"774": {
+"name": "Minior",
+"pron": "MIN-ee-ohr",
+"ipa": "/ˈmɪniːɔːɹ/"
+},
+"775": {
+"name": "Komala",
+"pron": "ko-MAH-luh",
+"ipa": "/koʊˈmɑːlə/"
+},
+"776": {
+"name": "Turtonator",
+"pron": "TURR-tuh-nay-turr",
+"ipa": "/ˈtɝːɾəneɪɾɚ/"
+},
+"777": {
+"name": "Togedemaru",
+"pron": "TOH-geh-deh-MAR-oo",
+"ipa": "/ˌtoʊɡədɛˈmɑːɹuː/"
+},
+"778": {
+"name": "Mimikyu",
+"pron": "MEE-mee-kyoo",
+"ipa": "/ˈmiːmiːkjuː/"
+},
+"779": {
+"name": "Bruxish",
+"pron": "BRUK-sish",
+"ipa": "/ˈbɹʌksɪʃ/"
+},
+"780": {
+"name": "Drampa",
+"pron": "DRAM-puh",
+"ipa": "/ˈdɹæmpə/"
+},
+"781": {
+"name": "Dhelmise",
+"pron": "dell-MIZE",
+"ipa": "/dɛlˈmaɪz/"
+},
+"782": {
+"name": "Jangmo-o",
+"pron": "jang-MOH-oh",
+"ipa": "/dʒæŋˈmoʊʔoʊ/"
+},
+"783": {
+"name": "Hakamo-o",
+"pron": "HAH-kuh-MOH-oh",
+"ipa": "/ˈhɑːkəmoʊʔoʊ/"
+},
+"784": {
+"name": "Kommo-o",
+"pron": "koh-MOH-oh",
+"ipa": "/koʊˈmoʊʔoʊ/"
+},
+"785": {
+"name": "Tapu Koko",
+"pron": "TAH-poo-KOH-koh",
+"ipa": "/ˌtɑːpuːˈkoʊkoʊ/"
+},
+"786": {
+"name": "Tapu Lele",
+"pron": "TAH-poo-LAY-lay",
+"ipa": "/ˌtɑːpuːˈleɪleɪ/"
+},
+"787": {
+"name": "Tapu Bulu",
+"pron": "TAH-poo-BOO-loo",
+"ipa": "/ˌtɑːpuːˈbuːluː/"
+},
+"788": {
+"name": "Tapu Fini",
+"pron": "TAH-poo-FEE-nee",
+"ipa": "/ˌtɑːpuːˈfiːniː/"
+},
+"789": {
+"name": "Cosmog",
+"pron": "KAHZ-mahg",
+"ipa": "/ˈkɑːzmɑːɡ/"
+},
+"790": {
+"name": "Cosmoem",
+"pron": "KAHZ-moh-em",
+"ipa": "/ˈkɑːzmoʊɛm/"
+},
+"791": {
+"name": "Solgaleo",
+"pron": "SOHL-guh-LAY-oh",
+"ipa": "/ˌsoʊlɡəˈleɪoʊ/"
+},
+"792": {
+"name": "Lunala",
+"pron": "loo-NAH-luh",
+"ipa": "/luːˈnɑːlə/"
+},
+"793": {
+"name": "Nihilego",
+"pron": "NYE-uh-LEE-goh",
+"ipa": "/ˌnaɪəːˈliːɡoʊ/"
+},
+"794": {
+"name": "Buzzwole",
+"pron": "BUZZ-wohl",
+"ipa": "/ˈbʌzwɔːl/"
+},
+"795": {
+"name": "Pheromosa",
+"pron": "FAIR-uh-MOH-suh",
+"ipa": "/ˌfɛɹəˈmoʊsə/"
+},
+"796": {
+"name": "Xurkitree",
+"pron": "ZURR-kih-tree",
+"ipa": "/ˈzɝkɪtriː/"
+},
+"797": {
+"name": "Celesteela",
+"pron": "SELL-uh-STEEL-uh",
+"ipa": "/ˌsɛləˈstiːlə/"
+},
+"798": {
+"name": "Kartana",
+"pron": "kar-TAH-nuh",
+"ipa": "/kɑːɹˈtɑːnə/"
+},
+"799": {
+"name": "Guzzlord",
+"pron": "GUZZ-lord",
+"ipa": "/ˈɡʌzlɔːɹd/"
+},
+"800": {
+"name": "Necrozma",
+"pron": "neh-KROHZ-muh",
+"ipa": "/nɛˈkɹoʊzmə/"
+},
+"801": {
+"name": "Magearna",
+"pron": "muh-GEER-nuh",
+"ipa": "/məˈɡɪɹnə/"
+},
+"802": {
+"name": "Marshadow",
+"pron": "MAR-shad-oh",
+"ipa": "/ˈmɑːɹʃædoʊ/"
+},
+"803": {
+"name": "Poipole",
+"pron": "POY-pohl",
+"ipa": "/ˈpɔːɪpɔl/"
+},
+"804": {
+"name": "Naganadel",
+"pron": "NAH-guh-NAH-dull",
+"ipa": "/ˌnɑːgəˈnɑːdəl/"
+},
+"805": {
+"name": "Stakataka",
+"pron": "STAK-uh-TAK-uh",
+"ipa": "/ˌstækəˈtækə/"
+},
+"806": {
+"name": "Blacephalon",
+"pron": "bluh-SEF-uh-lahn",
+"ipa": "/bləˈsɛfəlɑːn/"
+},
+"807": {
+"name": "Zeraora",
+"pron": "ZEHR-uh-OHR-uh",
+"ipa": "/ˌzɛɹəʔˈɔːɹə/"
+},
+"808": {
+"name": "Meltan",
+"pron": "MELL-tan",
+"ipa": "/ˈmɛltæn/"
+},
+"809": {
+"name": "Melmetal",
+"pron": "MELL-met-ull",
+"ipa": "/ˈmɛlmɛɾəl/"
+},
+"810": {
+"name": "Grookey",
+"pron": "GROO-kee",
+"ipa": "/ˈɡɹuːkiː/"
+},
+"811": {
+"name": "Thwackey",
+"pron": "THWAK-ee",
+"ipa": "/ˈθwækiː/"
+},
+"812": {
+"name": "Rillaboom",
+"pron": "RILL-uh-boom",
+"ipa": "/ˈɹɪləbuːm/"
+},
+"813": {
+"name": "Scorbunny",
+"pron": "SKOR-bun-ee",
+"ipa": "/ˈskɔːɹbʌniː/"
+},
+"814": {
+"name": "Raboot",
+"pron": "RAB-oot",
+"ipa": "/ˈɹæbuːt/"
+},
+"815": {
+"name": "Cinderace",
+"pron": "SIND-uh-race",
+"ipa": "/ˈsɪndɚeɪs/"
+},
+"816": {
+"name": "Sobble",
+"pron": "SAHB-ull",
+"ipa": "/ˈsɑːbəl/"
+},
+"817": {
+"name": "Drizzile",
+"pron": "DRIZ-ile",
+"ipa": "/ˈdɹɪzaɪl/"
+},
+"818": {
+"name": "Inteleon",
+"pron": "in-TELL-ee-uhn",
+"ipa": "/ɪnˈtɛliːən/"
+},
+"819": {
+"name": "Skwovet",
+"pron": "SKWUH-vet",
+"ipa": "/ˈskwʌːvət/"
+},
+"820": {
+"name": "Greedent",
+"pron": "GREE-dint",
+"ipa": "/ˈɡɹiːdənt/"
+},
+"821": {
+"name": "Rookidee",
+"pron": "RU-kih-dee",
+"ipa": "/ˈɹʊkədiː/"
+},
+"822": {
+"name": "Corvisquire",
+"pron": "KOR-vih-skwire",
+"ipa": "/ˈkɔːɹvəskwaɪɹ/"
+},
+"823": {
+"name": "Corviknight",
+"pron": "KOR-vih-nite",
+"ipa": "/ˈkɔːɹvənaɪt/"
+},
+"824": {
+"name": "Blipbug",
+"pron": "BLIP-bug",
+"ipa": "/ˈblɪpbʌɡ/"
+},
+"825": {
+"name": "Dottler",
+"pron": "DOT-lurr",
+"ipa": "/ˈdɑːtlɚ/"
+},
+"826": {
+"name": "Orbeetle",
+"pron": "OHR-bee-tull",
+"ipa": "/ˈɔɹbiːɾəl/"
+},
+"827": {
+"name": "Nickit",
+"pron": "NIK-it",
+"ipa": "/ˈnɪkət/"
+},
+"828": {
+"name": "Thievul",
+"pron": "THEE-vull",
+"ipa": "/ˈθiːvəl/"
+},
+"829": {
+"name": "Gossifleur",
+"pron": "GAHS-ih-flur",
+"ipa": "/ˈɡɑːsəflɚ/"
+},
+"830": {
+"name": "Eldegoss",
+"pron": "EL-de-gahs",
+"ipa": "/ˈɛldəɡɑːs/"
+},
+"831": {
+"name": "Wooloo",
+"pron": "WOO-loo",
+"ipa": "/ˈwuːluː/"
+},
+"832": {
+"name": "Dubwool",
+"pron": "DUB-wull",
+"ipa": "/ˈdʌbwʊl/"
+},
+"833": {
+"name": "Chewtle",
+"pron": "CHOO-tull",
+"ipa": "/ˈtʃuːɾəl/"
+},
+"834": {
+"name": "Drednaw",
+"pron": "DRED-nah",
+"ipa": "/ˈdɹɛdnɑː/"
+},
+"835": {
+"name": "Yamper",
+"pron": "YAM-purr",
+"ipa": "/ˈjæmpɚ/"
+},
+"836": {
+"name": "Boltund",
+"pron": "BOHL-tund",
+"ipa": "/ˈbɔːltənd/"
+},
+"837": {
+"name": "Rolycoly",
+"pron": "ROHL-ee-KOHL-ee",
+"ipa": "/ˌɹɔːliːˈkɔːliː/"
+},
+"838": {
+"name": "Carkol",
+"pron": "KAR-kohl",
+"ipa": "/ˈkɑɹkɔːl/"
+},
+"839": {
+"name": "Coalossal",
+"pron": "kohl-AH-sull",
+"ipa": "/kɔːlˈɑːsəl/"
+},
+"840": {
+"name": "Applin",
+"pron": "APP-lin",
+"ipa": "/ˈæplɪn/"
+},
+"841": {
+"name": "Flapple",
+"pron": "FLAP-ull",
+"ipa": "/ˈflæpəl/"
+},
+"842": {
+"name": "Appletun",
+"pron": "APP-ull-tun",
+"ipa": "/ˈæpəltən/"
+},
+"843": {
+"name": "Silicobra",
+"pron": "SIL-ih-KOH-bruh",
+"ipa": "/sɪləˈkoʊbɹə/"
+},
+"844": {
+"name": "Sandaconda",
+"pron": "SAND-uh-KAHN-duh",
+"ipa": "/sændəkɑːndə/"
+},
+"845": {
+"name": "Cramorant",
+"pron": "KRAM-er-int",
+"ipa": "/ˈkɹæmɚənt/"
+},
+"846": {
+"name": "Arrokuda",
+"pron": "AIR-uh-KOO-duh",
+"ipa": "/ˌɛrəˈkuːdə/"
+},
+"847": {
+"name": "Barraskewda",
+"pron": "BEHR-uh-SKYOO-duh",
+"ipa": "/ˌbɛrəˈskjuːdə/"
+},
+"848": {
+"name": "Toxel",
+"pron": "TAHKS-ull",
+"ipa": "/tɑːksəl/"
+},
+"849": {
+"name": "Toxtricity",
+"pron": "tahks-TRIS-ih-tee",
+"ipa": "/tɑksˈtɹɪsətiː/"
+},
+"850": {
+"name": "Sizzlipede",
+"pron": "SIZZ-lih-peed",
+"ipa": "/ˈsɪzləpiːd/"
+},
+"851": {
+"name": "Centiskorch",
+"pron": "SENT-ih-skorch",
+"ipa": "/ˈsɛntəskɔːɹtʃ/"
+},
+"852": {
+"name": "Clobbopus",
+"pron": "KLOB-uh-puss",
+"ipa": "/ˈklɑːbəpʊs/"
+},
+"853": {
+"name": "Grapploct",
+"pron": "GRAP-lokt",
+"ipa": "/ˈɡɹæplɑːkt/"
+},
+"854": {
+"name": "Sinistea",
+"pron": "SIN-iss-tee",
+"ipa": "/ˈsɪnəstiː/"
+},
+"855": {
+"name": "Polteageist",
+"pron": "POHL-tee-geist",
+"ipa": "/ˈpɔːltiːɡaɪst/"
+},
+"856": {
+"name": "Hatenna",
+"pron": "huh-TEN-uh",
+"ipa": "/həˈtɛnə/"
+},
+"857": {
+"name": "Hattrem",
+"pron": "HA-trem",
+"ipa": "/ˈhætɹɛm/"
+},
+"858": {
+"name": "Hatterene",
+"pron": "HAT-ur-een",
+"ipa": "/ˈhætɚiːn/"
+},
+"859": {
+"name": "Impidimp",
+"pron": "IMP-ih-dimp",
+"ipa": "/ˈɪmpɪdɪmp/"
+},
+"860": {
+"name": "Morgrem",
+"pron": "MOHR-grem",
+"ipa": "/ˈmɔːɹɡɹɛm/"
+},
+"861": {
+"name": "Grimmsnarl",
+"pron": "GRIM-snarl",
+"ipa": "/ˈɡɹɪmsnɑɹl/"
+},
+"862": {
+"name": "Obstagoon",
+"pron": "AHB-stuh-goon",
+"ipa": "/ˈɑːbstəɡuːn/"
+},
+"863": {
+"name": "Perrserker",
+"pron": "purr-SURR-kurr",
+"ipa": "/pɚˈsɝkɚ/"
+},
+"864": {
+"name": "Cursola",
+"pron": "CURR-suh-luh",
+"ipa": "/ˈkɝsələ/"
+},
+"865": {
+"name": "Sirfetch'd",
+"pron": "surr-FETCHT",
+"ipa": "/sɝˈfɛtʃt/"
+},
+"866": {
+"name": "Mr. Rime",
+"pron": "MISS-tur-RIME",
+"ipa": "/ˌmɪstɚˈɹaɪm/"
+},
+"867": {
+"name": "Runerigus",
+"pron": "roon-er-EE-gus",
+"ipa": "/ɹuːnɛˈɹiːɡəs/"
+},
+"868": {
+"name": "Milcery",
+"pron": "MILL-surr-ee",
+"ipa": "/ˈmɪlsɚiː/"
+},
+"869": {
+"name": "Alcremie",
+"pron": "AL-cruh-mee",
+"ipa": "/ˈælkɹəmiː/"
+},
+"870": {
+"name": "Falinks",
+"pron": "FAY-links",
+"ipa": "/ˈfeɪlɪŋks/"
+},
+"871": {
+"name": "Pincurchin",
+"pron": "pin-KURR-chin",
+"ipa": "/pɪnˈkɚtʃən/"
+},
+"872": {
+"name": "Snom",
+"pron": "SNAHM",
+"ipa": "/ˈsnɑːm/"
+},
+"873": {
+"name": "Frosmoth",
+"pron": "FRAHS-moth",
+"ipa": "/ˈfɹɑːsmɑːθ/"
+},
+"874": {
+"name": "Stonjourner",
+"pron": "STOHN-jurr-nurr",
+"ipa": "/ˈstoʊndʒɚnɚ/"
+},
+"875": {
+"name": "Eiscue",
+"pron": "ICE-kyoo",
+"ipa": "/ˈaɪskju/"
+},
+"876": {
+"name": "Indeedee",
+"pron": "in-DEE-dee",
+"ipa": "/ɪnˈdiːdiː/"
+},
+"877": {
+"name": "Morpeko",
+"pron": "mohr-PECK-oh",
+"ipa": "/mɔːɹˈpɛkoʊ/"
+},
+"878": {
+"name": "Cufant",
+"pron": "KYOO-funt",
+"ipa": "/ˈkjuːfənt/"
+},
+"879": {
+"name": "Copperajah",
+"pron": "KAH-purr-AH-zhuh",
+"ipa": "/ˌkɑːpɚɑːʒə/"
+},
+"880": {
+"name": "Dracozolt",
+"pron": "DRAK-uh-zolt",
+"ipa": "/ˈdɹækəzɔːlt/"
+},
+"881": {
+"name": "Arctozolt",
+"pron": "ARK-tuh-zolt",
+"ipa": "/ˈɑɹktəzɔːlt/"
+},
+"882": {
+"name": "Dracovish",
+"pron": "DRAK-uh-vish",
+"ipa": "/ˈdɹækəvɪʃ/"
+},
+"883": {
+"name": "Arctovish",
+"pron": "ARK-tuh-vish",
+"ipa": "/ˈɑɹktəvɪʃ/"
+},
+"884": {
+"name": "Duraludon",
+"pron": "durr-AL-uh-dahn",
+"ipa": "/dɚˈælədɑn/"
+},
+"885": {
+"name": "Dreepy",
+"pron": "DREE-pee",
+"ipa": "/ˈdɹiːpiː/"
+},
+"886": {
+"name": "Drakloak",
+"pron": "DRAK-lohk",
+"ipa": "/ˈdɹækloʊk/"
+},
+"887": {
+"name": "Dragapult",
+"pron": "DRAG-uh-pult",
+"ipa": "/ˈdɹæɡəpʊlt/"
+},
+"888": {
+"name": "Zacian",
+"pron": "ZAH-shee-un",
+"ipa": "/ˈzɑːʃiːən/"
+},
+"889": {
+"name": "Zamazenta",
+"pron": "ZAH-muh-ZEN-tuh",
+"ipa": "/ˌzɑːməˈzɛntə/"
+},
+"890": {
+"name": "Eternatus",
+"pron": "ee-TURN-uh-tiss",
+"ipa": "/ɪˈtɝnətəs/"
+},
+"891": {
+"name": "Kubfu",
+"pron": "kub-FOO",
+"ipa": "/kʌbˈfuː/"
+},
+"892": {
+"name": "Urshifu",
+"pron": "UR-shee-foo",
+"ipa": "/ˈɝʃiːfuː/"
+},
+"893": {
+"name": "Zarude",
+"pron": "zah-ROOD",
+"ipa": "/zɑːˈɹuːd/"
+},
+"894": {
+"name": "Regieleki",
+"pron": "REJ-ee-uh-LEK-ee",
+"ipa": "/ˌɹɛdʒiːəˈlɛkiː/"
+},
+"895": {
+"name": "Regidrago",
+"pron": "REJ-ee-DRAY-goh",
+"ipa": "/ˌɹɛdʒiːˈdɹɛɪɡoʊ/"
+},
+"896": {
+"name": "Glastrier",
+"pron": "GLASS-tree-urr",
+"ipa": "/ˈɡlæstɹiːɚ/"
+},
+"897": {
+"name": "Spectrier",
+"pron": "SPEK-tree-urr",
+"ipa": "/ˈspɛktɹiːɚ/"
+},
+"898": {
+"name": "Calyrex",
+"pron": "KAL-uh-rex",
+"ipa": "/ˈkæləɹɛks/"
+},
+"899": {
+"name": "Wyrdeer",
+"pron": "WEER-deer",
+"ipa": "/ˈwɪɹdɪɹ/"
+},
+"900": {
+"name": "Kleavor",
+"pron": "KLEE-vohr",
+"ipa": "/ˈkliːvɔːɹ/"
+},
+"901": {
+"name": "Ursaluna",
+"pron": "UR-suh-LOO-nuh",
+"ipa": "/ˌɝsəˈluːnə/"
+},
+"902": {
+"name": "Basculegion",
+"pron": "BASS-kyoo-LEE-jin",
+"ipa": "/ˌbæskjuːˈliːdʒən/"
+},
+"903": {
+"name": "Sneasler",
+"pron": "SNEEZ-lurr",
+"ipa": "/ˈsniːzlɚ/"
+},
+"904": {
+"name": "Overqwil",
+"pron": "OH-vur-kwil",
+"ipa": "/ˈoʊvɚkwɪl/"
+},
+"905": {
+"name": "Enamorus",
+"pron": "ee-NAM-ur-iss",
+"ipa": "/ɪˈnæmɚɪs/"
+},
+"906": {
+"name": "Sprigatito",
+"pron": "sprig-uh-TEE-toh",
+"ipa": "/ˌspɹɪɡəˈtiːtoʊ/"
+},
+"907": {
+"name": "Floragato",
+"pron": "flor-uh-GAH-toh",
+"ipa": "/ˌflɔɹəˈɡɑːtoʊ/"
+},
+"908": {
+"name": "Meowscarada",
+"pron": "mee-ow-scuh-RAH-duh",
+"ipa": "/miˈaʊskəˈɹɑːdə/"
+},
+"909": {
+"name": "Fuecoco",
+"pron": "fway-KOH-koh",
+"ipa": "/fweɪˈkoʊkoʊ/"
+},
+"910": {
+"name": "Crocalor",
+"pron": "KROK-uh-lohr",
+"ipa": "/ˈkɹɑːkəlɔɹ/"
+},
+"911": {
+"name": "Skeledirge",
+"pron": "SKEL-ih-durj",
+"ipa": "/ˈskɛlədɚdʒ/"
+},
+"912": {
+"name": "Quaxly",
+"pron": "KWAKS-lee",
+"ipa": "/ˈkwæksliː/"
+},
+"913": {
+"name": "Quaxwell",
+"pron": "KWAKS-well",
+"ipa": "/ˈkwækswɛl/"
+},
+"914": {
+"name": "Quaquaval",
+"pron": "KWA-kwuh-vahl",
+"ipa": "/ˈkwækwəvɑːl/"
+},
+"915": {
+"name": "Lechonk",
+"pron": "luh-CHONK",
+"ipa": "/ləˈtʃɑːnk/"
+},
+"916": {
+"name": "Oinkologne",
+"pron": "OING-kuh-lohn",
+"ipa": "/ˈɔɪŋkəloʊn/"
+},
+"917": {
+"name": "Tarountula",
+"pron": "tuh-ROWN-chuh-luh",
+"ipa": "/təˈɹaʊntʃələ/"
+},
+"918": {
+"name": "Spidops",
+"pron": "SPIE-dahps",
+"ipa": "/ˈspaɪdɑps/"
+},
+"919": {
+"name": "Nymble",
+"pron": "NIM-buhl",
+"ipa": "/ˈnɪmbəl/"
+},
+"920": {
+"name": "Lokix",
+"pron": "LOH-kicks",
+"ipa": "/ˈloʊkɪks/"
+},
+"921": {
+"name": "Pawmi",
+"pron": "PAW-mee",
+"ipa": "/ˈpɑːmiː/"
+},
+"922": {
+"name": "Pawmo",
+"pron": "PAW-moh",
+"ipa": "/ˈpɑːmoʊ/"
+},
+"923": {
+"name": "Pawmot",
+"pron": "PAW-mit",
+"ipa": "/ˈpɑːmət/"
+},
+"924": {
+"name": "Tandemaus",
+"pron": "TAN-duh-mowse",
+"ipa": "/ˈtændəmaʊs/"
+},
+"925": {
+"name": "Maushold",
+"pron": "MOWSE-hold",
+"ipa": "/ˈmaʊshɔld/"
+},
+"926": {
+"name": "Fidough",
+"pron": "FYE-doh",
+"ipa": "/ˈfaɪdoʊ/"
+},
+"927": {
+"name": "Dachsbun",
+"pron": "DAHKS-bun",
+"ipa": "/ˈdɑːksbʌn/"
+},
+"928": {
+"name": "Smoliv",
+"pron": "SMOHL-iv",
+"ipa": "/ˈsmoʊlɪv/"
+},
+"929": {
+"name": "Dolliv",
+"pron": "DAHL-iv",
+"ipa": "/ˈdɑːlɪv/"
+},
+"930": {
+"name": "Arboliva",
+"pron": "ahr-BALL-iv-uh",
+"ipa": "/ɑɹˈbɑːləvə/"
+},
+"931": {
+"name": "Squawkabilly",
+"pron": "SKWAHK-uh-bill-ee",
+"ipa": "/ˈskwɑːkəbɪliː/"
+},
+"932": {
+"name": "Nacli",
+"pron": "NAK-lee",
+"ipa": "/ˈnækliː/"
+},
+"933": {
+"name": "Naclstack",
+"pron": "NAK-ull-stak",
+"ipa": "/ˈnækəlstæk/"
+},
+"934": {
+"name": "Garganacl",
+"pron": "GAHR-guh-nak-ull",
+"ipa": "/ˈɡɑːɹɡənækəl/"
+},
+"935": {
+"name": "Charcadet",
+"pron": "CHAR-kuh-det",
+"ipa": "/ˈtʃɑːɹkədɛt/"
+},
+"936": {
+"name": "Armarouge",
+"pron": "AR-muh-roozh",
+"ipa": "/ˈɑːɹmɚuːʒ/"
+},
+"937": {
+"name": "Ceruledge",
+"pron": "suh-ROO-lej",
+"ipa": "/səˈɹuːlɛdʒ/"
+},
+"938": {
+"name": "Tadbulb",
+"pron": "TAD-bulb",
+"ipa": "/ˈtædbʊlb/"
+},
+"939": {
+"name": "Bellibolt",
+"pron": "BELL-ee-bolt",
+"ipa": "/ˈbɛliːbɔlt/"
+},
+"940": {
+"name": "Wattrel",
+"pron": "WAH-trull",
+"ipa": "/ˈwɑːtɹəl/"
+},
+"941": {
+"name": "Kilowattrel",
+"pron": "keel-oh-WAH-trull",
+"ipa": "/ˌkiːloʊˈwɑtɹəl/"
+},
+"942": {
+"name": "Maschiff",
+"pron": "MASS-chif",
+"ipa": "ˈmæstʃɪf"
+},
+"943": {
+"name": "Mabosstiff",
+"pron": "muh-BOSS-tiff",
+"ipa": "/məˈbɑːstɪf/"
+},
+"944": {
+"name": "Shroodle",
+"pron": "SHROO-dull",
+"ipa": "/ˈʃɹuːdəl/"
+},
+"945": {
+"name": "Grafaiai",
+"pron": "gruh-FYE-eye",
+"ipa": "/ɡɹəˈfaɪaɪ/"
+},
+"946": {
+"name": "Bramblin",
+"pron": "BRAM-blin",
+"ipa": "/ˈbɹæmblɪn/"
+},
+"947": {
+"name": "Brambleghast",
+"pron": "BRAM-bull-gast",
+"ipa": "/ˈbɹæmbəlɡæst/"
+},
+"948": {
+"name": "Toedscool",
+"pron": "TOHDZ-kool",
+"ipa": "/ˈtoʊdzkuːl/"
+},
+"949": {
+"name": "Toedscruel",
+"pron": "TOHDZ-krool",
+"ipa": "/ˈtoʊdzkɹuːl/"
+},
+"950": {
+"name": "Klawf",
+"pron": "KLAHF",
+"ipa": "/ˈklɑːf/"
+},
+"951": {
+"name": "Capsakid",
+"pron": "KAP-suh-kid",
+"ipa": "/ˈkæpsəkɪd/"
+},
+"952": {
+"name": "Scovillain",
+"pron": "SKOH-vill-in",
+"ipa": "/ˈskoʊvɪlən/"
+},
+"953": {
+"name": "Rellor",
+"pron": "RELL-ohr",
+"ipa": "/ˈɹɛlɔɹ/"
+},
+"954": {
+"name": "Rabsca",
+"pron": "RAB-skuh",
+"ipa": "/ˈɹæbskə/"
+},
+"955": {
+"name": "Flittle",
+"pron": "FLIT-ull",
+"ipa": "/ˈflɪɾəl/"
+},
+"956": {
+"name": "Espathra",
+"pron": "es-PATH-ruh",
+"ipa": "/ɛsˈpæθɹə/"
+},
+"957": {
+"name": "Tinkatink",
+"pron": "TINK-uh-tink",
+"ipa": "/ˈtiːŋkətiːŋk/"
+},
+"958": {
+"name": "Tinkatuff",
+"pron": "TINK-uh-tuff",
+"ipa": "/ˈtiːŋkətʌf/"
+},
+"959": {
+"name": "Tinkaton",
+"pron": "TINK-uh-tun",
+"ipa": "/ˈtiːŋkətʌn/"
+},
+"960": {
+"name": "Wiglett",
+"pron": "WIG-lit",
+"ipa": "/ˈwɪɡlət/"
+},
+"961": {
+"name": "Wugtrio",
+"pron": "wug-TREE-oh",
+"ipa": "/wʌɡˈtɹiːoʊ/"
+},
+"962": {
+"name": "Bombirdier",
+"pron": "bahm-burr-DEER",
+"ipa": "/ˌbɑːmbɚˈdɪɹ/"
+},
+"963": {
+"name": "Finizen",
+"pron": "FIN-ih-zen",
+"ipa": "/ˈfɪnɪzən/"
+},
+"964": {
+"name": "Palafin",
+"pron": "PAL-uh-fin",
+"ipa": "/ˈpæləfɪn/"
+},
+"965": {
+"name": "Varoom",
+"pron": "vuh-ROOM",
+"ipa": "/vəˈɹuːm/"
+},
+"966": {
+"name": "Revavroom",
+"pron": "REV-uh-vroom",
+"ipa": "/ˈɹɛvəvɹuːm/"
+},
+"967": {
+"name": "Cyclizar",
+"pron": "SYE-klih-zahr",
+"ipa": "/ˈsaɪkləzɑːɹ/"
+},
+"968": {
+"name": "Orthworm",
+"pron": "ORTH-wurm",
+"ipa": "/ˈɔɹθwɚm/"
+},
+"969": {
+"name": "Glimmet",
+"pron": "GLIM-it",
+"ipa": "/ˈɡlɪmət/"
+},
+"970": {
+"name": "Glimmora",
+"pron": "glih-MOHR-uh",
+"ipa": "/ɡləˈmɔɹə/"
+},
+"971": {
+"name": "Greavard",
+"pron": "GREE-vard",
+"ipa": "/ˈɡɹiːvɑːɹd/"
+},
+"972": {
+"name": "Houndstone",
+"pron": "HOUND-stone",
+"ipa": "/ˈhaʊndstoʊn/"
+},
+"973": {
+"name": "Flamigo",
+"pron": "fluh-MEE-goh",
+"ipa": "/fləˈmiːɡoʊ/"
+},
+"974": {
+"name": "Cetoddle",
+"pron": "suh-TOD-ull",
+"ipa": "/səˈtɑːdəl/"
+},
+"975": {
+"name": "Cetitan",
+"pron": "suh-TYE-tun",
+"ipa": "/səˈtaɪtən/"
+},
+"976": {
+"name": "Veluza",
+"pron": "vuh-LOO-zuh",
+"ipa": "/vəˈluːzə/"
+},
+"977": {
+"name": "Dondozo",
+"pron": "dohn-DOH-zoh",
+"ipa": "/doʊnˈdoʊnzoʊ/"
+},
+"978": {
+"name": "Tatsugiri",
+"pron": "taht-soo-GEER-ee",
+"ipa": "/ˌtɑːtsuːɡɪɹiː/"
+},
+"979": {
+"name": "Annihilape",
+"pron": "uh-NYE-uh-lape",
+"ipa": "/əˈnaɪəleɪp/"
+},
+"980": {
+"name": "Clodsire",
+"pron": "KLOD-sire",
+"ipa": "/ˈklɑːdsaɪɚ/"
+},
+"981": {
+"name": "Farigiraf",
+"pron": "fuh-RIG-uh-raf",
+"ipa": "/fəˈɹɪɡəɹæf/"
+},
+"982": {
+"name": "Dudunsparce",
+"pron": "duh-DUN-sparce",
+"ipa": "/dəˈdʌnspɑːɹs/"
+},
+"983": {
+"name": "Kingambit",
+"pron": "king-GAM-bit",
+"ipa": "/kiːŋˈɡæmbɪt/"
+},
+"984": {
+"name": "Great Tusk",
+"pron": "grate-TUSK",
+"ipa": "/ˌɡɹɛɪt ˈtʌsk/"
+},
+"985": {
+"name": "Scream Tail",
+"pron": "SKREEM-tail",
+"ipa": "/ˈskɹiːm ˌteɪl/"
+},
+"986": {
+"name": "Brute Bonnet",
+"pron": "broot-BAHN-it",
+"ipa": "/ˌbɹuːt ˈbɑːnət/"
+},
+"987": {
+"name": "Flutter Mane",
+"pron": "FLUH-turr-main",
+"ipa": "/ˈflʌɾɚ ˌmeɪn/"
+},
+"988": {
+"name": "Slither Wing",
+"pron": "SLIH-thur-wing",
+"ipa": "/ˈslɪðɚ ˌwiŋ/"
+},
+"989": {
+"name": "Sandy Shocks",
+"pron": "san-dee-SHAHKS",
+"ipa": "/ˈsændiː ˈʃɑːks/"
+},
+"990": {
+"name": "Iron Treads",
+"pron": "eye-urn-TREDZ",
+"ipa": "/ˌaɪɹn ˈtɹɛdz/"
+},
+"991": {
+"name": "Iron Bundle",
+"pron": "eye-urn-BUN-dull",
+"ipa": "/ˌaɪɹn ˈbʌndəl/"
+},
+"992": {
+"name": "Iron Hands",
+"pron": "eye-urn-HANDZ",
+"ipa": "/ˌaɪɹn ˈhændz/"
+},
+"993": {
+"name": "Iron Jugulis",
+"pron": "eye-urn-JUG-yoo-lis",
+"ipa": "/ˌaɪɹn ˈdʒʌɡjuːləs/"
+},
+"994": {
+"name": "Iron Moth",
+"pron": "eye-urn-MOTH",
+"ipa": "/ˌaɪɹn ˈmɑːθ/"
+},
+"995": {
+"name": "Iron Thorns",
+"pron": "eye-urn-THORNZ",
+"ipa": "/ˌaɪɹn ˈθɔɹnz/"
+},
+"996": {
+"name": "Frigibax",
+"pron": "FRIJ-ih-baks",
+"ipa": "/ˈfɹɪdʒɪbæks/"
+},
+"997": {
+"name": "Arctibax",
+"pron": "ARK-tih-baks",
+"ipa": "/ˈɑɹktɪbæks/"
+},
+"998": {
+"name": "Baxcalibur",
+"pron": "baks-KAL-ih-bur",
+"ipa": "/bæksˈkælɪbɚ/"
+},
+"999": {
+"name": "Gimmighoul",
+"pron": "GIM-ee-gool",
+"ipa": "/ˈɡɪmiːɡuːl/"
+},
+"1000": {
+"name": "Gholdengo",
+"pron": "GOHL-dun-goh",
+"ipa": "/ˈɡɔldənɡoʊ/"
+},
+"1001": {
+"name": "Wo-Chien",
+"pron": "wo-chee-EN",
+"ipa": "/woʊtʃiːˈɛn/"
+},
+"1002": {
+"name": "Chien-Pao",
+"pron": "chee-en-POW",
+"ipa": "/tʃiːɛnˈpaʊ/"
+},
+"1003": {
+"name": "Ting-Lu",
+"pron": "ting-LOO",
+"ipa": "/tiŋˈluː/"
+},
+"1004": {
+"name": "Chi-Yu",
+"pron": "chee-YOO",
+"ipa": "/tʃiːˈjuː/"
+},
+"1005": {
+"name": "Roaring Moon",
+"pron": "rohr-ing-MOON",
+"ipa": "/ˌɹɔɹiŋ ˈmuːn/"
+},
+"1006": {
+"name": "Iron Valiant",
+"pron": "eye-urn-VAL-yunt",
+"ipa": "/ˌaɪɹn ˈvæljənt/"
+},
+"1007": {
+"name": "Koraidon",
+"pron": "kohr-EYE-dahn",
+"ipa": "/kɔːɹˈaɪdɑːn/"
+},
+"1008": {
+"name": "Miraidon",
+"pron": "meer-EYE-dahn",
+"ipa": "/mɪɹˈaɪdɑːn/"
+},
+"1009": {
+"name": "Walking Wake",
+"pron": "wah-king-WAKE",
+"ipa": "/ˌwɑːkiːŋ ˈweɪk/"
+},
+"1010": {
+"name": "Iron Leaves",
+"pron": "eye-urn-LEEVZ",
+"ipa": "/ˌaɪɹn ˈliːvz/"
+},
+"1011": {
+"name": "Dipplin",
+"pron": "DIP-lin",
+"ipa": "/ˈdɪplən/"
+},
+"1012": {
+"name": "Poltchageist",
+"pron": "POHL-chuh-geist",
+"ipa": "/ˈpɔːltʃəɡaɪst/"
+},
+"1013": {
+"name": "Sinistcha",
+"pron": "SIN-iss-chuh",
+"ipa": "/ˈsɪnəstʃə/"
+},
+"1014": {
+"name": "Okidogi",
+"pron": "oh-kee-DOH-gee",
+"ipa": "/ˌoʊkiːˈdoʊɡiː/"
+},
+"1015": {
+"name": "Munkidori",
+"pron": "munk-ee-DOHR-ee",
+"ipa": "/ˌmʌŋkiːˈdɔːɹiː/"
+},
+"1016": {
+"name": "Fezandipiti",
+"pron": "fez-un-DIP-ih-tee",
+"ipa": "/ˌfɛzənˈdɪpəɾiː/"
+},
+"1017": {
+"name": "Ogerpon",
+"pron": "OH-gurr-pahn",
+"ipa": "/ˈoʊɡɚpɑːn/"
+},
+"1018": {
+"name": "Archaludon",
+"pron": "ahr-CHAL-uh-dahn",
+"ipa": "/ɑːɹˈtʃælədɑːn/"
+},
+"1019": {
+"name": "Hydrapple",
+"pron": "hie-DRAP-ull",
+"ipa": "/ˌhaɪˈdɹæpəl/"
+},
+"1020": {
+"name": "Gouging Fire",
+"pron": "gow-jeeng-FIRE",
+"ipa": "/ˌɡaʊdʒiŋ ˈfaɪɚ/"
+},
+"1021": {
+"name": "Raging Bolt",
+"pron": "ray-jeeng-BOHLT",
+"ipa": "/ˌɹɛɪdʒiːŋ ˈbɔlt/"
+},
+"1022": {
+"name": "Iron Boulder",
+"pron": "eye-urn-BOHL-durr",
+"ipa": "/ˌaɪɹn ˈbɔldɚ/"
+},
+"1023": {
+"name": "Iron Crown",
+"pron": "eye-urn-KROWN",
+"ipa": "/ˌaɪɹn ˈkɹaʊn/"
+},
+"1024": {
+"name": "Terapagos",
+"pron": "turr-AHP-uh-gohs",
+"ipa": "/tɚˈɑːpəɡoʊs/"
+},
+"1025": {
+"name": "Pecharunt",
+"pron": "PECH-uh-runt",
+"ipa": "ˈpɛtʃəɹʌnt/"
+}
+}
