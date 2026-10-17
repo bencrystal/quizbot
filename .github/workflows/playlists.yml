@@ -13,10 +13,15 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install -r requirements.txt
+      - uses: actions/cache/restore@v4
+        with:
+          path: state/youtube_token.json
+          key: yt-token-
+          restore-keys: yt-token-
       - run: |
           mkdir -p state config
           echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
-          echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
+          [ -s state/youtube_token.json ] || echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
       - run: python scripts/organize_playlists.py 2>&1 | tee state/run.log
         shell: bash -o pipefail {0}
       - name: report failure to the "Run failures" issue

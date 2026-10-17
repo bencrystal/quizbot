@@ -1,0 +1,43 @@
+# YouTube re-authorisation without a laptop. Two steps, both from the Actions tab → "youtube reauth" → Run workflow:
+#   1. leave `code` empty  → the job summary shows a Google consent link. Open it, approve, and copy the URL of the
+#      page you land on (github.com/bencrystal/quizbot/oauth-callback?code=...).
+#   2. run again with `code` = that whole URL → the job exchanges it and stores the token in the Actions cache,
+#      which every later episode run restores (the YT_TOKEN_JSON secret stays as a fallback).
+name: youtube reauth
+on:
+  workflow_dispatch:
+    inputs:
+      code: { default: "", description: "leave empty to get the consent link; then paste the redirect URL here" }
+permissions:
+  contents: read
+jobs:
+  reauth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install google-auth-oauthlib
+      - run: |
+          mkdir -p state config
+          echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
+      - name: consent link
+        if: github.event.inputs.code == ''
+        run: |
+          URL=$(python scripts/reauth.py url)
+          echo "## Open this link, approve, then copy the URL of the page you land on" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "$URL" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Then run this workflow again with that URL as the \`code\` input." >> $GITHUB_STEP_SUMMARY
+      - name: exchange code
+        if: github.event.inputs.code != ''
+        run: |
+          python scripts/reauth.py exchange '${{ github.event.inputs.code }}' | tee state/reauth.log
+          echo "## $(cat state/reauth.log)" >> $GITHUB_STEP_SUMMARY
+          echo "The token is stored in the Actions cache; episode runs pick it up automatically." >> $GITHUB_STEP_SUMMARY
+      - uses: actions/cache/save@v4
+        if: github.event.inputs.code != ''
+        with:
+          path: state/youtube_token.json
+          key: yt-token-${{ github.run_id }}

@@ -44,11 +44,16 @@ jobs:
             out
           key: quizbot-state-${{ github.run_id }}
           restore-keys: quizbot-state-
+      - uses: actions/cache/restore@v4       # token from the last `youtube reauth` run, if any
+        with:
+          path: state/youtube_token.json
+          key: yt-token-
+          restore-keys: yt-token-
       - name: secrets → files
         run: |
           mkdir -p state config
           echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
-          echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
+          [ -s state/youtube_token.json ] || echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
       - name: decide format
         id: fmt
         run: |
