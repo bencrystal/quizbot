@@ -49,6 +49,11 @@ class Settings:
     music_provider: str = "procedural"   # procedural | file | elevenlabs | none
     music_bed: str = ""                  # for provider=file: loopable bed
     music_bed_db: float = -26.0          # bed level before ducking
+    music_loop_start: float = 0.0        # file provider: seconds where the loop body starts (intro before it)
+    music_loop_end: float = 0.0          # file provider: seconds where the loop body ends (0 = whole file)
+    music_highpass_hz: float = 0.0       # corrective EQ on the bed
+    music_lowpass_hz: float = 0.0
+    music_notch_hz: float = 0.0
     music_duck_db: float = -12.0         # extra ducking while voice / quiz sounds play (sidechain)
     music_prompt: str = ("calm lo-fi hip hop instrumental, soft electric piano, light drums, warm, "
                          "loopable, no vocals, background music for a quiz show")

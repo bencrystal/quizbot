@@ -11,3 +11,4 @@ google-auth-oauthlib>=1.2
 google-auth-httplib2>=0.2
 numpy>=1.26
 soundfile>=0.12
+scipy>=1.11

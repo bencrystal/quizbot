@@ -146,12 +146,54 @@ def elevenlabs_bed(prompt: str, out: Path, seconds: int = 60) -> Path:
     return out
 
 
+def build_loop(settings: Settings, src: Path, work: Path, need_seconds: float = 900) -> Path:
+    """intro (0..loop_start) + body (loop_start..loop_end) repeated with short crossfades, long enough for any
+    episode. Corrective EQ: high-pass, low shelf, notch on `music_notch_hz` — all set in settings.yaml."""
+    import soundfile as sf
+    from scipy.signal import butter, sosfilt, iirnotch, lfilter
+    data, sr = sf.read(str(src), dtype="float32")
+    if data.ndim == 1:
+        data = np.stack([data, data], axis=1)
+    ls, le = settings.music_loop_start, settings.music_loop_end
+    if le <= ls:
+        ls, le = 0.0, len(data) / sr
+    intro = data[: int(ls * sr)]
+    body = data[int(ls * sr): int(le * sr)]
+    xf = int(0.04 * sr)
+    reps = max(1, int(np.ceil((need_seconds - ls) / max(1e-3, le - ls))))
+    out = [intro]
+    ramp = np.linspace(0, 1, xf)[:, None]
+    for i in range(reps):
+        seg = body.copy()
+        if i > 0 and len(out[-1]) > xf:
+            tail = out[-1][-xf:]
+            out[-1] = out[-1][:-xf]
+            seg[:xf] = tail * (1 - ramp) + seg[:xf] * ramp
+        out.append(seg)
+    y = np.concatenate(out)
+    # corrective EQ
+    if settings.music_highpass_hz > 0:
+        y = sosfilt(butter(2, settings.music_highpass_hz / (sr / 2), "high", output="sos"), y, axis=0)
+    if settings.music_notch_hz > 0:
+        b, a = iirnotch(settings.music_notch_hz / (sr / 2), 8)
+        y = lfilter(b, a, y, axis=0)
+    if settings.music_lowpass_hz > 0:
+        y = sosfilt(butter(2, settings.music_lowpass_hz / (sr / 2), "low", output="sos"), y, axis=0)
+    y = y / max(1e-6, np.abs(y).max()) * 0.9
+    out_path = work / "bed.wav"
+    sf.write(str(out_path), y.astype(np.float32), sr)
+    return out_path
+
+
 def bed_for(settings: Settings, slug: str, work: Path) -> Path | None:
     prov = settings.music_provider
     if prov == "none":
         return None
     if prov == "file":
-        return settings.asset("music_bed")
+        src = settings.asset("music_bed")
+        if not src:
+            return None
+        return build_loop(settings, src, work)
     if prov == "elevenlabs":
         cache = settings.cache_dir / "music"
         cache.mkdir(parents=True, exist_ok=True)

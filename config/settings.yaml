@@ -11,10 +11,15 @@ stage_seconds: 0                # thinking time per stage; 0 = format default (4
 fps: 30
 
 # Music ----------------------------------------------------------------------
-music_provider: procedural      # procedural (new royalty-free loop per episode) | file | elevenlabs | none
-music_bed: assets/music/bed.wav # only for provider: file
-music_bed_db: -24               # bed level under narration
-music_duck_db: -12              # extra sidechain ducking whenever voice or a quiz sound is playing
+music_provider: file            # file (Ben's track) | procedural (generated per episode) | elevenlabs | none
+music_bed: assets/music/bed.wav # Ben's pokemon_quiz_test_bgm, 122 bpm; 8-bar intro then drums
+music_loop_start: 15.74         # seconds: loop body starts here (bar 9), intro plays once before it
+music_loop_end: 59.02           # seconds: 22 bars later, on the bar line
+music_highpass_hz: 70           # corrective EQ: tame the sub so it doesn't mud up phone speakers
+music_lowpass_hz: 11000         # sit behind the voice
+music_notch_hz: 15800           # constant whine in the source
+music_bed_db: -27               # bed level under narration (track is dense and mastered hot)
+music_duck_db: -14              # extra sidechain ducking whenever voice or a quiz sound is playing
 music_prompt: "cozy, cheerful, Animal Crossing-style background loop, soft marimba and warm pads, major key, no drums, gentle"
 sting: assets/music/sting.wav         # ~0.5s reveal hit
 tick: assets/music/tick.wav           # ~0.1s per-second blip during thinking time
