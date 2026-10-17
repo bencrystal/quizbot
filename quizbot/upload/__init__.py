@@ -95,5 +95,36 @@ def upload(settings: Settings, ep: Episode, result: RenderResult) -> str:
         yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(result.thumbnail))).execute()
     except Exception as e:  # thumbnails need a verified channel; don't fail the run over it
         print(f"[upload] thumbnail skipped: {e}")
+    try:
+        add_to_playlist(yt, vid, playlist_title(ep, settings))
+    except Exception as e:  # organisation only; never fail a run over it
+        print(f"[upload] playlist skipped: {e}")
     print(f"[upload] https://youtu.be/{vid}")
     return vid
+
+
+def playlist_title(ep: Episode, settings: Settings) -> str:
+    """One playlist per pack and format, e.g. 'Guess That Pokémon (Shorts)' / 'Guess That Pokémon (Long Form)'."""
+    from ..packs import get_pack
+    name = get_pack(ep.pack, settings).display_name
+    return f"{name} ({'Shorts' if ep.format == 'short' else 'Long Form'})"
+
+
+def add_to_playlist(yt, video_id: str, title: str) -> None:
+    """Find the channel playlist with this title (create it if missing) and append the video."""
+    pid, page = None, None
+    while pid is None:
+        r = yt.playlists().list(part="snippet", mine=True, maxResults=50, pageToken=page).execute()
+        pid = next((p["id"] for p in r.get("items", []) if p["snippet"]["title"] == title), None)
+        page = r.get("nextPageToken")
+        if not page:
+            break
+    if pid is None:
+        r = yt.playlists().insert(part="snippet,status", body={
+            "snippet": {"title": title, "description": "Audio quizzes — play with your eyes closed."},
+            "status": {"privacyStatus": "public"}}).execute()
+        pid = r["id"]
+        print(f"[upload] created playlist '{title}'")
+    yt.playlistItems().insert(part="snippet", body={
+        "snippet": {"playlistId": pid, "resourceId": {"kind": "youtube#video", "videoId": video_id}}}).execute()
+    print(f"[upload] added to playlist '{title}'")

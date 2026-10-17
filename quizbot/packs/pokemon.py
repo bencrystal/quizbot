@@ -186,7 +186,7 @@ class PokemonPack(Pack):
         redacted = re.sub(rf"\b{n}\b", "this Pokémon", redacted, flags=re.I)
         redacted = re.sub(r"(^|[.!?]\s+)(its|this Pokémon)", lambda m: m.group(1) + m.group(2)[0].upper() + m.group(2)[1:], redacted)
         region_hint = f"It was first seen in the {REGIONS[gen]} region."
-        hints = [type_hint, region_hint, f"Last hint, from the Pokédex: {redacted}"]
+        hints = [type_hint, region_hint, f"From the Pokédex: {redacted}"]
         theme = theme or {}
         if "gen" in theme:          # a Generation episode already tells you the region
             hints.remove(region_hint)

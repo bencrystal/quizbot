@@ -177,8 +177,7 @@ class Renderer:
 
         T.mark("status", text="Listen")
         cold = bool(ep.meta.get("cold_open"))
-        if short and cold:       # hook: the sound itself is the first thing you hear
-            T.add(None, 0.15)
+        if short and cold:       # hook: the sound itself is the first thing you hear, nothing before it
             T.add(snd, snd_d, "sound")
             T.add(None, 0.3)
         if short:
@@ -187,6 +186,8 @@ class Renderer:
             T.mark("caption", text="")
         else:
             say_part(self.pack.question_line.format(n=i))
+        if short:                # Shorts: the music bed only comes in after the hook, never a note before it
+            self.bed_delay = T.t
         T.add(None, 0.3)
         T.add(snd, snd_d, "sound")
         if not (short and cold):   # cold-open shorts already had it once; keep it to two plays
@@ -356,6 +357,7 @@ class Renderer:
 
     # ---- main -----------------------------------------------------------------
     def render(self, ep: Episode) -> RenderResult:
+        self.bed_delay = 0.0
         work = self.s.out_dir / ep.slug / "work"
         if work.exists():
             shutil.rmtree(work)
@@ -385,8 +387,9 @@ class Renderer:
         if bed:
             # Gentle sidechain: slow attack/release so gaps between words don't pump the bed up and down.
             ratio = 10 ** (-self.s.music_duck_db / 20)
+            delay_ms = int(getattr(self, "bed_delay", 0.0) * 1000)
             graph = ("[0:a]asplit=2[v][sc];"
-                     f"[1:a]volume={self.s.music_bed_db}dB[b];"
+                     f"[1:a]volume={self.s.music_bed_db}dB,adelay={delay_ms}:all=1[b];"
                      f"[b][sc]sidechaincompress=threshold=0.01:ratio={ratio:.1f}:attack=60:release=1600:makeup=1[bd];"
                      "[v][bd]amix=inputs=2:duration=first:normalize=0[a]")
             run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-stream_loop", "-1", "-i", str(bed),
