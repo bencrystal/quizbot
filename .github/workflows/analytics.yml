@@ -1,4 +1,5 @@
-# Nightly: export channel/video analytics to JSON and commit it to the portfolio site (bencrystal.com/quizbot).
+# Nightly: export channel/video analytics to JSON and push it to the `quizbot-data` branch of the portfolio repo
+# (bencrystal.com/quizbot reads it from there at request time; main stays clean).
 # Needs secret PORTFOLIO_TOKEN: a fine-grained GitHub token with Contents: read/write on bencrystal/portfolio_website.
 name: analytics
 on:
@@ -37,20 +38,20 @@ jobs:
         shell: bash -o pipefail {0}
       - uses: actions/upload-artifact@v4
         with: { name: quizbot-analytics, path: out/quizbot-analytics.json, retention-days: 30 }
-      - name: commit to the portfolio site
+      - name: publish to the portfolio repo's quizbot-data branch (never main)
         env:
           PORTFOLIO_TOKEN: ${{ secrets.PORTFOLIO_TOKEN }}
         run: |
           if [ -z "$PORTFOLIO_TOKEN" ]; then echo "::warning::PORTFOLIO_TOKEN not set; JSON is in the run artifact only"; exit 0; fi
-          git clone --depth 1 "https://x-access-token:${PORTFOLIO_TOKEN}@github.com/bencrystal/portfolio_website" site
-          mkdir -p site/public/quizbot
-          cp out/quizbot-analytics.json site/public/quizbot/data.json
-          cd site
-          git config user.name "quizbot"
-          git config user.email "benjamincrystal8@gmail.com"
-          git add public/quizbot/data.json
-          git diff --cached --quiet || git commit -m "quizbot analytics $(date -u +%F)"
-          git push
+          REMOTE="https://x-access-token:${PORTFOLIO_TOKEN}@github.com/bencrystal/portfolio_website"
+          mkdir site && cd site && git init -q
+          git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
+          # keep the branch's own history (a snapshot per night); main is untouched
+          git fetch -q "$REMOTE" quizbot-data && git checkout -q -b quizbot-data FETCH_HEAD || git checkout -q --orphan quizbot-data
+          cp ../out/quizbot-analytics.json data.json
+          git add data.json
+          git diff --cached --quiet || git commit -q -m "quizbot analytics $(date -u +%F)"
+          git push -q "$REMOTE" quizbot-data
       - name: report failure to the "Run failures" issue
         if: failure()
         env:
