@@ -71,6 +71,7 @@ class PokemonPack(Pack):
         super().__init__(settings)
         self.guide = load_guide()
         self.spoken_replacements = dict(PRONUNCIATIONS)
+        self.pronunciations = {"Pokémon": "POH-kee-mon", "Pokédex": "POH-kee-dex"}   # for instruction-mode TTS
         if not self.guide:
             print("  [pokemon] pronunciation guide missing; names will be read as written")
     channel_blurb = "Can you name the Pokémon from its cry alone?"
@@ -159,7 +160,9 @@ class PokemonPack(Pack):
         types = " / ".join(t["type"]["name"].title() for t in poke["types"])
 
         type_names = [t["type"]["name"].title() for t in poke["types"]]
-        type_hint = f"It's a {type_names[0]} type." if len(type_names) == 1 else f"It's a {type_names[0]} and {type_names[1]} type."
+        art_ = "an" if type_names[0][0].lower() in "aeiou" else "a"
+        type_hint = (f"It's {art_} {type_names[0]} type." if len(type_names) == 1
+                     else f"It's {art_} {type_names[0]} and {type_names[1]} type.")
         gen = next(g for g, (lo, hi) in GENERATIONS.items() if lo <= pid <= hi)
         # Pokédex entry as hint 2, with the name swapped for "this Pokémon"
         n = re.escape(name)
@@ -178,6 +181,7 @@ class PokemonPack(Pack):
         pron = self.guide.get(pid)
         if pron:
             self.spoken_replacements[name] = pron
+            self.pronunciations[name] = pron
 
         return QuizItem(
             id=f"pokemon:{pid}",

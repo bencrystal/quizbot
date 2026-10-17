@@ -15,6 +15,10 @@ LINES = [
     ("It's Lugia.", "This is the reveal: a little brighter and more delighted, like sharing the answer with a friend."),
     ("Lugia, the Diving Pokémon.", ""),
     ("Round 2.", ""),
+    ("It's an Electric type.", ""),
+    ("It's Plusle.", "This is the reveal: a little brighter and more delighted, like sharing the answer with a friend."),
+    ("Plusle, the Cheering Pokémon.", ""),
+    ("Round 3.", ""),
     ("It's Arceus.", "This is the reveal: a little brighter and more delighted, like sharing the answer with a friend."),
     ("Arceus, the Alpha Pokémon.", ""),
     ("That's 10 rounds, 30 points possible. Drop your score in the comments, and subscribe for next week's quiz.", ""),
@@ -22,17 +26,23 @@ LINES = [
 s = Settings.load(); s.tts_provider = "openai"
 pack = get_pack("pokemon", s)
 out = s.out_dir / "voices"; out.mkdir(parents=True, exist_ok=True)
-pack.spoken_replacements.update({"Lugia": pack.guide.get(249, "Lugia"), "Arceus": pack.guide.get(493, "Arceus")})
-for v in VOICES:
-  for variant in ("", "-plain"):
-    s.tts_voice = v
+for n_, dex in (("Lugia", 249), ("Arceus", 493), ("Plusle", 311)):
+    pack.spoken_replacements[n_] = pack.pronunciations[n_] = pack.guide.get(dex, n_)
+for voice in VOICES:
+  for variant in ("-inline", "-instruct", "-plain"):
+    s.tts_voice = voice
     tts = TTS(s)
-    if variant:
-        tts.SPOKEN = {}            # no "POH-kee-mon" respelling either
+    if variant != "-inline":
+        tts.SPOKEN = {}            # no "POH-kee-mon" text respelling either
     parts = []
     for text, style in LINES:
-        parts.append(tts.say(text if variant else pack.spoken(text), style))
-    v = v + variant
+        if variant == "-inline":
+            parts.append(tts.say(pack.spoken(text), style))
+        elif variant == "-instruct":
+            parts.append(tts.say(text, style, notes=pack.pronunciation_notes(text)))
+        else:
+            parts.append(tts.say(text, style))
+    v = voice + variant
     lst = out / f"{v}.txt"
     lst.write_text("".join(f"file '{p.resolve()}'\nfile '{(out / 'gap.wav').resolve()}'\n" for p in parts))
     if not (out / "gap.wav").exists():

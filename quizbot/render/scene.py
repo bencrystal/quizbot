@@ -264,7 +264,7 @@ class Scene:
                     nr = int(11 * self.u)
                     d.ellipse((nx - nr, ny - nr, nx + nr, ny + nr), fill=bg, outline=accent if 360 * k / st["stages"] <= 360 * st["arc"] else (90, 92, 110), width=max(2, int(3 * self.u)))
             # hint dots
-            if st["reveal_p"] == 0 and st["stages"] > 1:
+            if st["reveal_p"] == 0 and st["stages"] > 3:     # with 2 hints the arc notches already say it
                 dx_, dy_ = g["dots"]
                 n = st["stages"] - 1
                 gap = int(30 * self.u)

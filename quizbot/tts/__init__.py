@@ -41,8 +41,16 @@ class TTS:
         "openai": {"Pokeymon": "POH-kee-mon", "Pokeydex": "POH-kee-dex"},
     }
 
-    def say(self, text: str, style: str = "") -> Path:
+    # How Pokémon names reach the OpenAI voice. "inline": respell them in the text (Plusle -> "PLUS-ull"), which
+    # can be read as two words or cause a hesitation. "instruct" (default): the text stays as written and the
+    # respellings go into the per-line instructions, which keeps the delivery flowing.
+    PRON_MODE = os.environ.get("QUIZBOT_PRON_MODE", "instruct")
+
+    def say(self, text: str, style: str = "", notes: list[tuple[str, str]] | None = None) -> Path:
         text = " ".join(text.split())
+        if notes:
+            style = (style + " " if style else "") + "Pronunciations (capitals = stressed syllable, each is one word " \
+                    "said smoothly): " + "; ".join(f"{n} = '{p}'" for n, p in notes) + "."
         self._style = style
         for a, b in self.SPOKEN.get(self.provider, {}).items():
             text = text.replace(a, b)

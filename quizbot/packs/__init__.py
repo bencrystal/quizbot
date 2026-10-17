@@ -76,6 +76,12 @@ class Pack(ABC):
         for k in sorted(self.spoken_replacements, key=len, reverse=True):
             text = re.sub(rf"\b{re.escape(k)}\b", self.spoken_replacements[k], text)
         return text
+    pronunciations: dict = {}          # name -> respelling, handed to the TTS as guidance (text stays as written)
+
+    def pronunciation_notes(self, text: str) -> list[tuple[str, str]]:
+        """(name, respelling) for every name that appears in `text`, longest first."""
+        return [(k, v) for k, v in sorted(self.pronunciations.items(), key=lambda kv: -len(kv[0]))
+                if re.search(rf"\b{re.escape(k)}\b", text)]
     reactions: list[str] = []          # post-reveal host lines; empty = none
     choice_line: str = "Is it {choices}?"
 

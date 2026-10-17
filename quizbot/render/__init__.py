@@ -140,7 +140,26 @@ class Renderer:
         return self.synth("sting", [523.25, 659.25, 783.99, 1046.5], 0.9, 0.3, work)
 
     def say(self, text: str, style: str = "") -> Path:
+        if self.tts.provider == "openai" and self.tts.PRON_MODE == "instruct":
+            return self.tts.say(text, style, notes=self.pack.pronunciation_notes(text))
         return self.tts.say(self.pack.spoken(text), style)
+
+    @staticmethod
+    def loudnorm_linear(audio: Path) -> str:
+        """Measure once, then return a loudnorm filter that applies a fixed gain (linear=true)."""
+        import json as _json
+        r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(audio), "-af",
+                            "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+                           capture_output=True, text=True)
+        blob = r.stderr[r.stderr.rfind("{"):r.stderr.rfind("}") + 1]
+        try:
+            m = _json.loads(blob)
+            return ("loudnorm=I=-16:TP=-1.5:LRA=11:linear=true"
+                    f":measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}"
+                    f":measured_thresh={m['input_thresh']}:offset={m['target_offset']}")
+        except Exception as e:
+            print(f"[mix] loudnorm measure failed ({e}); using one-pass")
+            return "loudnorm=I=-16:TP=-1.5:LRA=11"
 
     # ---- timeline builders ----------------------------------------------------
     def build_round(self, i: int, total: int, it: QuizItem, ep: Episode, rng: random.Random, work: Path) -> Timeline:
@@ -356,18 +375,22 @@ class Renderer:
         lst.write_text("".join(f"file '{p.resolve()}'\n" for p in segs))
         final = self.s.out_dir / ep.slug / f"{ep.slug}.mp4"
         bed = bed_for(self.s, ep.slug, work)
+        mix = work / "mix.wav"
         if bed:
+            # Gentle sidechain: slow attack/release so gaps between words don't pump the bed up and down.
             ratio = 10 ** (-self.s.music_duck_db / 20)
             graph = ("[0:a]asplit=2[v][sc];"
                      f"[1:a]volume={self.s.music_bed_db}dB[b];"
-                     f"[b][sc]sidechaincompress=threshold=0.01:ratio={ratio:.1f}:attack=15:release=900:makeup=1[bd];"
-                     "[v][bd]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]")
+                     f"[b][sc]sidechaincompress=threshold=0.01:ratio={ratio:.1f}:attack=60:release=1600:makeup=1[bd];"
+                     "[v][bd]amix=inputs=2:duration=first:normalize=0[a]")
             run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-stream_loop", "-1", "-i", str(bed),
-                   "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy", *AUD,
-                   "-movflags", "+faststart", str(final)))
+                   "-filter_complex", graph, "-map", "[a]", "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", str(mix)))
         else:
-            run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
-                   "-c:v", "copy", *AUD, "-movflags", "+faststart", str(final)))
+            run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-vn", "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", str(mix)))
+        # Two-pass loudness: measure, then apply a single linear gain. (One-pass loudnorm is a dynamic
+        # normaliser and audibly rides the gain on the music between lines.)
+        run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-i", str(mix), "-map", "0:v", "-map", "1:a",
+               "-af", self.loudnorm_linear(mix), "-c:v", "copy", *AUD, "-movflags", "+faststart", str(final)))
 
         thumb = self.s.out_dir / ep.slug / "thumbnail.jpg"
         first = ep.items[0]
