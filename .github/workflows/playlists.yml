@@ -1,0 +1,17 @@
+# On demand (the Sunday supervisor runs it): put every channel video in its '<quiz> (Shorts|Long Form)' playlist.
+name: organize playlists
+on:
+  workflow_dispatch:
+jobs:
+  organize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - run: |
+          mkdir -p state config
+          echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
+          echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
+      - run: python scripts/organize_playlists.py

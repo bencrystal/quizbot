@@ -79,7 +79,7 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
                  + f"Today's theme: {theme['label']}.")
         outro = (f"That's {n} rounds, {maxp * n} points possible. "
                  f"Drop your score in the comments, and subscribe for next week's quiz.")
-    tags = ["quiz", "audio quiz", "trivia", "guessing game", pack.name, theme["label"]]
+    tags = ["quiz", "audio quiz", "trivia", "guessing game", pack.name, f"pack:{pack.name}", theme["label"]]
     return Episode(slug=slug, pack=pack.name, title=title[:100], description=desc, tags=tags,
                    intro=intro, outro=outro, items=items, theme=theme["label"],
                    format=settings.format, mechanic=settings.mechanic, stage_seconds=settings.stage)
