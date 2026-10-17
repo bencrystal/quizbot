@@ -1,0 +1,24 @@
+# Manual: render the quiz script in several OpenAI voices → downloadable artifact "voice-samples".
+name: voice samples
+on:
+  workflow_dispatch:
+    inputs:
+      voices: { default: "ash,coral,nova,echo,sage,ballad" }
+jobs:
+  samples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install -r requirements.txt
+      - env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          VOICES: ${{ github.event.inputs.voices }}
+        run: python scripts/voice_sampler.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: voice-samples
+          path: out/voices/*.mp3
+          retention-days: 14
