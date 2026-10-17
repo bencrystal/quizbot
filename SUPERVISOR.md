@@ -20,10 +20,20 @@ and reports. Every run is a fresh session: start by cloning this repo and readin
 3. Download the latest successful run's artifact (`gh run download <id>`) and read `episode.json`:
    - Check `hints` and `fact` text for anything that spoils the answer early (an answer name inside hint 1 or 2).
      If found, fix the hint rule in `quizbot/packs/pokemon.py`, not the single episode.
-   - Add any proper noun that a TTS would plausibly mangle to `PRONUNCIATIONS` in `quizbot/packs/pokemon.py`
-     (commit; do not guess wildly — only names with a well-known pronunciation).
-4. Check the ledger for health: how many episodes are `rendered` but not `uploaded` (stuck)? Any day with 0 runs?
-5. Post one short report (SendUserMessage): runs since last time (✅/❌ counts), what you fixed, what needs Ben.
+   - Pokémon names are pronounced from `assets/pokemon_pronunciations.json` (synced from the Pokémon LP Wiki);
+     if a name is missing there, add it to `PRONUNCIATIONS` in `quizbot/packs/pokemon.py` only when the
+     pronunciation is well known.
+4. **Playlists.** Every public video on the channel must sit in exactly one playlist named
+   `<pack display_name> (Shorts)` or `<pack display_name> (Long Form)` (e.g. "Guess That Pokémon (Shorts)").
+   Uploads do this themselves; videos uploaded before 2026-10-17 and any that failed the playlist step do not.
+   Run `gh workflow run playlists.yml` (`.github/workflows/playlists.yml` → `scripts/organize_playlists.py`),
+   which lists the channel's videos, creates missing playlists, and files every video by its tags
+   (`#shorts` in the title / a `pack:<name>` tag) — it is idempotent. Report what it moved.
+5. **Cold-open A/B.** Shorts alternate `coldopen` / `announce` (tag + slug suffix). Once there are ≥10 of each,
+   compare average view duration and views per variant from YouTube Analytics (`scripts/ab_report.py`) and
+   include the two numbers in the report; recommend a winner only when the gap is clear across both metrics.
+6. Check the ledger for health: how many episodes are `rendered` but not `uploaded` (stuck)? Any day with 0 runs?
+7. Post one short report (SendUserMessage): runs since last time (✅/❌ counts), what you fixed, what needs Ben.
    If nothing happened and nothing is wrong, say so in one line.
 
 ## Rules

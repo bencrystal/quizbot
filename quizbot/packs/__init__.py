@@ -87,11 +87,17 @@ class Pack(ABC):
     choice_line: str = "Is it {choices}?"
 
 
-def get_pack(name: str, settings: Settings) -> Pack:
+PACK_NAMES = ["pokemon"]            # real packs, in rotation order (fixture is test-only)
+
+
+def _registry() -> dict:
     from .pokemon import PokemonPack
     from .fixture import FixturePack
+    return {p.name: p for p in (PokemonPack, FixturePack)}
 
-    PACKS = {p.name: p for p in (PokemonPack, FixturePack)}
-    if name not in PACKS:
-        raise SystemExit(f"Unknown pack '{name}'. Available: {', '.join(PACKS)}")
-    return PACKS[name](settings)
+
+def get_pack(name: str, settings: Settings) -> Pack:
+    packs = _registry()
+    if name not in packs:
+        raise SystemExit(f"Unknown pack '{name}'. Available: {', '.join(packs)}")
+    return packs[name](settings)
