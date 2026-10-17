@@ -62,6 +62,10 @@ class Settings:
     planner: str = "template"            # template | claude
     claude_model: str = "claude-sonnet-4-5"
 
+    # Content selection
+    shorts_famous_only: bool = True      # Shorts draw from the well-known subset; long-form can go deep
+    track_used: bool = False             # False while testing (repeats allowed); True once quality is signed off
+
     # Safety rails for unattended runs
     max_episodes_per_day: int = 2
     max_tts_chars_per_run: int = 20000

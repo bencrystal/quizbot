@@ -87,6 +87,9 @@ class PokemonPack(Pack):
         return out
 
     # ---- data ---------------------------------------------------------------
+    def famous(self, item: QuizItem) -> bool:
+        return item.meta.get("gen", 9) <= 4 or item.meta.get("dex") in FAMOUS
+
     def candidates(self, theme: dict) -> list[QuizItem]:
         if "gen" in theme:
             lo, hi = GENERATIONS[theme["gen"]]
@@ -160,7 +163,7 @@ class PokemonPack(Pack):
         # Pokédex entry as hint 2, with the name swapped for "this Pokémon"
         redacted = re.sub(re.escape(name), "this Pokémon", fact, flags=re.I)
         redacted = re.sub(r"\bthis Pokémon's\b", "its", redacted)
-        hints = [type_hint, f"From the Pokédex: {redacted}", f"Last hint: it was first seen in the {REGIONS[gen]} region."]
+        hints = [type_hint, f"It was first seen in the {REGIONS[gen]} region.", f"Last hint, from the Pokédex: {redacted}"]
 
         return QuizItem(
             id=f"pokemon:{pid}",

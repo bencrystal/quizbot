@@ -33,7 +33,8 @@ def cmd_run(args, settings: Settings) -> int:
     ep = plan_episode(pack, settings, state, seed=args.seed, theme_id=args.theme)
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned")
-    state.mark_used(ep.pack, [i.id for i in ep.items], ep.slug)
+    if settings.track_used:
+        state.mark_used(ep.pack, [i.id for i in ep.items], ep.slug)
     try:
         result = Renderer(settings, pack, TTS(settings)).render(ep)
     except Exception:

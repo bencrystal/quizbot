@@ -3,7 +3,7 @@
 channel_name: "Play It By Ear"
 
 # Game -----------------------------------------------------------------------
-# ladder = sound → type hint (+colour) → Pokédex hint → silhouette morph → reveal, 4/3/2/1 pts
+# ladder = sound → type (+colour) → region → Pokédex + silhouette morph → reveal, 4/3/2/1 pts
 format: long                    # long (16:9, 10 rounds) | short (9:16, 1 round). Scheduler passes --format.
 mechanic: ladder                # ladder (sound → hint → hint, 3/2/1 pts) | choice (spoken A-D) | cold
 rounds_per_episode: 0           # 0 = format default (10 long / 1 short)
@@ -25,6 +25,10 @@ tts_voice: ""                   # kokoro: af_heart / am_michael / bf_emma ... ; 
 kokoro_url: ""                  # e.g. http://localhost:8880 if you run kokoro-fastapi; empty = in-process
 planner: template               # template | claude   (claude = titles, intros, banter, fact rewrites)
 claude_model: claude-sonnet-4-5
+
+# Content selection ------------------------------------------------------------
+shorts_famous_only: true        # Shorts use the well-known subset (Gen 1-4 + famous later ones)
+track_used: false               # flip to true once video quality is signed off; then no Pokémon repeats
 
 # Safety rails for unattended runs --------------------------------------------
 max_episodes_per_day: 2         # scheduler never renders more than this, whatever happens

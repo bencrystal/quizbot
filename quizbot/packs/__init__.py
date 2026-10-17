@@ -47,7 +47,12 @@ class Pack(ABC):
         options = [t for t in self.themes() if t["label"] not in recent] or self.themes()
         return rng.choice(options)
 
-    def select(self, items: list[QuizItem], used: set[str], n: int, rng: random.Random) -> list[QuizItem]:
+    def famous(self, item: QuizItem) -> bool:   # packs override to define their "well-known" subset
+        return True
+
+    def select(self, items: list[QuizItem], used: set[str], n: int, rng: random.Random, famous_only=False) -> list[QuizItem]:
+        if famous_only:
+            items = [i for i in items if self.famous(i)] or items
         fresh = [i for i in items if i.id not in used]
         if len(fresh) < n:
             fresh = items  # pool exhausted for this theme: allow repeats rather than fail

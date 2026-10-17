@@ -182,7 +182,7 @@ class Renderer:
                 if h_i == 0:
                     T.mark("tint")
                 if last and it.shape_hint and it.reveal_image:
-                    T.mark("shape", dur=2.2)
+                    T.mark("shape", dur=1.2)
                 say_part(hint)
                 T.mark("points", value=pts)
                 T.mark("stage", index=h_i + 1, count=n_hints + 1)

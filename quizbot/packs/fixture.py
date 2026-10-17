@@ -49,8 +49,8 @@ class FixturePack(Pack):
             items.append(QuizItem(id=f"fixture:{i}", answer=name, prompt_audio=wav,
                                   reveal_image=png, fact=fact, subtitle=f"#{i:03d}  ·  {hz} Hz",
                                   hints=[f"Its pitch is {'above' if hz >= 300 else 'below'} 300 hertz.",
-                                         f"From the field guide: {fact.replace(name, 'this critter')}",
-                                         f"Last hint: its name starts with {name[0]}."],
+                                         f"Its name starts with {name[0]}.",
+                                         f"Last hint, from the field guide: {fact.replace(name, 'this critter')}"],
                                   tint=((hz * 7) % 200 + 55, 120, 255 - (hz * 3) % 200),
                                   difficulty=abs(hz - 440) / 100))
         return items
