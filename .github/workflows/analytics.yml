@@ -1,0 +1,61 @@
+# Nightly: export channel/video analytics to JSON and commit it to the portfolio site (bencrystal.com/quizbot).
+# Needs secret PORTFOLIO_TOKEN: a fine-grained GitHub token with Contents: read/write on bencrystal/portfolio_website.
+name: analytics
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "40 6 * * *"      # 02:40 New York, after the day's YouTube Analytics has settled
+permissions:
+  issues: write
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - uses: actions/cache/restore@v4
+        with:
+          path: state/youtube_token.json
+          key: yt-token-
+          restore-keys: yt-token-
+      - uses: actions/cache/restore@v4        # the episode ledger (read-only here)
+        with:
+          path: |
+            state/quizbot.db
+            state/cache
+            out
+          key: quizbot-state-
+          restore-keys: quizbot-state-
+      - run: |
+          mkdir -p state config
+          echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
+          [ -s state/youtube_token.json ] || echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
+      - run: python scripts/analytics_export.py out/quizbot-analytics.json 2>&1 | tee state/run.log
+        shell: bash -o pipefail {0}
+      - uses: actions/upload-artifact@v4
+        with: { name: quizbot-analytics, path: out/quizbot-analytics.json, retention-days: 30 }
+      - name: commit to the portfolio site
+        if: ${{ secrets.PORTFOLIO_TOKEN != '' }}
+        env:
+          PORTFOLIO_TOKEN: ${{ secrets.PORTFOLIO_TOKEN }}
+        run: |
+          git clone --depth 1 "https://x-access-token:${PORTFOLIO_TOKEN}@github.com/bencrystal/portfolio_website" site
+          mkdir -p site/public/quizbot
+          cp out/quizbot-analytics.json site/public/quizbot/data.json
+          cd site
+          git config user.name "quizbot"
+          git config user.email "benjamincrystal8@gmail.com"
+          git add public/quizbot/data.json
+          git diff --cached --quiet || git commit -m "quizbot analytics $(date -u +%F)"
+          git push
+      - name: report failure to the "Run failures" issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY="### Run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed ($(date -u +%FT%TZ))\n\n\`\`\`\n$(tail -c 6000 state/run.log 2>/dev/null | sed 's/`/'"'"'/g')\n\`\`\`"
+          N=$(gh issue list -R ${{ github.repository }} --search "Run failures in:title" --state open --json number --jq '.[0].number')
+          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Run failures" --body "$(printf "$BODY")"; else gh issue comment -R ${{ github.repository }} "$N" --body "$(printf "$BODY")"; fi
