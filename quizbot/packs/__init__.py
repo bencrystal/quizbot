@@ -87,13 +87,14 @@ class Pack(ABC):
     choice_line: str = "Is it {choices}?"
 
 
-PACK_NAMES = ["pokemon"]            # real packs, in rotation order (fixture is test-only)
+PACK_NAMES = ["pokemon", "birds"]   # real packs (fixture is test-only); rotation order comes from settings.packs_enabled
 
 
 def _registry() -> dict:
     from .pokemon import PokemonPack
+    from .birds import BirdsPack
     from .fixture import FixturePack
-    return {p.name: p for p in (PokemonPack, FixturePack)}
+    return {p.name: p for p in (PokemonPack, BirdsPack, FixturePack)}
 
 
 def get_pack(name: str, settings: Settings) -> Pack:

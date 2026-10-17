@@ -32,12 +32,14 @@ planner: template               # template | claude   (claude = titles, intros, 
 claude_model: claude-sonnet-4-5
 
 # Content selection ------------------------------------------------------------
+packs_enabled: [pokemon, birds]  # rotation for --pack auto: Shorts round-robin; long-form one per pack per week
+longs_per_pack_per_week: 1
 shorts_famous_only: true        # Shorts use the well-known subset (Gen 1-4 + famous later ones)
 shorts_cold_open: auto          # auto = alternate per Short (A/B test) | true | false. Cold open = cry before the question line
 track_used: short               # formats that never repeat a Pokémon: short | long | all | none. Long-form draws freely.
 
 # Safety rails for unattended runs --------------------------------------------
-max_episodes_per_day: 3         # scheduler never renders more than this, whatever happens
+max_episodes_per_day: 5         # scheduler never renders more than this, whatever happens
 max_tts_chars_per_run: 20000    # aborts a run that would blow through a paid TTS tier
 
 # Publishing -----------------------------------------------------------------

@@ -70,6 +70,8 @@ class Settings:
     # Content selection
     shorts_famous_only: bool = True      # Shorts draw from the well-known subset; long-form can go deep
     shorts_cold_open: str = "auto"       # auto (alternate per Short, for A/B) | true | false
+    packs_enabled: list = field(default_factory=lambda: ["pokemon"])   # rotation order for --pack auto
+    longs_per_pack_per_week: int = 1     # long-form cadence per pack (the long cron runs daily and skips when met)
     track_used: str = "short"            # which formats never repeat a Pokémon: short | long | all | none
 
     # Safety rails for unattended runs

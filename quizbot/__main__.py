@@ -29,7 +29,21 @@ def cmd_run(args, settings: Settings) -> int:
     if not args.force and state.episodes_today() >= settings.max_episodes_per_day:
         notify(settings, f"⏸ daily cap reached ({settings.max_episodes_per_day}); not rendering. Use --force to override.")
         return 0
-    pack = get_pack(args.pack, settings)
+    pack_name = args.pack
+    if pack_name == "auto":
+        rotation = list(settings.packs_enabled) or ["pokemon"]
+        if settings.format == "long":
+            import time as _time
+            week_ago = _time.time() - 7 * 86400
+            due = [n for n in rotation if state.count_episodes("long", n, week_ago) < settings.longs_per_pack_per_week]
+            if not due:
+                notify(settings, "⏸ every pack already has this week's long-form; nothing to render.")
+                return 0
+            pack_name = due[0]
+        else:
+            pack_name = rotation[state.count_episodes("short") % len(rotation)]
+        print(f"[plan] pack: {pack_name} (auto)")
+    pack = get_pack(pack_name, settings)
     ep = plan_episode(pack, settings, state, seed=args.seed, theme_id=args.theme)
     if ep.format == "short":
         mode = str(settings.shorts_cold_open).lower()
@@ -132,7 +146,7 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="quizbot")
     sub = p.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run")
-    r.add_argument("--pack", default="pokemon")
+    r.add_argument("--pack", default="auto", help="pack name, or auto = rotate through settings.packs_enabled")
     r.add_argument("--format", choices=["long", "short"])
     r.add_argument("--mechanic", choices=["ladder", "choice", "cold"])
     r.add_argument("--theme", help="theme id (see `themes`); random if omitted")

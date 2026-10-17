@@ -5,14 +5,17 @@
 name: episodes
 on:
   schedule:
-    - cron: "0 11 * * *"      # Short #1 — 07:00 New York (EDT; 06:00 in EST)
-    - cron: "0 23 * * *"      # Short #2 — 19:00 New York
-    - cron: "30 11 * * 6"     # weekly long   — Saturday 07:30 New York
+    - cron: "0 11 * * *"      # Shorts — 07:00, 11:00, 15:00, 19:00 New York (EDT); packs rotate
+    - cron: "0 15 * * *"
+    - cron: "0 19 * * *"
+    - cron: "0 23 * * *"
+    - cron: "30 12 * * *"     # long-form — 08:30 New York daily; renders the next pack that hasn't had one this week
   workflow_dispatch:
     inputs:
       format: { default: short, type: choice, options: [short, long] }
       theme: { default: "" }
       force: { default: false, type: boolean, description: "ignore the daily cap (manual test runs)" }
+      pack: { default: "auto", description: "pokemon | birds | auto (rotate)" }
       cold_open: { default: "auto", type: choice, options: [auto, "true", "false"], description: "Shorts: cry before the question line (auto = alternate)" }
 
 concurrency:
@@ -50,13 +53,14 @@ jobs:
         id: fmt
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then echo "format=${{ github.event.inputs.format }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event.schedule }}" = "30 11 * * 6" ]; then echo "format=long" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.schedule }}" = "30 12 * * *" ]; then echo "format=long" >> $GITHUB_OUTPUT
           else echo "format=short" >> $GITHUB_OUTPUT; fi
       - name: run
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          XC_API_KEY: ${{ secrets.XC_API_KEY }}
           # OpenAI voice when the key is present, Kokoro (free, local) otherwise
           QUIZBOT_TTS_PROVIDER: ${{ vars.QUIZBOT_TTS_PROVIDER || (secrets.OPENAI_API_KEY && 'openai' || 'kokoro') }}
           QUIZBOT_TTS_VOICE: ${{ vars.QUIZBOT_TTS_VOICE || (secrets.OPENAI_API_KEY && 'coral' || 'am_michael') }}
@@ -67,7 +71,7 @@ jobs:
         run: |
           set -o pipefail
           (python -m quizbot retry-uploads || true) 2>&1 | tee -a state/run.log
-          python -m quizbot run --format ${{ steps.fmt.outputs.format }} \
+          python -m quizbot run --format ${{ steps.fmt.outputs.format }} --pack ${{ github.event.inputs.pack || 'auto' }} \
             ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }} \
             ${{ github.event.inputs.force == 'true' && '--force' || '' }} 2>&1 | tee -a state/run.log
       - name: post result to the "Episode log" issue

@@ -67,9 +67,13 @@ class State:
         self.conn.execute("DELETE FROM used_by_format WHERE pack=? AND episode_slug=?", (pack, slug))
         self.conn.commit()
 
-    def count_episodes(self, fmt: str) -> int:
-        return self.conn.execute("SELECT COUNT(*) FROM episodes WHERE slug LIKE ? AND status!='failed'",
-                                 (f"%-{fmt}-%",)).fetchone()[0]
+    def count_episodes(self, fmt: str, pack: str | None = None, since: float = 0.0) -> int:
+        q = "SELECT COUNT(*) FROM episodes WHERE slug LIKE ? AND status!='failed' AND created_at>=?"
+        args: list = [f"%-{fmt}-%", since]
+        if pack:
+            q += " AND pack=?"
+            args.append(pack)
+        return self.conn.execute(q, args).fetchone()[0]
 
     # ---- episodes ----------------------------------------------------------
     def upsert_episode(self, slug: str, pack: str, title: str, theme: str, status: str, **kw) -> None:
