@@ -25,7 +25,11 @@ TOKEN = Path(__file__).resolve().parent.parent / "state" / "meta_token.json"
 
 
 def main() -> None:
-    app_id, secret = os.environ["META_APP_ID"], os.environ["META_APP_SECRET"]
+    app_id, secret = os.environ["META_APP_ID"].strip(), os.environ["META_APP_SECRET"].strip()
+    if not app_id.isdigit() or len(secret) < 20:
+        raise SystemExit(f"META_APP_ID looks wrong ({len(app_id)} chars, digits={app_id.isdigit()}) or "
+                         f"META_APP_SECRET too short ({len(secret)} chars). Re-paste both secrets.")
+    print(f"app id ...{app_id[-4:]} ({len(app_id)} digits); secret {len(secret)} chars", file=sys.stderr)
     cmd = sys.argv[1]
     if cmd == "url":
         q = {"client_id": app_id, "redirect_uri": REDIRECT, "scope": ",".join(SCOPES), "response_type": "code",
