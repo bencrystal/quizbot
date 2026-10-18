@@ -1,0 +1,45 @@
+# Meta (Facebook Page + Instagram) authorisation, two steps from the Actions tab → "meta auth" → Run workflow:
+#   1. leave `code` empty → the job summary shows a Facebook consent link. Open it, approve for the Page and the
+#      Instagram account, and copy the URL you land on (github.com/bencrystal/quizbot/oauth-callback?code=...).
+#   2. run again with `code` = that URL → the job stores the Page token in the Actions cache for every later run.
+# Needs secrets META_APP_ID and META_APP_SECRET; the app's Valid OAuth Redirect URIs must include
+# https://github.com/bencrystal/quizbot/oauth-callback
+name: meta auth
+on:
+  workflow_dispatch:
+    inputs:
+      code: { default: "", description: "leave empty to get the consent link; then paste the redirect URL here" }
+      page: { default: "Play It By Ear", description: "Page name to use if the account manages several" }
+permissions:
+  contents: read
+jobs:
+  auth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install requests
+      - name: consent link
+        if: github.event.inputs.code == ''
+        env:
+          META_APP_ID: ${{ secrets.META_APP_ID }}
+          META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
+        run: |
+          URL=$(python scripts/meta_auth.py url)
+          { echo "## Open this link, approve, then copy the URL of the page you land on"; echo; echo "$URL"; echo;
+            echo "Then run this workflow again with that URL as the \`code\` input."; } >> $GITHUB_STEP_SUMMARY
+      - name: exchange code
+        if: github.event.inputs.code != ''
+        env:
+          META_APP_ID: ${{ secrets.META_APP_ID }}
+          META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
+          META_PAGE_NAME: ${{ github.event.inputs.page }}
+        run: |
+          python scripts/meta_auth.py exchange '${{ github.event.inputs.code }}' | tee state/meta_auth.log
+          echo "## $(cat state/meta_auth.log)" >> $GITHUB_STEP_SUMMARY
+      - uses: actions/cache/save@v4
+        if: github.event.inputs.code != ''
+        with:
+          path: state/meta_token.json
+          key: meta-token-${{ github.run_id }}

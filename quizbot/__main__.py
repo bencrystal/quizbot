@@ -82,6 +82,7 @@ def cmd_run(args, settings: Settings) -> int:
             vid = upload(settings, ep, result)
             state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "uploaded", youtube_id=vid)
             msg += f"\n📺 https://youtu.be/{vid} ({settings.youtube_privacy})"
+            msg += crosspost_line(settings, ep, result.video, state)
             result.video.unlink(missing_ok=True)      # keep the cache small; episode.json + thumbnail stay
         except Exception:
             state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "rendered", error=traceback.format_exc()[-2000:])
@@ -90,6 +91,17 @@ def cmd_run(args, settings: Settings) -> int:
             return 1
     notify(settings, msg)
     return 0
+
+
+def crosspost_line(settings: Settings, ep, video, state) -> str:
+    """Instagram/Facebook after YouTube; never fails the run."""
+    try:
+        from .publish.meta import crosspost
+        posted = crosspost(settings, ep, video, state)
+    except Exception as e:
+        print(f"[meta] cross-post error: {str(e)[:200]}")
+        return ""
+    return "".join(f"\n📱 {p}: {i}" for p, i in posted.items())
 
 
 def cmd_retry_uploads(args, settings: Settings) -> int:
@@ -112,7 +124,7 @@ def cmd_retry_uploads(args, settings: Settings) -> int:
         try:
             vid = upload(settings, ep, res)
             state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "uploaded", youtube_id=vid)
-            notify(settings, f"📺 (retry) https://youtu.be/{vid} for {ep.slug}")
+            notify(settings, f"📺 (retry) https://youtu.be/{vid} for {ep.slug}" + crosspost_line(settings, ep, res.video, state))
             res.video.unlink(missing_ok=True)
         except Exception:
             notify(settings, f"❌ retry upload failed for {ep.slug}: {traceback.format_exc()[-500:]}")

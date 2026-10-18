@@ -95,6 +95,7 @@ def main() -> None:
     # ---- ledger (restored from the Actions cache when present)
     ledger = {"episodes": [], "used": {}}
     db = s.state_dir / "quizbot.db"
+    c = None
     if db.exists():
         c = sqlite3.connect(db)
         c.row_factory = sqlite3.Row
@@ -102,6 +103,40 @@ def main() -> None:
             "SELECT slug, pack, title, theme, status, youtube_id, created_at FROM episodes ORDER BY created_at DESC LIMIT 400")]
         for r in c.execute("SELECT pack, fmt, COUNT(*) n FROM used_by_format GROUP BY pack, fmt"):
             ledger["used"].setdefault(r["pack"], {})[r["fmt"]] = r["n"]
+
+    # ---- cross-post metrics (Instagram / Facebook) joined to videos by episode slug
+    platforms: dict[str, dict] = {}
+    try:
+        from quizbot.publish.meta import token as meta_token, GRAPH
+        import requests as _rq
+        tok = meta_token(s)
+        if tok and db.exists():
+            slug_by_yt = {r["youtube_id"]: r["slug"] for r in c.execute("SELECT slug, youtube_id FROM episodes WHERE youtube_id IS NOT NULL")}
+            for r in c.execute("SELECT episode_slug, platform, post_id FROM posts WHERE post_id IS NOT NULL"):
+                slug, plat, pid = r["episode_slug"], r["platform"], r["post_id"]
+                try:
+                    if plat == "instagram":
+                        d = _rq.get(f"{GRAPH}/{pid}/insights", params={
+                            "metric": "views,reach,likes,comments,shares,saved,total_interactions,ig_reels_avg_watch_time",
+                            "access_token": tok["page_token"]}, timeout=30).json()
+                        m = {x["name"]: (x.get("values") or [{}])[0].get("value") for x in d.get("data", [])}
+                    else:
+                        d = _rq.get(f"{GRAPH}/{pid}/video_insights", params={
+                            "metric": "total_video_views,total_video_avg_time_watched,post_impressions_unique,"
+                                      "blue_reels_play_count,post_video_avg_time_watched",
+                            "access_token": tok["page_token"]}, timeout=30).json()
+                        m = {x["name"]: (x.get("values") or [{}])[0].get("value") for x in d.get("data", [])}
+                        if "error" in d:
+                            m = {"error": d["error"].get("message", "")[:120]}
+                    platforms.setdefault(slug, {})[plat] = {"id": pid, **m}
+                except Exception as e:
+                    platforms.setdefault(slug, {})[plat] = {"id": pid, "error": str(e)[:120]}
+            for v in videos.values():
+                sl = slug_by_yt.get(v["id"])
+                if sl and sl in platforms:
+                    v["platforms"] = platforms[sl]
+    except Exception as e:
+        print(f"cross-post metrics skipped: {str(e)[:120]}")
 
     # ---- recent comments (newest 25 public videos, up to 5 each): what viewers actually say
     comments = []
@@ -136,6 +171,7 @@ def main() -> None:
         "packs": {n: {"display_name": p.display_name, "noun": p.noun} for n, p in packs.items()},
         "videos": sorted(videos.values(), key=lambda v: v["published"], reverse=True),
         "ledger": ledger,
+        "platforms": platforms,
         "comments": comments[:60],
         "experiments": {"config": exp_cfg, "state": exp_state},
     }

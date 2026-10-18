@@ -24,6 +24,14 @@ CREATE TABLE IF NOT EXISTS used_by_format (
     used_at REAL NOT NULL,
     PRIMARY KEY (pack, fmt, item_id)
 );
+CREATE TABLE IF NOT EXISTS posts (
+    episode_slug TEXT NOT NULL,
+    platform TEXT NOT NULL,            -- instagram | facebook | tiktok
+    post_id TEXT,
+    error TEXT,
+    posted_at REAL NOT NULL,
+    PRIMARY KEY (episode_slug, platform)
+);
 CREATE TABLE IF NOT EXISTS episodes (
     slug TEXT PRIMARY KEY,
     pack TEXT NOT NULL,
@@ -66,6 +74,20 @@ class State:
         """Un-use items if an episode failed so they can be picked again."""
         self.conn.execute("DELETE FROM used_by_format WHERE pack=? AND episode_slug=?", (pack, slug))
         self.conn.commit()
+
+    # ---- cross-posts -------------------------------------------------------
+    def posts(self, slug: str) -> set[str]:
+        """Platforms this episode has been successfully posted to."""
+        rows = self.conn.execute("SELECT platform FROM posts WHERE episode_slug=? AND post_id IS NOT NULL", (slug,)).fetchall()
+        return {r["platform"] for r in rows}
+
+    def record_post(self, slug: str, platform: str, post_id: str | None, error: str | None = None) -> None:
+        self.conn.execute("INSERT OR REPLACE INTO posts(episode_slug,platform,post_id,error,posted_at) VALUES (?,?,?,?,?)",
+                          (slug, platform, post_id, error, time.time()))
+        self.conn.commit()
+
+    def all_posts(self) -> list[sqlite3.Row]:
+        return self.conn.execute("SELECT * FROM posts WHERE post_id IS NOT NULL").fetchall()
 
     def count_episodes(self, fmt: str, pack: str | None = None, since: float = 0.0) -> int:
         q = "SELECT COUNT(*) FROM episodes WHERE slug LIKE ? AND status!='failed' AND created_at>=?"

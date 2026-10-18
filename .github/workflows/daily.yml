@@ -52,6 +52,11 @@ jobs:
           path: state/youtube_token.json
           key: yt-token-
           restore-keys: yt-token-
+      - uses: actions/cache/restore@v4       # Meta (Instagram/Facebook) token from `meta auth`, if any
+        with:
+          path: state/meta_token.json
+          key: meta-token-
+          restore-keys: meta-token-
       - name: ledger — restore from the `ledger` branch if the cache had nothing
         run: |
           if [ ! -s state/quizbot.db ]; then
@@ -79,6 +84,7 @@ jobs:
           QUIZBOT_TTS_VOICE: ${{ vars.QUIZBOT_TTS_VOICE || (secrets.OPENAI_API_KEY && 'coral' || 'am_michael') }}
           QUIZBOT_PLANNER: ${{ vars.QUIZBOT_PLANNER || 'template' }}
           QUIZBOT_UPLOAD: "true"
+          PORTFOLIO_TOKEN: ${{ secrets.PORTFOLIO_TOKEN }}     # stages cross-post media on the public portfolio release
           QUIZBOT_SHORTS_COLD_OPEN: ${{ github.event.inputs.cold_open || 'auto' }}
           TZ: America/New_York
         run: |
