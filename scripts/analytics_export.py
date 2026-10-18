@@ -64,7 +64,9 @@ def main() -> None:
                 "format": "short" if "#shorts" in sn["title"].lower() else "long", "variant": variant, "theme": theme,
                 "duration": iso_dur(v["contentDetails"].get("duration")), "privacy": v.get("status", {}).get("privacyStatus"),
                 "views": int(st.get("viewCount", 0)), "likes": int(st.get("likeCount", 0)), "comments": int(st.get("commentCount", 0)),
-                "avd": None, "avp": None, "minutes": None, "subs": None, "tags": [t for t in tags if t.startswith("exp:")],
+                "avd": None, "avp": None, "minutes": None, "subs": None, "tags": [t for t in tags if t.startswith("exp:")]
+                        # the first day's Shorts predate exp: tags; they belong to the 'open' experiment
+                        + ([f"exp:open={'cold' if variant == 'coldopen' else 'announce'}"] if variant and not any(t.startswith("exp:open=") for t in tags) else []),
             }
 
     # ---- per-video retention (Analytics API), 200 ids per query
