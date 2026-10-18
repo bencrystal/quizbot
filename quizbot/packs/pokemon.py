@@ -178,11 +178,13 @@ class PokemonPack(Pack):
         type_hint = (f"It's {art_} {type_names[0]} type." if len(type_names) == 1
                      else f"It's {art_} {type_names[0]} and {type_names[1]} type.")
         gen = next(g for g, (lo, hi) in GENERATIONS.items() if lo <= pid <= hi)
-        # Pokédex entry as hint 2, with the name swapped for "this Pokémon"
-        n = re.escape(name)
+        # Pokédex entry as hint 2, with the name swapped for "this Pokémon". The API slug drops the punctuation
+        # the entries keep ("mr-mime" vs "MR. MIME", "farfetchd" vs "Farfetch'd", "ho-oh" vs "HO-OH"), so match
+        # the letters with anything non-alphanumeric allowed between them.
+        n = r"[\W_]*".join(re.escape(c) for c in re.sub(r"[^a-z0-9]", "", poke["name"].lower()))
         redacted = re.sub(rf"\b(a|an|the)\s+{n}'s\b", "its", fact, flags=re.I)
         redacted = re.sub(rf"\b{n}'s\b", "its", redacted, flags=re.I)
-        redacted = re.sub(rf"\b(a|an|the)\s+{n}\b", "this Pokémon", redacted, flags=re.I)
+        redacted = re.sub(rf"\b(a|an|the|this|that)\s+{n}\b", "this Pokémon", redacted, flags=re.I)
         redacted = re.sub(rf"\b{n}\b", "this Pokémon", redacted, flags=re.I)
         redacted = re.sub(r"(^|[.!?]\s+)(its|this Pokémon)", lambda m: m.group(1) + m.group(2)[0].upper() + m.group(2)[1:], redacted)
         region_hint = f"It was first seen in the {REGIONS[gen]} region."
