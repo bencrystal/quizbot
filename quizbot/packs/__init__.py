@@ -78,6 +78,13 @@ class Pack(ABC):
             text = re.sub(rf"\b{re.escape(k)}\b", self.spoken_replacements[k], text)
         return text
     pronunciations: dict = {}          # name -> respelling, handed to the TTS as guidance (text stays as written)
+    ipa: dict = {}                     # name -> IPA, for engines that accept phoneme tags (ElevenLabs)
+
+    def with_phonemes(self, text: str) -> str:
+        """Wrap known names in <phoneme alphabet="ipa"> tags (SSML subset ElevenLabs understands)."""
+        for k, v in sorted(self.ipa.items(), key=lambda kv: -len(kv[0])):
+            text = re.sub(rf"\b{re.escape(k)}\b", f'<phoneme alphabet="ipa" ph="{v}">{k}</phoneme>', text)
+        return text
 
     def pronunciation_notes(self, text: str) -> list[tuple[str, str]]:
         """(name, respelling) for every name that appears in `text`, longest first."""

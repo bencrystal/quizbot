@@ -142,6 +142,8 @@ class Renderer:
     def say(self, text: str, style: str = "") -> Path:
         if self.tts.provider == "openai" and self.tts.PRON_MODE == "instruct":
             return self.tts.say(text, style, notes=self.pack.pronunciation_notes(text))
+        if self.tts.provider == "elevenlabs":
+            return self.tts.say(self.pack.with_phonemes(text), style)
         return self.tts.say(self.pack.spoken(text), style)
 
     @staticmethod

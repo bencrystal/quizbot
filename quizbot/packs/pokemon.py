@@ -49,13 +49,21 @@ def _respell(pron: str) -> str:
 
 def load_guide() -> dict[int, str]:
     """dex number → respelling, or {} if the guide file is missing."""
+    return {k: _respell(v["pron"]) for k, v in _raw_guide().items() if v.get("pron")}
+
+
+def load_ipa() -> dict[int, str]:
+    """dex number → IPA (General American), e.g. /ˈluːdʒiə/, for TTS engines that accept phonemes."""
+    return {k: v["ipa"].strip("/") for k, v in _raw_guide().items() if v.get("ipa")}
+
+
+def _raw_guide() -> dict[int, dict]:
     if not GUIDE_PATH.exists():
         return {}
     try:
-        raw = json.loads(GUIDE_PATH.read_text())
+        return {int(k): v for k, v in json.loads(GUIDE_PATH.read_text()).items()}
     except Exception:
         return {}
-    return {int(k): _respell(v["pron"]) for k, v in raw.items() if v.get("pron")}
 
 
 class PokemonPack(Pack):
@@ -70,8 +78,10 @@ class PokemonPack(Pack):
     def __init__(self, settings):
         super().__init__(settings)
         self.guide = load_guide()
+        self.ipa_guide = load_ipa()
         self.spoken_replacements = dict(PRONUNCIATIONS)
         self.pronunciations = {"Pokémon": "POH-kee-mon", "Pokédex": "POH-kee-dex"}   # for instruction-mode TTS
+        self.ipa = {"Pokémon": "ˈpoʊkiˌmɑn", "Pokédex": "ˈpoʊkiˌdɛks"}               # for phoneme-capable TTS
         if not self.guide:
             print("  [pokemon] pronunciation guide missing; names will be read as written")
     channel_blurb = "Can you name the Pokémon from its cry alone?"
@@ -198,6 +208,8 @@ class PokemonPack(Pack):
         if pron:
             self.spoken_replacements[name] = pron
             self.pronunciations[name] = pron
+        if self.ipa_guide.get(pid):
+            self.ipa[name] = self.ipa_guide[pid]
 
         return QuizItem(
             id=f"pokemon:{pid}",

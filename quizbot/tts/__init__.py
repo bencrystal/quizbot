@@ -146,8 +146,12 @@ class TTS:
         r = requests.post(
             f"https://api.elevenlabs.io/v1/text-to-speech/{voice}",
             headers={"xi-api-key": os.environ["ELEVENLABS_API_KEY"], "accept": "audio/mpeg"},
-            json={"text": text, "model_id": os.environ.get("QUIZBOT_ELEVENLABS_MODEL", "eleven_multilingual_v2"),
-                  "voice_settings": {"stability": 0.4, "similarity_boost": 0.8, "style": 0.35}},
+            # eleven_turbo_v2 (English) honours <phoneme alphabet="ipa"> tags; multilingual_v2 ignores them.
+            json={"text": text, "model_id": os.environ.get("QUIZBOT_ELEVENLABS_MODEL", "eleven_turbo_v2"),
+                  "voice_settings": {"stability": 0.45 if self.settings.tts_energy == "host" else 0.35,
+                                     "similarity_boost": 0.8,
+                                     "style": 0.35 if self.settings.tts_energy == "host" else 0.6,
+                                     "use_speaker_boost": True}},
             timeout=120,
         )
         r.raise_for_status()

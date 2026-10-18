@@ -28,6 +28,10 @@ pack = get_pack("pokemon", s)
 out = s.out_dir / "voices"; out.mkdir(parents=True, exist_ok=True)
 for n_, dex in (("Lugia", 249), ("Arceus", 493), ("Plusle", 311)):
     pack.spoken_replacements[n_] = pack.pronunciations[n_] = pack.guide.get(dex, n_)
+    if pack.ipa_guide.get(dex):
+        pack.ipa[n_] = pack.ipa_guide[dex]
+BLIND = os.environ.get("BLIND") == "1"          # name outputs sample-1.mp3 … and write the key to a separate file
+key = []
 def eleven_voice_id(name: str) -> str:
     """'eleven:Brian' → voice id, resolved from the account's voice list (premade voices included)."""
     import requests
@@ -49,16 +53,31 @@ for voice in VOICES:
         tts.SPOKEN = {}            # no "POH-kee-mon" text respelling either
     parts = []
     for text, style in LINES:
-        if variant == "-inline":
+        if variant == "-inline" and eleven:
+            parts.append(tts.say(pack.with_phonemes(text), style))
+        elif variant == "-inline":
             parts.append(tts.say(pack.spoken(text), style))
         elif variant == "-instruct":
             parts.append(tts.say(text, style, notes=pack.pronunciation_notes(text)))
         else:
             parts.append(tts.say(text, style))
     v = voice.replace(":", "-") + variant
+    if BLIND:
+        key.append((f"sample-{len(key) + 1}", v))
+        v = key[-1][0]
     lst = out / f"{v}.txt"
     lst.write_text("".join(f"file '{p.resolve()}'\nfile '{(out / 'gap.wav').resolve()}'\n" for p in parts))
     if not (out / "gap.wav").exists():
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-t", "0.6", (out / "gap.wav")], check=True)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-b:a", "160k", out / f"{v}.mp3"], check=True)
     print("voice", v, "done")
+
+if BLIND:
+    import random
+    random.shuffle(key)
+    (out / "KEY.txt").write_text("".join(f"{a}.mp3 = {b}\n" for a, b in sorted(key)))
+    # shuffle the numbering so order carries no information
+    tmp = {b: (out / f"{a}.mp3").read_bytes() for a, b in key}
+    for i, (a, b) in enumerate(key, 1):
+        (out / f"sample-{i}.mp3").write_bytes(tmp[b])
+    (out / "KEY.txt").write_text("".join(f"sample-{i}.mp3 = {b}\n" for i, (a, b) in enumerate(key, 1)))
