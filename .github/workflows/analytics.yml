@@ -41,13 +41,19 @@ jobs:
       - uses: actions/upload-artifact@v4
         with: { name: quizbot-analytics, path: out/quizbot-analytics.json, retention-days: 30 }
       - name: record experiment decisions in the repo
+        shell: bash -o pipefail {0}
         run: |
-          git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
-          git add state/experiments.json
-          if ! git diff --cached --quiet; then
-            git commit -q -m "experiments: nightly judgement $(date -u +%F)"
-            git pull -q --rebase origin main && git push origin HEAD:main
-          fi
+          {
+            git status --short | head -20
+            git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
+            git add state/experiments.json
+            if ! git diff --cached --quiet; then
+              git commit -m "experiments: nightly judgement $(date -u +%F)"
+              git fetch origin main
+              git rebase origin/main
+              git push origin HEAD:main
+            fi
+          } 2>&1 | tee -a state/run.log
       - name: publish to the portfolio repo's quizbot-data branch (never main)
         env:
           PORTFOLIO_TOKEN: ${{ secrets.PORTFOLIO_TOKEN }}
