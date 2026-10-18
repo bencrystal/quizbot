@@ -34,7 +34,7 @@ def eleven_voice_id(name: str) -> str:
     r = requests.get("https://api.elevenlabs.io/v1/voices", headers={"xi-api-key": os.environ["ELEVENLABS_API_KEY"]}, timeout=30)
     r.raise_for_status()
     for v in r.json()["voices"]:
-        if v["name"].lower() == name.lower():
+        if v["name"].split(" - ")[0].strip().lower() == name.lower():
             return v["voice_id"]
     raise SystemExit(f"ElevenLabs voice '{name}' not found; have: {[v['name'] for v in r.json()['voices']]}")
 
