@@ -36,9 +36,13 @@ jobs:
           META_APP_ID: ${{ secrets.META_APP_ID }}
           META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
           META_PAGE_NAME: ${{ github.event.inputs.page }}
+        shell: bash -o pipefail {0}
         run: |
-          python scripts/meta_auth.py exchange '${{ github.event.inputs.code }}' | tee state/meta_auth.log
-          echo "## $(cat state/meta_auth.log)" >> $GITHUB_STEP_SUMMARY
+          mkdir -p state
+          python scripts/meta_auth.py exchange '${{ github.event.inputs.code }}' 2>&1 | tee state/meta_auth.log \
+            || { echo "## Exchange failed"; echo; echo '```'; cat state/meta_auth.log; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          grep -q "^page:" state/meta_auth.log && echo "## $(grep '^page:' state/meta_auth.log)" >> $GITHUB_STEP_SUMMARY
+          test -s state/meta_token.json
       - uses: actions/cache/save@v4
         if: github.event.inputs.code != ''
         with:
