@@ -19,6 +19,9 @@ from . import Pack
 
 XC_API = "https://xeno-canto.org/api/3/recordings"
 WIKI = "https://en.wikipedia.org/api/rest_v1/page/summary/"
+WIKI_API = "https://en.wikipedia.org/w/api.php"
+# Sections a birder would quote, best first: how it sounds, what it looks like, how it behaves
+SECTION_PREFS = [("vocal", "voice", "call", "song"), ("description", "identification", "appearance"), ("behavio",)]
 UA = {"User-Agent": "quizbot/1.0 (audio quiz channel; contact benjamincrystal8@gmail.com)"}
 OK_LICENSES = ("creativecommons.org/licenses/by/", "creativecommons.org/licenses/by-sa/", "publicdomain")
 
@@ -266,7 +269,22 @@ class BirdsPack(Pack):
         r.raise_for_status()
         d = r.json()
         keep = {"extract": d.get("extract", ""), "image": (d.get("originalimage") or d.get("thumbnail") or {}).get("source"),
-                "url": (d.get("content_urls") or {}).get("desktop", {}).get("page", "")}
+                "url": (d.get("content_urls") or {}).get("desktop", {}).get("page", ""), "sections": {}}
+        try:                                               # full article text, split into sections
+            r2 = requests.get(WIKI_API, params={"action": "query", "prop": "extracts", "explaintext": 1, "format": "json",
+                                                "redirects": 1, "titles": title}, headers=UA, timeout=30)
+            page = next(iter(r2.json()["query"]["pages"].values()))
+            cur, buf = "lead", []
+            for line in page.get("extract", "").splitlines():
+                m = re.match(r"^=+\s*(.+?)\s*=+$", line.strip())
+                if m:
+                    keep["sections"][cur] = " ".join(buf).strip()
+                    cur, buf = m.group(1).lower(), []
+                elif line.strip():
+                    buf.append(line.strip())
+            keep["sections"][cur] = " ".join(buf).strip()
+        except Exception as e:
+            print(f"  [birds] sections unavailable for {title}: {str(e)[:80]}")
         p.write_text(json.dumps(keep))
         return keep
 
@@ -326,9 +344,12 @@ class BirdsPack(Pack):
             family_hint = f"It's {family}."
         else:
             family_hint = f"It's {family}, about the size of {size}."
-        guide = first_sentences(info["extract"], 2)
-        guide = redact(guide, name)
-        hints = [region_hint, family_hint, f"From the field guide: {guide}"]
+        guide_src, guide_kind = field_guide_text(info, name)
+        guide = redact(first_sentences(guide_src, 2), name)
+        lead_in = {"voice": "Birders describe the call like this:", "looks": "From the field guide:",
+                   "behaviour": "From the field guide:"}[guide_kind]
+        hints = [region_hint, family_hint, f"{lead_in} {guide}"]
+        aka = aliases(info["extract"], name)
         if "region" in theme:
             hints.remove(region_hint)
         elif "families" in theme:
@@ -342,8 +363,40 @@ class BirdsPack(Pack):
             shape_hint=False,                      # photos have no silhouette; the last hint is the field-guide line
             difficulty=float(diff), pronunciation=None,
             meta={"family": family, "regions": regions, "credit": credit, "wiki": info.get("url", ""),
-                  "entry": first_sentences(info["extract"], 3)},
+                  "entry": redact_clean_lead(info["extract"]), "aka": aka},
         )
+
+
+def field_guide_text(info: dict, name: str) -> tuple[str, str]:
+    """Pick the most birder-like passage: the call description, else the physical description, else behaviour,
+    else the lead paragraph with its 'also known as' clause stripped."""
+    secs = info.get("sections") or {}
+    for keys, kind in zip(SECTION_PREFS, ("voice", "looks", "behaviour")):
+        for title, text in secs.items():
+            if any(k in title for k in keys) and len(text) > 80:
+                return text, kind
+    return redact_clean_lead(info.get("extract", "")), "looks"
+
+
+def redact_clean_lead(text: str) -> str:
+    """Lead paragraph without the ', also known as …,' clause (those names move to the reveal)."""
+    t = re.sub(r",?\s*(also|sometimes|formerly|commonly|colloquially) (known|called|referred to) (as )?[^.]*?(?=, is | is |\.)", "", text, flags=re.I)
+    return first_sentences(t, 3)
+
+
+def aliases(text: str, name: str) -> list[str]:
+    """'also known as the northern barred owl, striped owl, or hoot owl' → ['northern barred owl', 'striped owl', 'hoot owl']"""
+    m = re.search(r"(?:also|sometimes|commonly|colloquially) (?:known|called|referred to) (?:as )?(?:the )?([^.]*?)(?=, is | is |\.)", text, flags=re.I)
+    if not m:
+        return []
+    raw = re.sub(r"\bor more informally,?\b", ",", m.group(1), flags=re.I)
+    parts = re.split(r",\s*|\s+or\s+", raw)
+    out = []
+    for x in parts:
+        x = re.sub(r"^(the|an?)\s+", "", x.strip(" ,"), flags=re.I).strip()
+        if x and x.lower() != name.lower() and len(x) < 40 and x not in out:
+            out.append(x)
+    return out[:4]
 
 
 def slug(s: str) -> str:
@@ -368,6 +421,7 @@ def redact(text: str, name: str) -> str:
             t = re.sub(rf"\b{re.escape(w)}\b", "bird", t, flags=re.I)
     t = re.sub(r"\([^)]*\)", "", t)                  # drop scientific names in parentheses
     t = re.sub(r"\s+", " ", t).replace(" ,", ",").replace(" .", ".").strip()
+    t = re.sub(r"\bthis bird, (is|was|has)\b", r"this bird \1", t, flags=re.I)      # leftover comma after a stripped clause
     t = re.sub(r"\bthis bird is a (species|kind|type) of bird\b", "this bird is a bird", t, flags=re.I)
     t = re.sub(r"\bis a bird, (a group|a genus|a family) of\b", r"belongs to \1 of", t, flags=re.I)
     return re.sub(r"(^|[.!?]\s+)([a-z])", lambda m: m.group(1) + m.group(2).upper(), t)

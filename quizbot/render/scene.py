@@ -295,6 +295,8 @@ class Scene:
             # landscape: bigger type, plus the Pokédex entry under the one-liner so the column isn't empty
             name_sz, fact_sz, entry_sz = (104, 36, 0) if self.portrait else (124, 44, 32)
             fact_lines = self.wrap(st["fact"], fact_sz, g["text_w"])[:4]
+            if st.get("aka"):
+                fact_lines += self.wrap("Also known as " + ", ".join(st["aka"]) + ".", fact_sz, g["text_w"])[:2]
             entry_lines = self.wrap(st["entry"], entry_sz, g["text_w"])[:6] if entry_sz and st["entry"] else []
             if not self.portrait:
                 block = (int(100 * self.u) + int(100 * self.u) + len(fact_lines) * int(fact_sz * 1.4 * self.u)
