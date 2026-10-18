@@ -65,6 +65,9 @@ class TTS:
         try:
             getattr(self, f"_{self.provider}")(text, raw)
         except Exception as e:
+            import importlib.util
+            if importlib.util.find_spec("kokoro") is None:     # no local fallback installed: fail loudly, never ship a worse voice
+                raise
             if self.provider in ("openai", "elevenlabs") and not getattr(self, "_fell_back", False):
                 print(f"[tts] {self.provider} failed ({str(e)[:120]}); falling back to kokoro for this run")
                 self._fell_back = True

@@ -31,9 +31,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng
-      - run: pip install -r requirements.txt kokoro soundfile
+        with: { python-version: "3.12", cache: pip }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install -r requirements.txt
+      # Kokoro (free local TTS) pulls in torch — ~3 minutes per run. Only install it when it is the provider.
+      - if: ${{ vars.QUIZBOT_TTS_PROVIDER == 'kokoro' }}
+        run: sudo apt-get install -y espeak-ng && pip install kokoro soundfile
       - name: Refresh pronunciation guide (falls back to the committed copy)
         run: python scripts/fetch_pronunciations.py || echo "::warning::pronunciation guide fetch failed; using committed copy"
       - uses: actions/cache@v4
