@@ -28,9 +28,22 @@ pack = get_pack("pokemon", s)
 out = s.out_dir / "voices"; out.mkdir(parents=True, exist_ok=True)
 for n_, dex in (("Lugia", 249), ("Arceus", 493), ("Plusle", 311)):
     pack.spoken_replacements[n_] = pack.pronunciations[n_] = pack.guide.get(dex, n_)
+def eleven_voice_id(name: str) -> str:
+    """'eleven:Brian' → voice id, resolved from the account's voice list (premade voices included)."""
+    import requests
+    r = requests.get("https://api.elevenlabs.io/v1/voices", headers={"xi-api-key": os.environ["ELEVENLABS_API_KEY"]}, timeout=30)
+    r.raise_for_status()
+    for v in r.json()["voices"]:
+        if v["name"].lower() == name.lower():
+            return v["voice_id"]
+    raise SystemExit(f"ElevenLabs voice '{name}' not found; have: {[v['name'] for v in r.json()['voices']]}")
+
+
 for voice in VOICES:
-  for variant in ("-inline", "-instruct", "-plain"):
-    s.tts_voice = voice
+  eleven = voice.startswith("eleven:")
+  for variant in (("-inline",) if eleven else ("-inline", "-instruct", "-plain")):
+    s.tts_provider = "elevenlabs" if eleven else "openai"
+    s.tts_voice = eleven_voice_id(voice.split(":", 1)[1]) if eleven else voice
     tts = TTS(s)
     if variant != "-inline":
         tts.SPOKEN = {}            # no "POH-kee-mon" text respelling either
@@ -42,7 +55,7 @@ for voice in VOICES:
             parts.append(tts.say(text, style, notes=pack.pronunciation_notes(text)))
         else:
             parts.append(tts.say(text, style))
-    v = voice + variant
+    v = voice.replace(":", "-") + variant
     lst = out / f"{v}.txt"
     lst.write_text("".join(f"file '{p.resolve()}'\nfile '{(out / 'gap.wav').resolve()}'\n" for p in parts))
     if not (out / "gap.wav").exists():

@@ -3,7 +3,7 @@ name: voice samples
 on:
   workflow_dispatch:
     inputs:
-      voices: { default: "ash,coral,nova,echo,sage,ballad" }
+      voices: { default: "coral,eleven:Brian,eleven:Sarah,eleven:Chris,eleven:Jessica", description: "OpenAI voice names, or eleven:<ElevenLabs voice name>" }
 jobs:
   samples:
     runs-on: ubuntu-latest
@@ -15,6 +15,7 @@ jobs:
       - run: pip install -r requirements.txt
       - env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           VOICES: ${{ github.event.inputs.voices }}
         run: python scripts/voice_sampler.py
       - uses: actions/upload-artifact@v4
