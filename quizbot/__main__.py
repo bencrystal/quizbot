@@ -44,12 +44,21 @@ def cmd_run(args, settings: Settings) -> int:
             pack_name = rotation[state.count_episodes("short") % len(rotation)]
         print(f"[plan] pack: {pack_name} (auto)")
     pack = get_pack(pack_name, settings)
+    exp_tags: list[str] = []
+    if settings.format == "short":
+        forced = str(settings.shorts_cold_open).lower()          # workflow input overrides the experiment
+        from .experiments import assign
+        exp_id, variant, exp_tags = assign(settings, state)
+        if forced in ("1", "true", "yes", "0", "false", "no"):
+            settings.shorts_cold_open = forced
+        if exp_id:
+            print(f"[plan] experiment {exp_id}: variant {variant}")
     ep = plan_episode(pack, settings, state, seed=args.seed, theme_id=args.theme)
     if ep.format == "short":
         mode = str(settings.shorts_cold_open).lower()
         cold = (state.count_episodes("short") % 2 == 0) if mode == "auto" else mode in ("1", "true", "yes")
         ep.meta["cold_open"] = cold
-        ep.tags.append("coldopen" if cold else "announce")
+        ep.tags += ["coldopen" if cold else "announce", *exp_tags]
         ep.slug += "-cold" if cold else "-ann"
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned", meta={"manual": bool(args.force)})

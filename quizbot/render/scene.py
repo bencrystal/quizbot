@@ -291,7 +291,7 @@ class Scene:
         # text column: hints (pre-reveal) or name + fact (reveal)
         x, y, anchor = g["text_x"], g["text_y"], ("mm" if g["center"] else "lm")
         if st["reveal_p"] > 0:
-            y = g["name_y"]
+            y = g["name_y"] - (int(14 * self.u) if self.portrait else 0)   # keep the block centred after the wider gaps
             # landscape: bigger type, plus the Pokédex entry under the one-liner so the column isn't empty
             name_sz, fact_sz, entry_sz = (104, 36, 0) if self.portrait else (124, 44, 32)
             fact_lines = self.wrap(st["fact"], fact_sz, g["text_w"])[:4]
@@ -303,7 +303,7 @@ class Scene:
             a = ease_out(st["reveal_p"] / 0.4)
             rx_, ranchor = (g["art"][0], "mm") if self.portrait else (x, anchor)
             self.text(d, (rx_, y), st["answer"], name_sz, anchor=ranchor, max_width=g["text_w"], alpha=a)
-            y += int((90 if self.portrait else 100) * self.u)
+            y += int((112 if self.portrait else 100) * self.u)      # clear the name's descenders
             label = st["subtitle"]
             f = self.font(34)
             w = f.getlength(label) + int(44 * self.u)
@@ -312,7 +312,7 @@ class Scene:
             d.rounded_rectangle((px, y - h // 2, px + w, y + h // 2), radius=h // 2,
                                 fill=tuple(int(c * a) for c in accent))
             self.text(d, (px + w / 2, y), label, 34, fill=bg, alpha=a)
-            y += int((90 if self.portrait else 100) * self.u)
+            y += int((98 if self.portrait else 100) * self.u)
             for ln in fact_lines:
                 self.text(d, (rx_, y), ln, fact_sz, fill=(230, 230, 238), bold=False, anchor=ranchor, alpha=a)
                 y += int(fact_sz * 1.4 * self.u)

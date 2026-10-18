@@ -22,7 +22,7 @@ concurrency:
   group: quizbot-render
   cancel-in-progress: false
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
@@ -49,6 +49,11 @@ jobs:
           path: state/youtube_token.json
           key: yt-token-
           restore-keys: yt-token-
+      - name: ledger — restore from the `ledger` branch if the cache had nothing
+        run: |
+          if [ ! -s state/quizbot.db ]; then
+            git fetch -q origin ledger 2>/dev/null && git show origin/ledger:quizbot.db > state/quizbot.db && echo "ledger restored from branch" || echo "no ledger yet"
+          fi
       - name: secrets → files
         run: |
           mkdir -p state config
@@ -79,6 +84,18 @@ jobs:
           python -m quizbot run --format ${{ steps.fmt.outputs.format }} --pack ${{ github.event.inputs.pack || 'auto' }} \
             ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }} \
             ${{ github.event.inputs.force == 'true' && '--force' || '' }} 2>&1 | tee -a state/run.log
+      - name: ledger — back up to the `ledger` branch (survives cache eviction)
+        if: always()
+        run: |
+          [ -s state/quizbot.db ] || exit 0
+          rm -rf /tmp/ledger && mkdir /tmp/ledger && cd /tmp/ledger && git init -q
+          git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}"
+          git fetch -q origin ledger && git checkout -q -b ledger FETCH_HEAD || git checkout -q --orphan ledger
+          cp "$GITHUB_WORKSPACE/state/quizbot.db" quizbot.db
+          git add quizbot.db
+          git diff --cached --quiet || git commit -q -m "ledger $(date -u +%FT%TZ)"
+          git push -q origin ledger
       - name: post result to the "Episode log" issue
         if: always()
         env:

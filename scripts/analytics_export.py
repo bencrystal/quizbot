@@ -64,7 +64,7 @@ def main() -> None:
                 "format": "short" if "#shorts" in sn["title"].lower() else "long", "variant": variant, "theme": theme,
                 "duration": iso_dur(v["contentDetails"].get("duration")), "privacy": v.get("status", {}).get("privacyStatus"),
                 "views": int(st.get("viewCount", 0)), "likes": int(st.get("likeCount", 0)), "comments": int(st.get("commentCount", 0)),
-                "avd": None, "avp": None, "minutes": None, "subs": None,
+                "avd": None, "avp": None, "minutes": None, "subs": None, "tags": [t for t in tags if t.startswith("exp:")],
             }
 
     # ---- per-video retention (Analytics API), 200 ids per query
@@ -101,6 +101,29 @@ def main() -> None:
         for r in c.execute("SELECT pack, fmt, COUNT(*) n FROM used_by_format GROUP BY pack, fmt"):
             ledger["used"].setdefault(r["pack"], {})[r["fmt"]] = r["n"]
 
+    # ---- recent comments (newest 25 public videos, up to 5 each): what viewers actually say
+    comments = []
+    for v in sorted(videos.values(), key=lambda v: v["published"], reverse=True)[:25]:
+        if v["privacy"] != "public":
+            continue
+        try:
+            r = yt.commentThreads().list(part="snippet", videoId=v["id"], maxResults=5, order="relevance",
+                                         textFormat="plainText").execute()
+        except Exception as e:                      # comments disabled etc.
+            print(f"comments skipped for {v['id']}: {str(e)[:80]}")
+            continue
+        for t in r.get("items", []):
+            c = t["snippet"]["topLevelComment"]["snippet"]
+            comments.append({"video": v["id"], "title": v["title"], "author": c.get("authorDisplayName", ""),
+                             "text": c.get("textDisplay", "")[:300], "likes": c.get("likeCount", 0),
+                             "at": c.get("publishedAt", "")})
+    comments.sort(key=lambda c: c["at"], reverse=True)
+
+    # ---- experiments: judge the active one from retention data, persist the decision
+    from quizbot.experiments import judge, load_config
+    exp_state = judge(list(videos.values()))
+    exp_cfg = load_config()
+
     out = {
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "channel": {"title": ch["snippet"]["title"], "subscribers": int(ch["statistics"].get("subscriberCount", 0)),
@@ -109,6 +132,8 @@ def main() -> None:
         "packs": {n: {"display_name": p.display_name, "noun": p.noun} for n, p in packs.items()},
         "videos": sorted(videos.values(), key=lambda v: v["published"], reverse=True),
         "ledger": ledger,
+        "comments": comments[:60],
+        "experiments": {"config": exp_cfg, "state": exp_state},
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=0) + "\n")

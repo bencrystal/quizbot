@@ -37,6 +37,9 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     if settings.mechanic == "choice":
         for it in items:
             it.choices = pack.make_choices(it, pool, rng)
+    if settings.format == "short" and settings.short_hints:
+        for it in items:
+            it.hints = it.hints[-settings.short_hints:]
 
     today = dt.date.today().isoformat()
     slug = f"{pack.name}-{settings.format}-{slugify(theme['label'])}-{today}"
@@ -61,7 +64,10 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
     hashtags = f"#quiz #audioquiz #{slugify(pack.name)}" + (" #shorts" if short else "")
 
     if short:
-        title = f"Can you name this {pack.noun} from its sound? ({theme['label']}) #shorts"
+        if settings.title_style == "challenge":
+            title = f"Only real fans know this {pack.noun} by its sound ({theme['label']}) #shorts"
+        else:
+            title = f"Can you name this {pack.noun} from its sound? ({theme['label']}) #shorts"
         desc = (f"{pack.channel_blurb}\n\nOne round. Three hints. How fast did you get it?\n"
                 f"Full {n if n > 1 else 10}-round quizzes every week.\n\nAnswer: {items[0].answer}\n\n{hashtags}")
         intro = pack.opening_line

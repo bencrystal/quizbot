@@ -390,7 +390,7 @@ class Renderer:
             delay_ms = int(getattr(self, "bed_delay", 0.0) * 1000)
             graph = ("[0:a]asplit=2[v][sc];"
                      f"[1:a]volume={self.s.music_bed_db}dB,adelay={delay_ms}:all=1[b];"
-                     f"[b][sc]sidechaincompress=threshold=0.01:ratio={ratio:.1f}:attack=60:release=1600:makeup=1[bd];"
+                     f"[b][sc]sidechaincompress=threshold=0.01:ratio={ratio:.1f}:attack=40:release=1000:makeup=1[bd];"
                      "[v][bd]amix=inputs=2:duration=first:normalize=0[a]")
             run(ff("-f", "concat", "-safe", "0", "-i", str(lst), "-stream_loop", "-1", "-i", str(bed),
                    "-filter_complex", graph, "-map", "[a]", "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", str(mix)))

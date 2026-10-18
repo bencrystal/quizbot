@@ -8,7 +8,7 @@ on:
     - cron: "40 6 * * *"      # 02:40 New York, after the day's YouTube Analytics has settled
 permissions:
   issues: write
-  contents: read
+  contents: write
 jobs:
   export:
     runs-on: ubuntu-latest
@@ -38,6 +38,11 @@ jobs:
         shell: bash -o pipefail {0}
       - uses: actions/upload-artifact@v4
         with: { name: quizbot-analytics, path: out/quizbot-analytics.json, retention-days: 30 }
+      - name: record experiment decisions in the repo
+        run: |
+          git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
+          git add state/experiments.json
+          git diff --cached --quiet || (git commit -q -m "experiments: $(python -c "import json;d=json.load(open('state/experiments.json'));print('decided', d.get('decided'))")" && git push)
       - name: publish to the portfolio repo's quizbot-data branch (never main)
         env:
           PORTFOLIO_TOKEN: ${{ secrets.PORTFOLIO_TOKEN }}

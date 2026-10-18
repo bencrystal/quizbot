@@ -1,0 +1,36 @@
+# Sequential A/B experiments for Shorts. One is active at a time; variants alternate per Short.
+# The nightly analytics job (scripts/analytics_export.py) judges the active experiment once every variant has
+# `min_n` videos with retention data, records the winner in state/experiments.json, and activates the next one.
+# Winners become the baseline for everything after them. Each variant is a set of settings overrides.
+#
+# Decision rule (metric = average % viewed, the swipe-away signal; views are a tie-breaker):
+#   at n >= min_n per side: winner if the best variant leads by >= min_lead (relative) on % viewed;
+#   otherwise keep running until n >= max_n per side, then take the leader on % viewed, views on a tie.
+min_n: 4
+max_n: 8
+min_lead: 0.10
+
+experiments:
+  - id: open
+    question: "Cold open (sound first) or announce the question first?"
+    variants:
+      cold:     { shorts_cold_open: "true" }
+      announce: { shorts_cold_open: "false" }
+
+  - id: title
+    question: "Question title or challenge title?"
+    variants:
+      question:  { title_style: question }
+      challenge: { title_style: challenge }
+
+  - id: think
+    question: "2.5 s or 2.0 s of thinking time per stage?"
+    variants:
+      s25: { stage_seconds: 2.5 }
+      s20: { stage_seconds: 2.0 }
+
+  - id: hints
+    question: "Two hints or just the Pokédex/field-guide hint?"
+    variants:
+      two: { short_hints: 2 }
+      one: { short_hints: 1 }
