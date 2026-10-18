@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       voices: { default: "coral,eleven:Brian,eleven:Sarah,eleven:Chris,eleven:Jessica", description: "OpenAI voice names, or eleven:<ElevenLabs voice name>" }
+permissions:
+  issues: write
+  contents: read
 jobs:
   samples:
     runs-on: ubuntu-latest
@@ -12,12 +15,21 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: sudo apt-get update && sudo apt-get install -y ffmpeg
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt && mkdir -p state
       - env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           VOICES: ${{ github.event.inputs.voices }}
-        run: python scripts/voice_sampler.py
+        run: python scripts/voice_sampler.py 2>&1 | tee state/run.log
+        shell: bash -o pipefail {0}
+      - name: report failure to the "Run failures" issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY="### Run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed ($(date -u +%FT%TZ))\n\n\`\`\`\n$(tail -c 6000 state/run.log 2>/dev/null | sed 's/`/'"'"'/g')\n\`\`\`"
+          N=$(gh issue list -R ${{ github.repository }} --search "Run failures in:title" --state open --json number --jq '.[0].number')
+          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Run failures" --body "$(printf '%b' "$BODY")"; else gh issue comment -R ${{ github.repository }} "$N" --body "$(printf '%b' "$BODY")"; fi
       - uses: actions/upload-artifact@v4
         with:
           name: voice-samples
