@@ -110,7 +110,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          LINE=$(grep -E "🎬|📺|⏸|❌" state/run.log | tail -3 | sed 's/^/    /')
+          LINE=$(grep -E "🎬|📺|📱|⏸|❌|\[meta\]" state/run.log | tail -8 | sed 's/^/    /')
           BODY="[run ${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) · ${{ steps.fmt.outputs.format }} · $(date -u +%FT%TZ)"$'\n'"$LINE"
           N=$(gh issue list -R ${{ github.repository }} --search "Episode log in:title" --state open --json number --jq '.[0].number')
           if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Episode log" --body "$BODY"; else gh issue comment -R ${{ github.repository }} "$N" --body "$BODY"; fi
