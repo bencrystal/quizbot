@@ -103,11 +103,13 @@ def main() -> None:
 
     # ---- recent comments (newest 25 public videos, up to 5 each): what viewers actually say
     comments = []
-    for v in sorted(videos.values(), key=lambda v: v["published"], reverse=True)[:25]:
+    api_key = __import__("os").environ.get("YT_API_KEY")   # commentThreads needs an API key or the force-ssl scope
+    ytc = build("youtube", "v3", developerKey=api_key) if api_key else None
+    for v in sorted(videos.values(), key=lambda v: v["published"], reverse=True)[:25] if ytc else []:
         if v["privacy"] != "public":
             continue
         try:
-            r = yt.commentThreads().list(part="snippet", videoId=v["id"], maxResults=5, order="relevance",
+            r = ytc.commentThreads().list(part="snippet", videoId=v["id"], maxResults=5, order="relevance",
                                          textFormat="plainText").execute()
         except Exception as e:                      # comments disabled etc.
             print(f"comments skipped for {v['id']}: {str(e)[:80]}")

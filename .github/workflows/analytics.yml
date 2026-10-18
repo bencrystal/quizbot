@@ -36,13 +36,18 @@ jobs:
           [ -s state/youtube_token.json ] || echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
       - run: python scripts/analytics_export.py out/quizbot-analytics.json 2>&1 | tee state/run.log
         shell: bash -o pipefail {0}
+        env:
+          YT_API_KEY: ${{ secrets.YT_API_KEY }}
       - uses: actions/upload-artifact@v4
         with: { name: quizbot-analytics, path: out/quizbot-analytics.json, retention-days: 30 }
       - name: record experiment decisions in the repo
         run: |
           git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
           git add state/experiments.json
-          git diff --cached --quiet || (git commit -q -m "experiments: $(python -c "import json;d=json.load(open('state/experiments.json'));print('decided', d.get('decided'))")" && git push)
+          if ! git diff --cached --quiet; then
+            git commit -q -m "experiments: nightly judgement $(date -u +%F)"
+            git pull -q --rebase origin main && git push origin HEAD:main
+          fi
       - name: publish to the portfolio repo's quizbot-data branch (never main)
         env:
           PORTFOLIO_TOKEN: ${{ secrets.PORTFOLIO_TOKEN }}
