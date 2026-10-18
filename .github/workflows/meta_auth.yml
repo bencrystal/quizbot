@@ -26,7 +26,8 @@ jobs:
           META_APP_ID: ${{ secrets.META_APP_ID }}
           META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
         run: |
-          URL=$(python scripts/meta_auth.py url)
+          # GitHub masks the (non-secret) App ID in summaries; store it as repo var META_APP_ID_PUBLIC to avoid that.
+          URL=$(python scripts/meta_auth.py url | sed "s/client_id=[^&]*/client_id=${{ vars.META_APP_ID_PUBLIC || '<APP_ID>' }}/")
           { echo "## Open this link, approve, then copy the URL of the page you land on"; echo; echo "$URL"; echo;
             echo "Then run this workflow again with that URL as the \`code\` input."; } >> $GITHUB_STEP_SUMMARY
       - name: exchange code
