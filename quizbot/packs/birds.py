@@ -262,7 +262,7 @@ class BirdsPack(Pack):
         return best
 
     def _wiki(self, title: str) -> dict:
-        p = self.cache / f"wiki-{slug(title)}.json"
+        p = self.cache / f"wiki2-{slug(title)}.json"
         if p.exists():
             return json.loads(p.read_text())
         r = requests.get(WIKI + title.replace(" ", "_"), headers=UA, timeout=30)
