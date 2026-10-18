@@ -34,3 +34,15 @@ experiments:
     variants:
       two: { short_hints: 2 }
       one: { short_hints: 1 }
+
+  - id: pace
+    question: "Brisk or quick delivery?"
+    variants:
+      brisk: { tts_pace: brisk }
+      quick: { tts_pace: quick }
+
+  - id: energy
+    question: "Host energy or full showman?"
+    variants:
+      host:    { tts_energy: host }
+      showman: { tts_energy: showman }

@@ -334,28 +334,77 @@ class Scene:
                     self.text(d, (g["art"][0], y), st["status"], 40, fill=(200, 202, 214), bold=False, anchor="mm")
                 else:
                     self.text(d, (x, g["art"][1]), st["status"], 44, fill=(200, 202, 214), bold=False, anchor="lm")
-            sizes = []
-            for i, (hint, age) in enumerate(st["hints"]):
-                s_ = hint[0].upper() + hint[1:]
-                if i == len(st["hints"]) - 1:
-                    lines, size = self.wrap_fit(s_, 40, g["text_w"], max_lines=7, bold=True)
-                else:   # earlier hints collapse to one dim line
-                    lines, size = self.wrap_fit(s_, 32, g["text_w"], max_lines=1, bold=False)
-                    if lines and not s_.endswith(lines[-1]):
-                        lines[-1] = lines[-1].rstrip(",.;: ") + "…"
-                sizes.append((lines, size, age, i))
-            latest = len(sizes) - 1
-            if not self.portrait and sizes:          # centre the block vertically on the disc
-                total_h = sum(len(l) * int(sz * 1.4 * self.u) + int(16 * self.u) for l, sz, _, _ in sizes)
-                y = max(int(self.H * 0.14), g["art"][1] - total_h // 2)
-            for lines, size, age, i in sizes:
-                slide = ease_out(age / 0.45)
-                a = slide * (1.0 if i == latest else 0.55)
-                dx = int((1 - slide) * 60 * self.u)
+            hints = st["hints"]
+            latest = len(hints) - 1
+            # Transition: when a new hint lands, the previous hint shrinks from its full layout into its
+            # collapsed one-liner and everything above it settles into place — one eased motion, not a snap.
+            T_IN = 0.45
+            p_new = ease_out(hints[-1][1] / T_IN) if hints else 1.0
+
+            def layout(items, collapse_last):
+                """[(lines, size, bold)] for a list of hints where all but the last are collapsed,
+                or all collapsed when collapse_last=True."""
+                out = []
+                for k, (hint, _) in enumerate(items):
+                    s_ = hint[0].upper() + hint[1:]
+                    full = (k == len(items) - 1) and not collapse_last
+                    if full:
+                        lines, size = self.wrap_fit(s_, 40, g["text_w"], max_lines=7, bold=True)
+                    else:
+                        lines, size = self.wrap_fit(s_, 32, g["text_w"], max_lines=1, bold=False)
+                        if lines and not s_.endswith(lines[-1]):
+                            lines[-1] = lines[-1].rstrip(",.;: ") + "…"
+                    out.append((lines, size, full))
+                return out
+
+            def ys(lay, y0):
+                """Top y of each block, centred on the disc in landscape."""
+                total_h = sum(len(l) * int(sz * 1.4 * self.u) + int(16 * self.u) for l, sz, _ in lay)
+                yy = max(int(self.H * 0.14), g["art"][1] - total_h // 2) if not self.portrait else y0
+                pos = []
+                for l, sz, _ in lay:
+                    pos.append(yy)
+                    yy += len(l) * int(sz * 1.4 * self.u) + int(16 * self.u)
+                return pos
+
+            new_lay = layout(hints, False)
+            new_y = ys(new_lay, y)
+            if len(hints) >= 2 and p_new < 1:
+                old_lay = layout(hints[:-1], False)       # previous hint was the full one
+                old_y = ys(old_lay, y)
+            else:
+                old_lay, old_y = new_lay[:-1], new_y[:-1]
+
+            for i, (lines, size, full) in enumerate(new_lay):
+                if i == latest:
+                    a = p_new
+                    dx = int((1 - p_new) * 60 * self.u)
+                    yy = new_y[i]
+                    for ln in lines:
+                        self.text(d, (x + dx, yy), ln, size, bold=True, anchor=anchor, alpha=a)
+                        yy += int(size * 1.4 * self.u)
+                    continue
+                if i == latest - 1 and p_new < 1:
+                    # the hint that was just the headline: crossfade full → collapsed while sliding up
+                    ol, osz, _ = old_lay[i]
+                    yy_old, yy_new = old_y[i], new_y[i]
+                    yy = int(yy_old + (yy_new - yy_old) * p_new)
+                    if p_new < 0.5:
+                        a = 1.0 - p_new * 2 * 0.45
+                        for ln in ol:
+                            self.text(d, (x, yy), ln, osz, bold=True, anchor=anchor, alpha=a * (1 - p_new * 2))
+                            yy += int(osz * 1.4 * self.u)
+                    else:
+                        for ln in lines:
+                            self.text(d, (x, yy), ln, size, bold=False, anchor=anchor, alpha=0.55 * ((p_new - 0.5) * 2))
+                            yy += int(size * 1.4 * self.u)
+                    continue
+                # older collapsed hints: slide from their old slot to the new one
+                yy_old = old_y[i] if i < len(old_y) else new_y[i]
+                yy = int(yy_old + (new_y[i] - yy_old) * p_new)
                 for ln in lines:
-                    self.text(d, (x + dx, y), ln, size, bold=(i == latest), anchor=anchor, alpha=a)
-                    y += int(size * 1.4 * self.u)
-                y += int(16 * self.u)
+                    self.text(d, (x, yy), ln, size, bold=False, anchor=anchor, alpha=0.55)
+                    yy += int(size * 1.4 * self.u)
 
         return img
 

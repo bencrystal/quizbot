@@ -71,6 +71,8 @@ class Settings:
     shorts_famous_only: bool = True      # Shorts draw from the well-known subset; long-form can go deep
     shorts_cold_open: str = "auto"       # auto (alternate per Short, for A/B) | true | false
     title_style: str = "question"        # Shorts title: question | challenge (A/B)
+    tts_pace: str = "brisk"              # brisk | quick   (how fast the host talks; A/B)
+    tts_energy: str = "host"             # host | showman  (game-show energy level; A/B)
     short_hints: int = 0                 # Shorts: keep only the last N hints (0 = all)
     packs_enabled: list = field(default_factory=lambda: ["pokemon"])   # rotation order for --pack auto
     longs_per_pack_per_week: int = 1     # long-form cadence per pack (the long cron runs daily and skips when met)

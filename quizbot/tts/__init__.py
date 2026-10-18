@@ -54,7 +54,8 @@ class TTS:
         self._style = style
         for a, b in self.SPOKEN.get(self.provider, {}).items():
             text = text.replace(a, b)
-        key = hashlib.sha1(f"{self.provider}|{self.voice}|{style}|{text}".encode()).hexdigest()[:20]
+        direction = self.instructions() if self.provider == "openai" else ""
+        key = hashlib.sha1(f"{self.provider}|{self.voice}|{direction}|{style}|{text}".encode()).hexdigest()[:20]
         out = self.cache / f"{key}.wav"
         if out.exists():
             return out
@@ -108,6 +109,26 @@ class TTS:
         chunks = [audio for _, _, audio in self._kokoro_pipeline(text, voice=voice)]
         sf.write(str(out), np.concatenate(chunks), 24000, format="WAV")
 
+    PACE = {"brisk": "Keep a steady, flowing pace with no long pauses mid-sentence.",
+            "quick": "Talk noticeably quickly — a host keeping a fast show moving — crisp and clear, no long pauses, "
+                     "but never rushed into mumbling."}
+    ENERGY = {"host": "Game-show host energy: bright, upbeat and quick, with a smile in the voice and a little showman "
+                      "flair, like announcing the next round to a live audience. Natural and conversational, never "
+                      "cheesy, never shouting.",
+              "showman": "Big game-show announcer energy: bright, punchy and animated, clearly having fun, with real "
+                         "showman flair and emphasis on the key word of each line — still natural, never cheesy, never "
+                         "shouting."}
+
+    def instructions(self) -> str:
+        """Voice direction from settings (A/B-able) unless QUIZBOT_TTS_STYLE overrides it wholesale."""
+        if os.environ.get("QUIZBOT_TTS_STYLE"):
+            return os.environ["QUIZBOT_TTS_STYLE"]
+        s = self.settings
+        return (self.ENERGY.get(s.tts_energy, self.ENERGY["host"]) + " " + self.PACE.get(s.tts_pace, self.PACE["brisk"]) + " "
+                "Pronounce Pokémon as 'POH-kee-mon' with the stress on POH. Hyphenated words are single names "
+                "written phonetically (capitals mark the stressed syllable), e.g. 'LOO-gee-uh' is one name said "
+                "smoothly — never spell letters out, never pause before them.")
+
     def _openai(self, text: str, out: Path) -> None:
         from openai import OpenAI
         client = OpenAI()
@@ -115,14 +136,7 @@ class TTS:
             model=os.environ.get("QUIZBOT_OPENAI_TTS_MODEL", "gpt-4o-mini-tts"),
             voice=self.voice or "coral", input=text, response_format="wav",
             speed=float(os.environ.get("QUIZBOT_TTS_SPEED", "1.22")),
-            instructions=os.environ.get("QUIZBOT_TTS_STYLE",
-                "Game-show host energy: bright, upbeat and quick, with a smile in the voice and a little showman "
-                "flair, like announcing the next round to a live audience. Natural and conversational, never cheesy, "
-                "never shouting. Keep a steady, flowing pace with no long pauses mid-sentence. "
-                "Pronounce Pokémon as 'POH-kee-mon' with the stress on POH. Hyphenated words are single names "
-                "written phonetically (capitals mark the stressed syllable), e.g. 'LOO-gee-uh' is one name said "
-                "smoothly — never spell letters out, never pause before them.")
-                + (" " + getattr(self, "_style", "") if getattr(self, "_style", "") else ""),
+            instructions=self.instructions() + (" " + getattr(self, "_style", "") if getattr(self, "_style", "") else ""),
         ) as r:
             r.stream_to_file(out)
 
