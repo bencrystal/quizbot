@@ -271,7 +271,7 @@ class BirdsPack(Pack):
         return keep
 
     def _audio(self, rec: dict, name: str) -> Path:
-        """Download, trim to the first 5 s of the recording, fade, 48 kHz."""
+        """Download, trim to the first 4 s of the recording, fade, 48 kHz."""
         out = self.cache / f"call-{slug(name)}.wav"
         if out.exists():
             return out
@@ -280,8 +280,8 @@ class BirdsPack(Pack):
             r = requests.get(rec["file"], headers=UA, timeout=120)
             r.raise_for_status()
             raw.write_bytes(r.content)
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-t", "5",
-                        "-af", "highpass=f=250,afade=t=in:d=0.05,afade=t=out:st=4.6:d=0.4",
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-t", "4",
+                        "-af", "highpass=f=250,afade=t=in:d=0.05,afade=t=out:st=3.6:d=0.4",
                         "-ar", "48000", "-ac", "2", str(out)], check=True)
         return out
 
@@ -321,7 +321,11 @@ class BirdsPack(Pack):
 
         where = ", ".join(REGION_NAMES[c] for c in regions if c in REGION_NAMES) if regions != "A" else "most of the United States"
         region_hint = f"It lives in {where}, in {habitat}."
-        family_hint = f"It's {family}, about the size of {size}."
+        fam_word = re.sub(r"^(a|an)\s+", "", family).split(",")[0].split(" ")[0]
+        if fam_word and fam_word in size:                       # "a sparrow … the size of a sparrow"
+            family_hint = f"It's {family}."
+        else:
+            family_hint = f"It's {family}, about the size of {size}."
         guide = first_sentences(info["extract"], 2)
         guide = redact(guide, name)
         hints = [region_hint, family_hint, f"From the field guide: {guide}"]
@@ -352,17 +356,21 @@ def first_sentences(text: str, n: int) -> str:
 
 
 def redact(text: str, name: str) -> str:
-    """Swap the bird's name (and any distinctive word of it) for 'this bird'."""
-    t = re.sub(rf"\b(a|an|the)\s+{re.escape(name)}\b", "this bird", text, flags=re.I)
-    t = re.sub(rf"\b{re.escape(name)}\b", "this bird", t, flags=re.I)
+    """Hide the bird's name. The full name becomes 'this bird'; a lone distinctive word of it (junco, towhee,
+    'the robin') becomes plain 'bird'/'birds', so 'a species of junco' reads 'a species of bird'."""
+    t = re.sub(rf"\b(a|an|the)\s+{re.escape(name)}s?\b", "this bird", text, flags=re.I)
+    t = re.sub(rf"\b{re.escape(name)}s?\b", "this bird", t, flags=re.I)
+    generic = {"american", "common", "northern", "eastern", "western", "great", "house", "black", "white", "red",
+               "blue", "yellow", "brown", "gray", "grey", "green", "golden", "wood", "song", "winter", "tree"}
     for w in re.split(r"[\s\-']+", name):
-        if len(w) >= 4 and w.lower() not in {"american", "common", "northern", "eastern", "western", "great", "house"}:
-            t = re.sub(rf"\b{re.escape(w)}s\b", "these birds", t, flags=re.I)
-            t = re.sub(rf"\b(a|an|the)\s+{re.escape(w)}\b", "this bird", t, flags=re.I)
-            t = re.sub(rf"\b{re.escape(w)}\b", "this bird", t, flags=re.I)
+        if len(w) >= 4 and w.lower() not in generic:
+            t = re.sub(rf"\b{re.escape(w)}s\b", "birds", t, flags=re.I)
+            t = re.sub(rf"\b{re.escape(w)}\b", "bird", t, flags=re.I)
     t = re.sub(r"\([^)]*\)", "", t)                  # drop scientific names in parentheses
     t = re.sub(r"\s+", " ", t).replace(" ,", ",").replace(" .", ".").strip()
-    return re.sub(r"(^|[.!?]\s+)th(is bird|ese birds)", lambda m: m.group(1) + "Th" + m.group(2), t)
+    t = re.sub(r"\bthis bird is a (species|kind|type) of bird\b", "this bird is a bird", t, flags=re.I)
+    t = re.sub(r"\bis a bird, (a group|a genus|a family) of\b", r"belongs to \1 of", t, flags=re.I)
+    return re.sub(r"(^|[.!?]\s+)([a-z])", lambda m: m.group(1) + m.group(2).upper(), t)
 
 
 def lic_short(url: str) -> str:
