@@ -1,1 +1,19 @@
-{"decided": {}, "active": "open", "log": []}
+{
+ "decided": {},
+ "active": "open",
+ "log": [],
+ "results": {
+  "open": {
+   "cold": {
+    "n": 0,
+    "avp": null,
+    "views": null
+   },
+   "announce": {
+    "n": 0,
+    "avp": null,
+    "views": null
+   }
+  }
+ }
+}
