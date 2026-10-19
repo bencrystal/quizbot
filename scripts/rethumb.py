@@ -43,6 +43,7 @@ def main() -> None:
     decided = st.get("decided", {}).get("thumb")
     packs: dict = {}
     done = skipped = 0
+    summary: list[str] = []
     rows = state.conn.execute("SELECT slug, pack, theme, youtube_id FROM episodes WHERE youtube_id IS NOT NULL ORDER BY created_at").fetchall()
     n_long = 0
     for r in rows:
@@ -86,7 +87,8 @@ def main() -> None:
         out.parent.mkdir(parents=True, exist_ok=True)
         scene.thumbnail(thumb_items(e), ep.get("theme", ""), out, style=style, short=(fmt == "short"),
                         rounds=len(items), tint=items[0].tint)
-        print(f"{'would set' if a.dry_run else 'set'} {vid} ({fmt}, {style}{', tagged' if 'exp:thumb=' + str(arm) in tags and fmt == 'long' else ''}): {slug}")
+        line = f"{'would set' if a.dry_run else 'set'} {vid} ({fmt}, {style}{', tagged' if 'exp:thumb=' + str(arm) in tags and fmt == 'long' else ''}): {slug}"
+        print(line); summary.append(line)
         if a.dry_run:
             continue
         yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(out))).execute()
@@ -94,6 +96,7 @@ def main() -> None:
             snippet["tags"] = tags
             yt.videos().update(part="snippet", body={"id": vid, "snippet": snippet}).execute()
         done += 1
+    print("---- summary ----\n" + "\n".join(summary))
     print(f"rethumbed {done} video(s); skipped {skipped}")
 
 
