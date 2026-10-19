@@ -39,8 +39,9 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
 - Rules Ben owns (never change unasked): `youtube_privacy`, `upload`, `max_episodes_per_day`, `made_for_kids`.
 
 ## Operations
-- `.github/workflows/daily.yml`: Shorts at 11/15/19/23 UTC, long-form 12:30 UTC daily (skips packs that
-  already had one this week). `workflow_dispatch` inputs: format, theme, force, cold_open, pack.
+- `.github/workflows/daily.yml`: runs hourly; `scripts/due.py` decides from the ledger whether a Short (slots
+  11/15/19/23 UTC), the long-form (from 12:30 UTC; skips packs that already had one this week) or nothing is due.
+  GitHub cron drops/delays firings, so missed slots catch up on the next hour. 'none' runs post nothing. `workflow_dispatch` inputs: format, theme, force, cold_open, pack.
   Runs are serialized (`concurrency`); the state cache (`state/`, `out/`) is restored from the latest run.
 - Results → GitHub issue "Episode log" (#2); failures with log tail → "Run failures" (#1). Actions logs are
   not readable from Claude sessions; the issues are the source of truth.

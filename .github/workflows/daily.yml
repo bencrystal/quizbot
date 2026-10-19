@@ -5,11 +5,10 @@
 name: episodes
 on:
   schedule:
-    - cron: "0 11 * * *"      # Shorts — 07:00, 11:00, 15:00, 19:00 New York (EDT); packs rotate
-    - cron: "0 15 * * *"
-    - cron: "0 19 * * *"
-    - cron: "0 23 * * *"
-    - cron: "30 12 * * *"     # long-form — 08:30 New York daily; renders the next pack that hasn't had one this week
+    # Hourly; scripts/due.py decides from the ledger whether a Short (slots 11/15/19/23 UTC), the day's long-form
+    # (from 12:30 UTC) or nothing is due — GitHub's cron drops and delays firings, so the slots themselves are
+    # not trusted. Missed slots catch up on the next hour.
+    - cron: "5 * * * *"
   workflow_dispatch:
     inputs:
       format: { default: short, type: choice, options: [short, long] }
@@ -39,7 +38,7 @@ jobs:
         run: sudo apt-get install -y espeak-ng && pip install kokoro soundfile
       - name: Refresh pronunciation guide (falls back to the committed copy)
         run: python scripts/fetch_pronunciations.py || echo "::warning::pronunciation guide fetch failed; using committed copy"
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v4        # saved explicitly at the end, only when something rendered
         with:
           path: |
             state/quizbot.db
@@ -71,9 +70,10 @@ jobs:
         id: fmt
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then echo "format=${{ github.event.inputs.format }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event.schedule }}" = "30 12 * * *" ]; then echo "format=long" >> $GITHUB_OUTPUT
-          else echo "format=short" >> $GITHUB_OUTPUT; fi
+          else echo "format=$(python scripts/due.py)" >> $GITHUB_OUTPUT; fi
+          cat $GITHUB_OUTPUT
       - name: run
+        if: steps.fmt.outputs.format != 'none'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
@@ -93,8 +93,16 @@ jobs:
           python -m quizbot run --format ${{ steps.fmt.outputs.format }} --pack ${{ github.event.inputs.pack || 'auto' }} \
             ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }} \
             ${{ github.event.inputs.force == 'true' && '--force' || '' }} 2>&1 | tee -a state/run.log
+      - uses: actions/cache/save@v4           # hourly 'none' runs save nothing, so the token caches are not churned out
+        if: always() && steps.fmt.outputs.format != 'none'
+        with:
+          path: |
+            state/quizbot.db
+            state/cache
+            out
+          key: quizbot-state-${{ github.run_id }}
       - name: ledger — back up to the `ledger` branch (survives cache eviction)
-        if: always()
+        if: always() && steps.fmt.outputs.format != 'none'
         run: |
           [ -s state/quizbot.db ] || exit 0
           rm -rf /tmp/ledger && mkdir /tmp/ledger && cd /tmp/ledger && git init -q
@@ -106,7 +114,7 @@ jobs:
           git diff --cached --quiet || git commit -q -m "ledger $(date -u +%FT%TZ)"
           git push -q origin ledger
       - name: post result to the "Episode log" issue
-        if: always()
+        if: always() && steps.fmt.outputs.format != 'none'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -123,7 +131,7 @@ jobs:
           N=$(gh issue list -R ${{ github.repository }} --search "Run failures in:title" --state open --json number --jq '.[0].number')
           if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Run failures" --body "$(printf '%b' "$BODY")"; else gh issue comment -R ${{ github.repository }} "$N" --body "$(printf '%b' "$BODY")"; fi
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.fmt.outputs.format != 'none'
         with:
           name: episode-${{ github.run_id }}
           path: |
