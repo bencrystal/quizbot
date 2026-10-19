@@ -104,8 +104,58 @@ def main() -> None:
         for r in c.execute("SELECT pack, fmt, COUNT(*) n FROM used_by_format GROUP BY pack, fmt"):
             ledger["used"].setdefault(r["pack"], {})[r["fmt"]] = r["n"]
 
+    # ---- audience + traffic (Analytics API): who watches and how they arrive. Each query is independent.
+    audience: dict[str, list] = {}
+    for key, dims, metrics, sort in [
+        ("countries", "country", "views,estimatedMinutesWatched", "-views"),
+        ("ages", "ageGroup,gender", "viewerPercentage", "-viewerPercentage"),
+        ("traffic", "insightTrafficSourceType", "views,estimatedMinutesWatched", "-views"),
+        ("devices", "deviceType", "views", "-views"),
+    ]:
+        try:
+            rep = yta.reports().query(ids="channel==MINE", startDate=START, endDate=today, dimensions=dims,
+                                      metrics=metrics, sort=sort, maxResults=25).execute()
+            cols = [c["name"] for c in rep.get("columnHeaders", [])]
+            audience[key] = [dict(zip(cols, r)) for r in rep.get("rows", [])]
+        except Exception as e:
+            print(f"audience/{key} skipped: {str(e)[:100]}")
+            audience[key] = []
+
+    # ---- monetisation progress (YPP: 1,000 subs AND 4,000 public watch-hours on long-form in 365 d, or 10M
+    #      Shorts views in 90 d). Shorts watch time does not count toward the 4,000 hours.
+    def _window(ids_: list[str], days: int, metric: str) -> float:
+        tot = 0.0
+        for k in range(0, len(ids_), 200):
+            try:
+                rep = yta.reports().query(ids="channel==MINE", startDate=(dt.date.today() - dt.timedelta(days=days)).isoformat(),
+                                          endDate=today, metrics=metric, filters="video==" + ",".join(ids_[k:k + 200])).execute()
+                tot += float((rep.get("rows") or [[0]])[0][0])
+            except Exception as e:
+                print(f"ypp window skipped: {str(e)[:100]}")
+        return tot
+    long_ids = [v["id"] for v in videos.values() if v["format"] == "long"]
+    short_ids = [v["id"] for v in videos.values() if v["format"] == "short"]
+    ypp = {"subscribers": int(ch["statistics"].get("subscriberCount", 0)), "subscribers_needed": 1000,
+           "watch_hours_365d": round(_window(long_ids, 365, "estimatedMinutesWatched") / 60, 1) if long_ids else 0.0,
+           "watch_hours_needed": 4000,
+           "shorts_views_90d": int(_window(short_ids, 90, "views")) if short_ids else 0, "shorts_views_needed": 10_000_000}
+
+    # ---- budget: paid TTS credits (ElevenLabs), so a dry account is visible before a Short falls back
+    budget: dict[str, dict] = {}
+    el_key = __import__("os").environ.get("ELEVENLABS_API_KEY")
+    if el_key:
+        try:
+            import requests as _rq
+            sub = _rq.get("https://api.elevenlabs.io/v1/user/subscription", headers={"xi-api-key": el_key}, timeout=30).json()
+            budget["elevenlabs"] = {"tier": sub.get("tier"), "used": sub.get("character_count"), "limit": sub.get("character_limit"),
+                                    "resets": dt.datetime.fromtimestamp(sub["next_character_count_reset_unix"], dt.timezone.utc).date().isoformat()
+                                    if sub.get("next_character_count_reset_unix") else None}
+        except Exception as e:
+            budget["elevenlabs"] = {"error": str(e)[:120]}
+
     # ---- cross-post metrics (Instagram / Facebook) joined to videos by episode slug
     platforms: dict[str, dict] = {}
+    platform_summary: dict[str, dict] = {}
     try:
         from quizbot.publish.meta import token as meta_token, GRAPH
         import requests as _rq
@@ -135,8 +185,28 @@ def main() -> None:
                 sl = slug_by_yt.get(v["id"])
                 if sl and sl in platforms:
                     v["platforms"] = platforms[sl]
+            # account level: followers + totals across every post we made, per platform (TikTok joins here later)
+            def _sum(plat: str, *keys: str) -> int:
+                return sum(int(next((m[k] for k in keys if isinstance(m.get(k), (int, float))), 0))
+                           for p in platforms.values() for pl, m in p.items() if pl == plat)
+            ig_acct = _rq.get(f"{GRAPH}/{tok['ig_user_id']}", params={"fields": "username,followers_count,media_count",
+                                                                       "access_token": tok["page_token"]}, timeout=30).json() if tok.get("ig_user_id") else {}
+            fb_acct = _rq.get(f"{GRAPH}/{tok['page_id']}", params={"fields": "name,followers_count,fan_count",
+                                                                    "access_token": tok["page_token"]}, timeout=30).json()
+            platform_summary["instagram"] = {"handle": ig_acct.get("username"), "followers": ig_acct.get("followers_count"),
+                                             "posts": sum(1 for p in platforms.values() if "instagram" in p),
+                                             "views": _sum("instagram", "views"), "reach": _sum("instagram", "reach"),
+                                             "likes": _sum("instagram", "likes"), "comments": _sum("instagram", "comments"),
+                                             "shares": _sum("instagram", "shares"), "saves": _sum("instagram", "saved")}
+            platform_summary["facebook"] = {"handle": fb_acct.get("name"), "followers": fb_acct.get("followers_count") or fb_acct.get("fan_count"),
+                                            "posts": sum(1 for p in platforms.values() if "facebook" in p),
+                                            "views": _sum("facebook", "blue_reels_play_count", "total_video_views"),
+                                            "reach": _sum("facebook", "post_impressions_unique")}
     except Exception as e:
         print(f"cross-post metrics skipped: {str(e)[:120]}")
+    platform_summary["youtube"] = {"handle": ch["snippet"]["title"], "followers": int(ch["statistics"].get("subscriberCount", 0)),
+                                   "posts": len(videos), "views": int(ch["statistics"].get("viewCount", 0)),
+                                   "likes": sum(v["likes"] for v in videos.values()), "comments": sum(v["comments"] for v in videos.values())}
 
     # ---- recent comments (newest 25 public videos, up to 5 each): what viewers actually say
     comments = []
@@ -172,6 +242,10 @@ def main() -> None:
         "videos": sorted(videos.values(), key=lambda v: v["published"], reverse=True),
         "ledger": ledger,
         "platforms": platforms,
+        "platform_summary": platform_summary,
+        "audience": audience,
+        "ypp": ypp,
+        "budget": budget,
         "comments": comments[:60],
         "experiments": {"config": exp_cfg, "state": exp_state},
     }
@@ -194,3 +268,10 @@ if __name__ == "__main__":
 # videos: [{id, title, published, pack, format(short|long), variant(coldopen|announce|null), theme, duration(s),
 #           privacy, views, likes, comments, avd(avg view duration s), avp(avg % viewed), minutes, subs}]
 # ledger: {episodes: [{slug, pack, title, theme, status, youtube_id, created_at}], used: {pack: {short: n, long: n}}}
+# platforms: {slug: {instagram: {id, views, reach, likes, ...}, facebook: {id, ...}}}  (also on each video as .platforms)
+# platform_summary: {youtube|instagram|facebook: {handle, followers, posts, views, reach?, likes?, ...}}
+# audience: {countries: [{country, views, estimatedMinutesWatched}], ages: [{ageGroup, gender, viewerPercentage}],
+#            traffic: [{insightTrafficSourceType, views, ...}], devices: [{deviceType, views}]}
+# ypp: {subscribers, subscribers_needed, watch_hours_365d, watch_hours_needed, shorts_views_90d, shorts_views_needed}
+# budget: {elevenlabs: {tier, used, limit, resets}}
+# experiments: {config: experiments.yaml, state: experiments.json (decided, active, results, log)}

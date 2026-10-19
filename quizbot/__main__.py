@@ -69,6 +69,8 @@ def cmd_run(args, settings: Settings) -> int:
         result = Renderer(settings, pack, tts).render(ep)
         if getattr(tts, "fell_back_to", None):                # voice experiment: this one is not a clean sample
             ep.tags = [t if not t.startswith("exp:voice=") else "exp:voice=fallback" for t in ep.tags]
+        elif str(settings.tts_provider) == "elevenlabs":      # free-tier licence requires attribution
+            ep.description = ep.description.rstrip() + "\n\nVoice: ElevenLabs (elevenlabs.io)"
     except Exception:
         state.release(ep.pack, ep.slug)
         state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "failed", error=traceback.format_exc()[-2000:])
