@@ -80,6 +80,8 @@ def main() -> None:
         style = (arm if fmt == "long" and arm in (arms or [decided]) else None) or decided or s.thumb_style
         if fmt == "long":
             n_long += 1
+        if f"thumb:{style}" in tags:                 # already carries this generator's thumbnail (idempotent re-runs)
+            continue
         class _E:  # what thumb_items needs
             pass
         e = _E(); e.items = items
@@ -91,10 +93,17 @@ def main() -> None:
         print(line); summary.append(line)
         if a.dry_run:
             continue
-        yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(out))).execute()
-        if fmt == "long" and arm and snippet.get("tags") != tags:
-            snippet["tags"] = tags
-            yt.videos().update(part="snippet", body={"id": vid, "snippet": snippet}).execute()
+        try:
+            yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(out))).execute()
+        except Exception as e:
+            if "uploadRateLimitExceeded" in str(e) or "429" in str(e):
+                # YouTube allows only a handful of thumbnail changes per hour; the rest pick up on the next run
+                print(f"rate limited by YouTube after {done}; re-run rethumb.yml later for the rest")
+                summary.append("… rate limited; re-run later for the rest")
+                break
+            raise
+        snippet["tags"] = [t for t in tags if not t.startswith("thumb:")] + [f"thumb:{style}"]
+        yt.videos().update(part="snippet", body={"id": vid, "snippet": snippet}).execute()
         done += 1
     print("---- summary ----\n" + "\n".join(summary))
     print(f"rethumbed {done} video(s); skipped {skipped}")
