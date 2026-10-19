@@ -68,7 +68,16 @@ class TTS:
             raise TTSBudgetExceeded(f"TTS budget exceeded ({self.chars_this_run} chars > max_tts_chars_per_run)")
         raw = self.cache / f"{key}.raw"
         try:
-            getattr(self, f"_{self.provider}")(text, raw)
+            for attempt in range(3):                     # streaming TTS calls drop occasionally; retry before any fallback
+                try:
+                    getattr(self, f"_{self.provider}")(text, raw)
+                    break
+                except Exception as e:
+                    if attempt == 2 or self.provider == "dev":
+                        raise
+                    print(f"[tts] {self.provider} attempt {attempt + 1} failed ({str(e)[:80]}); retrying")
+                    import time
+                    time.sleep(3 * (attempt + 1))
         except Exception as e:
             if self.provider == "elevenlabs" and os.environ.get("OPENAI_API_KEY"):
                 # paid provider down or out of credits: finish the video on OpenAI and flag it so the
