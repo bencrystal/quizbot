@@ -45,7 +45,7 @@ def cmd_run(args, settings: Settings) -> int:
         print(f"[plan] pack: {pack_name} (auto)")
     pack = get_pack(pack_name, settings)
     exp_tags: list[str] = []
-    if settings.format == "short":
+    if settings.format == "short" and settings.tts_provider != "dev":   # no experiments in the offline smoke test
         forced = str(settings.shorts_cold_open).lower()          # workflow input overrides the experiment
         from .experiments import assign
         exp_id, variant, exp_tags = assign(settings, state)
