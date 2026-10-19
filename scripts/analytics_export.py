@@ -147,6 +147,8 @@ def main() -> None:
         try:
             import requests as _rq
             sub = _rq.get("https://api.elevenlabs.io/v1/user/subscription", headers={"xi-api-key": el_key}, timeout=30).json()
+            if "detail" in sub and "tier" not in sub:          # key lacks the user_read permission, or invalid
+                raise RuntimeError(str(sub["detail"])[:120])
             budget["elevenlabs"] = {"tier": sub.get("tier"), "used": sub.get("character_count"), "limit": sub.get("character_limit"),
                                     "resets": dt.datetime.fromtimestamp(sub["next_character_count_reset_unix"], dt.timezone.utc).date().isoformat()
                                     if sub.get("next_character_count_reset_unix") else None}
@@ -205,7 +207,8 @@ def main() -> None:
     except Exception as e:
         print(f"cross-post metrics skipped: {str(e)[:120]}")
     platform_summary["youtube"] = {"handle": ch["snippet"]["title"], "followers": int(ch["statistics"].get("subscriberCount", 0)),
-                                   "posts": len(videos), "views": int(ch["statistics"].get("viewCount", 0)),
+                                   "posts": len(videos),      # channel statistics lag a day or two behind per-video counts
+                                   "views": max(int(ch["statistics"].get("viewCount", 0)), sum(v["views"] for v in videos.values())),
                                    "likes": sum(v["likes"] for v in videos.values()), "comments": sum(v["comments"] for v in videos.values())}
 
     # ---- recent comments (newest 25 public videos, up to 5 each): what viewers actually say
