@@ -15,6 +15,9 @@ on:
       mark_done:
         description: "comma-separated video ids already re-thumbed (tag only, no upload)"
         default: ""
+      redo:
+        description: "comma-separated video ids wrongly tagged as done (re-set)"
+        default: ""
 permissions:
   issues: write
   contents: read
@@ -45,7 +48,7 @@ jobs:
           mkdir -p state config
           echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
           [ -s state/youtube_token.json ] || echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
-      - run: python scripts/rethumb.py --format "${{ inputs.format || 'all' }}" --mark-done "${{ inputs.mark_done }}" $([ "${{ inputs.dry_run }}" = "true" ] && echo --dry-run) 2>&1 | tee state/run.log
+      - run: python scripts/rethumb.py --format "${{ inputs.format || 'all' }}" --mark-done "${{ inputs.mark_done }}" --redo "${{ inputs.redo }}" $([ "${{ inputs.dry_run }}" = "true" ] && echo --dry-run) 2>&1 | tee state/run.log
         shell: bash -o pipefail {0}
         env:
           XC_API_KEY: ${{ secrets.XC_API_KEY }}

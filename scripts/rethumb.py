@@ -33,6 +33,7 @@ def main() -> None:
     ap.add_argument("--format", default="all", choices=["long", "short", "all"])
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--mark-done", default="", help="comma-separated video ids whose thumbnail is already set: tag only")
+    ap.add_argument("--redo", default="", help="comma-separated video ids wrongly tagged as done: strip the tag and re-set")
     a = ap.parse_args()
     s = Settings.load()
     state = State(s.state_dir / "quizbot.db")
@@ -47,6 +48,8 @@ def main() -> None:
     summary: list[str] = []
     rows = state.conn.execute("SELECT slug, pack, theme, youtube_id FROM episodes WHERE youtube_id IS NOT NULL ORDER BY created_at DESC").fetchall()
     mark_done = {x.strip() for x in a.mark_done.split(",") if x.strip()}
+    redo = {x.strip() for x in a.redo.split(",") if x.strip()}
+    rows = sorted(rows, key=lambda r: r["youtube_id"] not in mark_done)   # tag-only ones first: they cost no quota
     n_long = 0
     for r in rows:
         slug, pack_name, vid = r["slug"], r["pack"], r["youtube_id"]
@@ -75,6 +78,8 @@ def main() -> None:
         # arm: keep an existing exp:thumb tag, else alternate; Shorts always use the baseline/decided style
         snippet = yt.videos().list(part="snippet", id=vid).execute()["items"][0]["snippet"]
         tags = snippet.get("tags") or []
+        if vid in redo:
+            tags = [t for t in tags if not t.startswith("thumb:")]
         arm = next((t.split("=", 1)[1].rstrip("*") for t in tags if t.startswith("exp:thumb=")), None)
         if fmt == "long" and arms and arm is None:
             arm = arms[n_long % len(arms)]
