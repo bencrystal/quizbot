@@ -410,30 +410,88 @@ class Scene:
 
         return img
 
-    def thumbnail(self, title: str, tint: tuple | None, wave: np.ndarray, out: Path) -> Path:
+    # ---- thumbnails -------------------------------------------------------------
+    # What works on YouTube thumbnails (and survives at 120 px wide): one big subject, 2-4 words of text, hard
+    # contrast, the brand tint. Two styles, A/B-tested on long-form (experiment `thumb`):
+    #   sil  - black silhouettes of the episode's best-known items with a glowing "?" (no spoilers, classic
+    #          "who's that" tension)
+    #   art  - the same items in full colour (spoils three answers, but colour and faces pull clicks)
+    def thumbnail(self, items: list, theme: str, out: Path, style: str = "sil", short: bool = False,
+                  rounds: int = 1, tint: tuple | None = None) -> Path:
         saved = (self.W, self.H, self.portrait, self.u, self._glow)
-        self.W, self.H, self.portrait, self.u, self._glow = 1280, 720, False, 720 / 1080, None
+        self.W, self.H = (1080, 1920) if short else (1280, 720)
+        self.portrait, self.u, self._glow = short, (1 if short else 720 / 1080), None
         self._fonts.clear()
-        accent = tint or NEUTRAL_ACCENT
-        bg = lerp_rgb(NEUTRAL_BG, accent, 0.14) if tint else NEUTRAL_BG
+        accent = tint or (items[0].tint if items and items[0].tint else None) or NEUTRAL_ACCENT
+        bg = lerp_rgb(NEUTRAL_BG, accent, 0.18)
         img = self.background(bg, accent, 7)
         d = ImageDraw.Draw(img)
-        r = 170
-        d.ellipse((930 - r, 300 - r, 930 + r, 300 + r), fill=(10, 10, 14))
-        self.text(d, (930, 300), "?", 300, fill=accent)
-        n = 40
-        for i in range(n):
-            v = float(wave[int(i * len(wave) / n)]) if len(wave) else 0.2
-            h = 10 + 150 * v
-            x0 = 640 + i * 14.5
-            d.rounded_rectangle((x0, 560 - h / 2, x0 + 8, 560 + h / 2), radius=4, fill=accent)
-        y = 150
-        for ln in self.wrap(title, 100, 560, bold=True)[:4]:
-            for dx, dy in ((-4, 0), (4, 0), (0, -4), (0, 4)):
-                self.text(d, (60 + dx, y + dy), ln, 100, fill=(0, 0, 0), anchor="lm")
-            self.text(d, (60, y), ln, 100, anchor="lm")
-            y += 118
+        arts = [it for it in items if it.reveal_image and Path(it.reveal_image).exists()]
+        if short:
+            # one big subject high in the frame (the Shorts shelf crops to a 9:16 tile; keep the lower third free)
+            it = arts[0] if arts else None
+            box = int(self.W * 0.78)
+            cx, cy = self.W // 2, int(self.H * 0.40)
+            self._thumb_subject(img, d, it, box, cx, cy, style, accent, getattr(it, "shape_hint", True) if it else True)
+            kicker = "CAN YOU NAME IT?"
+            lines = ["GUESS", "THE SOUND"]
+            y = int(self.H * 0.70)
+            for ln in lines:
+                self._outlined(d, (self.W // 2, y), ln, 150, accent if ln == "THE SOUND" else WHITE)
+                y += 160
+            self._outlined(d, (self.W // 2, int(self.H * 0.62)), kicker, 56, WHITE, bold=True)
+        else:
+            # three subjects fanned on the right, the theme huge on the left
+            picks = arts[:3]
+            slots = [(int(self.W * 0.67), int(self.H * 0.50), 370), (int(self.W * 0.86), int(self.H * 0.33), 320),
+                     (int(self.W * 0.83), int(self.H * 0.73), 280)]
+            for it, (cx, cy, box) in zip(picks, slots):
+                self._thumb_subject(img, d, it, box, cx, cy, style, accent, getattr(it, "shape_hint", True))
+            if not picks:
+                self._thumb_subject(img, d, None, 360, int(self.W * 0.76), int(self.H * 0.50), style, accent, True)
+            label = theme.replace("-type Pokémon", " TYPE").replace("Generation", "GEN").upper()
+            lines, size = self.wrap_fit(label, 150, int(self.W * 0.56), 2, bold=True, min_size=90)
+            y = int(self.H * 0.45) - (len(lines) - 1) * int(size * 0.5)
+            for ln in lines:
+                self._outlined(d, (56, y), ln, size, WHITE, anchor="lm")
+                y += int(size * 0.98)
+            self._outlined(d, (56, int(self.H * 0.17)), "GUESS THE SOUND", 56, accent, anchor="lm")
+            if rounds > 1:
+                pill = f"{rounds} ROUNDS"
+                f = self.font(44, True)
+                w = f.getlength(pill) + 48
+                x0, y0 = 56, int(self.H * 0.80)
+                d.rounded_rectangle((x0, y0, x0 + w, y0 + 70), radius=35, fill=accent)
+                d.text((x0 + w / 2, y0 + 35), pill, font=f, fill=(12, 12, 16), anchor="mm")
         img.save(out, quality=92)
         self.W, self.H, self.portrait, self.u, self._glow = saved
         self._fonts.clear()
         return out
+
+    def _outlined(self, d, xy, s, size, fill, anchor="mm", bold=True):
+        o = max(3, int(size * 0.045))
+        for dx, dy in ((-o, 0), (o, 0), (0, -o), (0, o), (-o, -o), (o, o), (-o, o), (o, -o)):
+            self.text(d, (xy[0] + dx, xy[1] + dy), s, size, fill=(0, 0, 0), anchor=anchor, bold=bold)
+        self.text(d, xy, s, size, fill=fill, anchor=anchor, bold=bold)
+
+    def _thumb_subject(self, img, d, it, box, cx, cy, style, accent, can_silhouette):
+        """A disc with the item's art (colour) or silhouette + '?' (sil). Photos (no silhouette) blur instead."""
+        r = box // 2 + 8
+        # silhouettes read best as black on the bright tint (the classic "who's that" card); colour art on dark
+        sil = style != "art" and (it is None or can_silhouette)
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=accent if sil else (10, 10, 14))
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=WHITE if sil else accent, width=max(4, box // 60))
+        if it is None:
+            self._outlined(d, (cx, cy), "?", int(box * 0.9), WHITE)
+            return
+        if style == "art" or not can_silhouette and style != "sil":
+            layer = self.art(Path(it.reveal_image), box, "color")
+            self.paste_center(img, layer, cx, cy)
+        elif not can_silhouette:                      # photo: heavy blur keeps the colour, hides the bird
+            layer = self.art(Path(it.reveal_image), box, "color").filter(ImageFilter.GaussianBlur(box * 0.06))
+            self.paste_center(img, layer, cx, cy)
+            self._outlined(d, (cx, cy), "?", int(box * 0.8), accent)
+        else:
+            layer = self.art(Path(it.reveal_image), box, "sil")
+            self.paste_center(img, layer, cx, cy)
+            self._outlined(d, (cx, cy), "?", int(box * 0.42), WHITE)

@@ -65,6 +65,11 @@ class Timeline:
         self.events.append(Event(self.t, kind, dur, data))
 
 
+def thumb_items(ep) -> list:
+    """The episode's best-known items first (lowest difficulty), for the thumbnail subjects."""
+    return sorted(ep.items, key=lambda i: i.difficulty)
+
+
 class Renderer:
     def __init__(self, settings: Settings, pack: Pack, tts: TTS):
         self.s = settings
@@ -404,9 +409,8 @@ class Renderer:
                "-af", self.loudnorm_linear(mix), "-c:v", "copy", *AUD, "-movflags", "+faststart", str(final)))
 
         thumb = self.s.out_dir / ep.slug / "thumbnail.jpg"
-        first = ep.items[0]
-        self.scene.thumbnail("Name it from the sound" if short else ep.theme, first.tint,
-                             self.envelope(first.prompt_audio, work), thumb)
+        self.scene.thumbnail(thumb_items(ep), ep.theme, thumb, style=str(self.s.thumb_style), short=short,
+                             rounds=len(ep.items), tint=ep.items[0].tint)
 
         (self.s.out_dir / ep.slug / "episode.json").write_text(json.dumps({
             "slug": ep.slug, "pack": ep.pack, "format": ep.format, "mechanic": ep.mechanic,

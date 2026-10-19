@@ -86,6 +86,19 @@ def main() -> None:
                          avd=round(d["averageViewDuration"], 1), avp=round(d["averageViewPercentage"], 1),
                          likes=int(d["likes"]), comments=int(d["comments"]), subs=int(d["subscribersGained"]))
 
+    # ---- views in the first 7 full days per video (thumbnail/CTR proxy); only once the window has closed
+    for v in videos.values():
+        v["views7d"] = None
+        pub = dt.date.fromisoformat(v["published"][:10])
+        if (dt.date.today() - pub).days < 8:
+            continue
+        try:
+            rep = yta.reports().query(ids="channel==MINE", startDate=pub.isoformat(), endDate=(pub + dt.timedelta(days=6)).isoformat(),
+                                      metrics="views", filters=f"video=={v['id']}").execute()
+            v["views7d"] = int((rep.get("rows") or [[0]])[0][0])
+        except Exception as e:
+            print(f"views7d skipped for {v['id']}: {str(e)[:80]}")
+
     # ---- channel by day
     rep = yta.reports().query(ids="channel==MINE", startDate=START, endDate=today, dimensions="day",
                               metrics="views,estimatedMinutesWatched,subscribersGained,subscribersLost", sort="day").execute()
@@ -269,7 +282,8 @@ if __name__ == "__main__":
 # channel: {title, subscribers, views, videos, daily: [{day, views, estimatedMinutesWatched, subscribersGained, subscribersLost}]}
 # packs: {name: {display_name, noun}}
 # videos: [{id, title, published, pack, format(short|long), variant(coldopen|announce|null), theme, duration(s),
-#           privacy, views, likes, comments, avd(avg view duration s), avp(avg % viewed), minutes, subs}]
+#           privacy, views, likes, comments, avd(avg view duration s), avp(avg % viewed), minutes, subs,
+#           views7d (views in the first 7 full days; null until the window closes), tags: [exp:...]}]
 # ledger: {episodes: [{slug, pack, title, theme, status, youtube_id, created_at}], used: {pack: {short: n, long: n}}}
 # platforms: {slug: {instagram: {id, views, reach, likes, ...}, facebook: {id, ...}}}  (also on each video as .platforms)
 # platform_summary: {youtube|instagram|facebook: {handle, followers, posts, views, reach?, likes?, ...}}

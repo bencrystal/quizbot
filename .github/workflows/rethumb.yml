@@ -1,0 +1,62 @@
+# On demand: regenerate every existing video's thumbnail with the current generator and re-upload it.
+# Long-form videos get an `exp:thumb=<arm>` tag so they count in the thumbnail A/B.
+name: rethumb
+on:
+  workflow_dispatch:
+    inputs:
+      format:
+        description: "long | short | all"
+        default: "all"
+      dry_run:
+        description: "true = render only, change nothing on YouTube"
+        default: "false"
+permissions:
+  issues: write
+  contents: read
+concurrency:
+  group: quizbot-render
+jobs:
+  rethumb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt && sudo apt-get update -qq && sudo apt-get -qq install -y ffmpeg
+      - uses: actions/cache/restore@v4
+        with:
+          path: state/youtube_token.json
+          key: yt-token-
+          restore-keys: yt-token-
+      - uses: actions/cache/restore@v4        # ledger + cached episode.json files + pack caches
+        with:
+          path: |
+            state/quizbot.db
+            state/cache
+            out
+          key: quizbot-state-
+          restore-keys: quizbot-state-
+      - run: |
+          mkdir -p state config
+          echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
+          [ -s state/youtube_token.json ] || echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
+      - run: python scripts/rethumb.py --format "${{ inputs.format }}" $([ "${{ inputs.dry_run }}" = "true" ] && echo --dry-run) 2>&1 | tee state/run.log
+        shell: bash -o pipefail {0}
+        env:
+          XC_API_KEY: ${{ secrets.XC_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        with: { name: thumbnails, path: out/*/thumbnail.jpg, retention-days: 7 }
+      - name: note in the Episode log
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          N=$(gh issue list -R ${{ github.repository }} --search "Episode log in:title" --state open --json number --jq '.[0].number')
+          [ -n "$N" ] && gh issue comment -R ${{ github.repository }} "$N" --body "$(printf '%b' "🖼 rethumb ([run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))\n\n\`\`\`\n$(tail -c 3000 state/run.log | sed 's/`/'"'"'/g')\n\`\`\`")"
+      - name: report failure to the "Run failures" issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY="### Run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed ($(date -u +%FT%TZ))\n\n\`\`\`\n$(tail -c 6000 state/run.log 2>/dev/null | sed 's/`/'"'"'/g')\n\`\`\`"
+          N=$(gh issue list -R ${{ github.repository }} --search "Run failures in:title" --state open --json number --jq '.[0].number')
+          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Run failures" --body "$(printf '%b' "$BODY")"; else gh issue comment -R ${{ github.repository }} "$N" --body "$(printf '%b' "$BODY")"; fi

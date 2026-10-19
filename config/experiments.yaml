@@ -60,3 +60,16 @@ experiments:
       ash:   { tts_provider: openai, tts_voice: ash }
       sage:  { tts_provider: openai, tts_voice: sage }
       liam:  { tts_provider: elevenlabs, tts_voice: "name:Liam" }
+
+  # Long-form thumbnails, judged on views in the first 7 full days (the click-through proxy; the API has no
+  # CTR). One long video a day → ~3 weeks to a decision. `format: long` experiments have their own queue.
+  - id: thumb
+    format: long
+    metric: views7d
+    question: "Long-form thumbnail: silhouettes with a ? or full-colour art?"
+    min_n: 5
+    max_n: 10
+    min_lead: 0.20
+    variants:
+      sil: { thumb_style: sil }
+      art: { thumb_style: art }

@@ -45,10 +45,10 @@ def cmd_run(args, settings: Settings) -> int:
         print(f"[plan] pack: {pack_name} (auto)")
     pack = get_pack(pack_name, settings)
     exp_tags: list[str] = []
-    if settings.format == "short" and settings.tts_provider != "dev":   # no experiments in the offline smoke test
+    if settings.tts_provider != "dev":   # no experiments in the offline smoke test
         forced = str(settings.shorts_cold_open).lower()          # workflow input overrides the experiment
         from .experiments import assign
-        exp_id, variant, exp_tags = assign(settings, state)
+        exp_id, variant, exp_tags = assign(settings, state, settings.format)
         if forced in ("1", "true", "yes", "0", "false", "no"):
             settings.shorts_cold_open = forced
         if exp_id:
@@ -60,6 +60,8 @@ def cmd_run(args, settings: Settings) -> int:
         ep.meta["cold_open"] = cold
         ep.tags += ["coldopen" if cold else "announce", *exp_tags]
         ep.slug += "-cold" if cold else "-ann"
+    else:
+        ep.tags += exp_tags
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned", meta={"manual": bool(args.force)})
     if str(settings.track_used).lower() in (ep.format, "all", "true"):
