@@ -7,6 +7,7 @@ Species are a curated list of common US birds with region / family / size metada
 from __future__ import annotations
 
 import json
+import time
 import re
 import subprocess
 from pathlib import Path
@@ -237,15 +238,39 @@ class BirdsPack(Pack):
             raise RuntimeError("XC_API_KEY not set")
         p = self.cache / f"xc-{slug(name)}.json"
         if p.exists():
-            return json.loads(p.read_text())
-        q = f'en:"{name}" cnt:"United States" q:A'
-        r = requests.get(XC_API, params={"query": q, "key": key}, headers=UA, timeout=60)
-        r.raise_for_status()
-        recs = r.json().get("recordings", [])
-        if len(recs) < 3:                      # fall back to any quality and any country
-            r = requests.get(XC_API, params={"query": f'en:"{name}"', "key": key}, headers=UA, timeout=60)
-            r.raise_for_status()
-            recs += r.json().get("recordings", [])
+            cached = json.loads(p.read_text())
+            # a miss is retried after a week (it is usually the API having a bad day, not a missing species);
+            # a bare `null` is an old-style cached miss from before licence-aware queries: always retry it
+            if isinstance(cached, dict) and cached.get("_miss"):
+                if time.time() - cached["_miss"] < 7 * 86400:
+                    return None
+            elif cached is not None:
+                return cached
+
+        def fetch(q: str) -> list[dict] | None:
+            r = requests.get(XC_API, params={"query": q, "key": key}, headers=UA, timeout=60)
+            if r.status_code != 200:
+                print(f"  [birds] xeno-canto {r.status_code} for {q!r}")
+                return None
+            d = r.json()
+            if "error" in d:
+                print(f"  [birds] xeno-canto error for {q!r}: {str(d.get('message') or d['error'])[:80]}")
+                return None
+            return d.get("recordings", [])
+
+        # Ask for open licences explicitly (most xeno-canto recordings are NC, which we cannot use); best
+        # quality first, US first, then widen. Stop at the first query with usable results.
+        recs: list[dict] = []
+        failed = False
+        for q in (f'en:"{name}" cnt:"United States" lic:BY-SA q:A', f'en:"{name}" cnt:"United States" lic:BY q:A',
+                  f'en:"{name}" lic:BY-SA', f'en:"{name}" lic:BY', f'en:"{name}" cnt:"United States" q:A', f'en:"{name}"'):
+            got = fetch(q)
+            if got is None:
+                failed = True
+                continue
+            recs += got
+            if len(recs) >= 3:
+                break
 
         def secs(rec):
             try:
@@ -258,7 +283,9 @@ class BirdsPack(Pack):
               and "nd" not in (x.get("lic") or "").split("/")[-3:-1]]
         ok.sort(key=lambda x: (x.get("q", "Z"), -secs(x)))          # best quality first, longer first
         best = ok[0] if ok else None
-        p.write_text(json.dumps(best))
+        if best is None and failed:
+            return None                                            # transient: do not cache the miss
+        p.write_text(json.dumps(best if best else {"_miss": time.time(), "seen": len(recs)}))
         return best
 
     def _wiki(self, title: str) -> dict:
