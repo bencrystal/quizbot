@@ -62,6 +62,7 @@ def cmd_run(args, settings: Settings) -> int:
         ep.slug += "-cold" if cold else "-ann"
     else:
         ep.tags += exp_tags
+    ep.tags.append(f"thumb:{settings.thumb_style}")        # which thumbnail generator/style this upload carries
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned", meta={"manual": bool(args.force)})
     if str(settings.track_used).lower() in (ep.format, "all", "true"):
