@@ -27,22 +27,29 @@ Sources of truth (Actions logs are not readable from Claude sessions):
 2. **Content quality.** Read the last week's Episode log entries. For each pack, spot-check hints and facts for
    spoilers (the answer or an alias inside a hint), broken redaction ("this bird the size of this bird"), or
    repeated items in Shorts. Fix the *rule* in the pack, never the single episode.
-3. **Experiments.** From `data.json → experiments`:
+3. **Visual QA.** `python -m quizbot test && python scripts/contact_sheet.py` renders the offline fixture pack
+   and tiles the frames viewers actually see (one `.sheet.png` per video under `out/`). Look at one Short sheet
+   and the long sheet with the Read tool. You are checking for bugs, not taste: text overlapping or clipped,
+   a name wider than the frame, captions unreadable against the art, hint dots when there are only two hints,
+   the reveal art off-centre. Fix the rule in `quizbot/render/scene.py`, re-render, look again, then commit.
+   Visual *style* changes (font sizes, positions, colours) are not for this step — they go through the
+   experiment queue like everything else (step 4), one at a time, so retention decides.
+4. **Experiments.** From `data.json → experiments`:
    - Report each running experiment's rows (n, % viewed, views/video) and any decision made this week.
    - If the sequential queue is down to one undecided experiment, **add two more** to `config/experiments.yaml`
      (ideas backlog below). Keep variants to settings overrides that exist in `quizbot/config.py`; add a knob
      there if needed. Never edit `state/experiments.json` by hand.
    - A decided winner that looks wrong (tiny views, n padded by fallbacks) → report it; Ben decides reverts.
-4. **Platforms.** `platform_summary` — report followers and views/post for YouTube vs Instagram vs Facebook.
+5. **Platforms.** `platform_summary` — report followers and views/post for YouTube vs Instagram vs Facebook.
    Shorts missing a 📱 line in the Episode log for two days running → cross-posting is broken; check #1.
-5. **Audience.** Note the top traffic source (Shorts feed vs search vs external) and whether retention differs
+6. **Audience.** Note the top traffic source (Shorts feed vs search vs external) and whether retention differs
    by pack. If one pack's Shorts retention is >20% below the other's for ≥10 videos, say so with numbers.
-6. **Playlists.** Dispatch `playlists.yml` (idempotent; files every video). Report what it moved.
-7. **Ledger health.** `ledger.used` vs pool size per pack; episodes `rendered` but not `uploaded` (stuck); any
+7. **Playlists.** Dispatch `playlists.yml` (idempotent; files every video). Report what it moved.
+8. **Ledger health.** `ledger.used` vs pool size per pack; episodes `rendered` but not `uploaded` (stuck); any
    day with 0 Shorts in the Episode log.
-8. **Monetisation.** Quote `ypp` progress in one line (subs / 1,000; long-form hours / 4,000; Shorts views / 10M)
+9. **Monetisation.** Quote `ypp` progress in one line (subs / 1,000; long-form hours / 4,000; Shorts views / 10M)
    and the week-over-week change.
-9. **Report** (SendUserMessage, short): runs ✅/❌, what you fixed, experiment status, platform numbers, what
+10. **Report** (SendUserMessage, short): runs ✅/❌, what you fixed, experiment status, platform numbers, what
    needs Ben. Nothing wrong → one line.
 
 ## Growth loop (the point of the job)

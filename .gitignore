@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 config/client_secret.json
 !state/experiments.json
+out/_frames/
