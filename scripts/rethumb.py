@@ -32,6 +32,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--format", default="all", choices=["long", "short", "all"])
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--mark-done", default="", help="comma-separated video ids whose thumbnail is already set: tag only")
     a = ap.parse_args()
     s = Settings.load()
     state = State(s.state_dir / "quizbot.db")
@@ -44,7 +45,8 @@ def main() -> None:
     packs: dict = {}
     done = skipped = 0
     summary: list[str] = []
-    rows = state.conn.execute("SELECT slug, pack, theme, youtube_id FROM episodes WHERE youtube_id IS NOT NULL ORDER BY created_at").fetchall()
+    rows = state.conn.execute("SELECT slug, pack, theme, youtube_id FROM episodes WHERE youtube_id IS NOT NULL ORDER BY created_at DESC").fetchall()
+    mark_done = {x.strip() for x in a.mark_done.split(",") if x.strip()}
     n_long = 0
     for r in rows:
         slug, pack_name, vid = r["slug"], r["pack"], r["youtube_id"]
@@ -94,7 +96,8 @@ def main() -> None:
         if a.dry_run:
             continue
         try:
-            yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(out))).execute()
+            if vid not in mark_done:
+                yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(out))).execute()
         except Exception as e:
             if "uploadRateLimitExceeded" in str(e) or "429" in str(e):
                 # YouTube allows only a handful of thumbnail changes per hour; the rest pick up on the next run
