@@ -56,20 +56,47 @@ Sources of truth (Actions logs are not readable from Claude sessions):
 
 The channel grows by (a) more series, (b) better retention, (c) more surfaces. Each week, pick the biggest lever
 and act within the rules below:
-- **Retention**: experiments are the mechanism. Keep the queue full. Backlog of ideas, in rough priority:
-  reveal hold length; "drop your score" wording vs none; hint order (fact first vs region first); caption style;
-  Shorts length (one hint fewer when retention drops after hint 2); long-form opener (cold sound vs intro);
-  music bed level −24 vs −28 dB; title emoji; thumbnail for long-form (question vs answer art).
+- **Retention**: experiments are the mechanism. Keep the queue full. **At most one in four** queued experiments
+  is visual (fonts, positions, art size, tints, motion); the rest are content, voice, pacing, structure.
+  Non-visual backlog, in rough priority: reveal hold length; "drop your score" wording vs none; hint order
+  (fact first vs region first); Shorts length (one hint fewer when retention drops after hint 2); long-form
+  opener (cold sound vs intro); music bed −24 vs −28 dB; title emoji; long-form thumbnail (question vs art).
 - **Series**: a pack with ≥20 Shorts and retention ≥ channel average deserves more slots; a pack 20% below for
   20+ videos deserves a format fix before more volume. New packs (game sounds, music) are PRs, not direct commits.
 - **Surfaces**: TikTok once Ben's developer app is approved (see Pending in the report until then).
 - **Volume**: never raise `max_episodes_per_day` or the cron schedule; propose it with numbers.
 
+## Visual changes: propose, never push
+
+Any change to how a video *looks* (scene.py layout, fonts, sizes, colours, motion, art scale) — whether a bug
+fix bigger than a few pixels or a new visual experiment variant — ships as a **pull request labelled
+`decision`**, which Ben approves or declines from the password-gated Decisions panel on the dashboard. Mechanics:
+1. Branch `decision/<short-slug>`. Make the change. `python -m quizbot test` must pass.
+2. Contact sheets: run the smoke test + `python scripts/contact_sheet.py` on `main` first and copy one Short
+   sheet and the long sheet to `docs/decisions/<slug>/before-short.png` / `before-long.png`; then on the branch,
+   `after-short.png` / `after-long.png`. Commit them (small PNGs; they are the whole point of the PR).
+3. PR title: one line a non-engineer understands ("Reveal name 10% larger on Shorts"). Body, in this order:
+   **What changes** (two sentences) · **Why** (the evidence: a retention number, a comment, a bug) ·
+   **Expected effect** (what metric should move, by roughly how much) · **If it is an experiment**: the yaml
+   variant it adds, and that it will take ~2 weeks at 4 Shorts/day · then the four image paths, one per line
+   as plain text `docs/decisions/<slug>/after-short.png` (the dashboard renders them from the branch).
+4. Add the `decision` label. Mention the PR in the weekly report. Do not merge it yourself. A declined PR has
+   Ben's reason as a comment — read it before proposing anything similar.
+Only true layout *bugs* (text overlapping, a name clipped by the frame) go straight to `main` with a one-line
+commit — and still with a before/after sheet in `docs/decisions/` so the fix is reviewable later.
+
+Taste guardrails for anything visual or audio (Ben's words, keep them): it is a game show, not an anime —
+changes should be relatively subtle and build excitement without ever being loud or flashy. Mass appeal, kids
+and adults, people who want to learn. Never blow out anyone's ears (bed stays low, no stings or chimes) and
+never risk photosensitive viewers: no flashing, no strobing, no rapid full-frame colour changes, nothing
+cycling faster than ~3 Hz. Clean reveal, no reactions. One "drop your score" at the end is enough.
+
 ## Rules
 
 - Never change `youtube_privacy`, `upload`, `max_episodes_per_day`, `made_for_kids`, or the cron schedule.
 - Never add API keys or tokens to the repo. Never commit `state/quizbot.db`.
-- Push to `main` only for fixes and experiment additions; anything bigger (new pack, mechanic, layout) → PR.
+- Push to `main` only for non-visual fixes and experiment additions; anything visual or bigger (new pack,
+  mechanic, layout) → a `decision` PR as above.
 - At most one re-dispatch per run. You cannot listen to audio — report what you verified, not how it sounds.
 - Commits end with the attribution lines in CLAUDE.md.
 
