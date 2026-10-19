@@ -7,34 +7,62 @@
    "cold": {
     "n": 0,
     "avp": null,
-    "views": null
+    "views": null,
+    "metric": "avp",
+    "score": null
    },
    "announce": {
     "n": 0,
     "avp": null,
-    "views": null
+    "views": null,
+    "metric": "avp",
+    "score": null
    }
   },
   "voice": {
    "coral": {
     "n": 0,
     "avp": null,
-    "views": null
+    "views": null,
+    "metric": "avp",
+    "score": null
    },
    "ash": {
     "n": 0,
     "avp": null,
-    "views": null
+    "views": null,
+    "metric": "avp",
+    "score": null
    },
    "sage": {
     "n": 0,
     "avp": null,
-    "views": null
+    "views": null,
+    "metric": "avp",
+    "score": null
    },
    "liam": {
     "n": 0,
     "avp": null,
-    "views": null
+    "views": null,
+    "metric": "avp",
+    "score": null
+   }
+  },
+  "thumb": {
+   "sil": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "metric": "views7d",
+    "score": null
+   },
+   "art": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "metric": "views7d",
+    "score": null
    }
   }
  }
