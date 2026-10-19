@@ -55,7 +55,11 @@ class TTS:
         for a, b in self.SPOKEN.get(self.provider, {}).items():
             text = text.replace(a, b)
         direction = self.instructions() if self.provider == "openai" else ""
-        key = hashlib.sha1(f"{self.provider}|{self.voice}|{direction}|{style}|{text}".encode()).hexdigest()[:20]
+        # Tempo: a hair faster than spoken keeps the show moving; long read-outs (Pokédex entry, the fact) a
+        # little more. Applied with ffmpeg atempo (pitch preserved) so it works the same for every provider.
+        speed = float(self.settings.tts_speed_long if len(text) > 90 else self.settings.tts_speed)
+        speed = min(max(speed, 0.9), 1.3)
+        key = hashlib.sha1(f"{self.provider}|{self.voice}|{direction}|{style}|{speed:.3f}|{text}".encode()).hexdigest()[:20]
         out = self.cache / f"{key}.wav"
         if out.exists():
             return out
@@ -88,7 +92,8 @@ class TTS:
             self.cache = self.settings.cache_dir / "tts" / "kokoro"
             self.cache.mkdir(parents=True, exist_ok=True)
             return self.say(text)
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw),
+        tempo = [] if abs(speed - 1.0) < 0.005 else ["-af", f"atempo={speed:.3f}"]
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), *tempo,
                         "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", str(out)], check=True)
         raw.unlink(missing_ok=True)
         return out

@@ -40,6 +40,8 @@ track_used: short               # formats that never repeat a Pokémon: short | 
 
 # Safety rails for unattended runs --------------------------------------------
 max_episodes_per_day: 5         # scheduler never renders more than this, whatever happens
+tts_speed: 1.05                 # tempo applied to every spoken line after synthesis (pitch kept); A/B-able
+tts_speed_long: 1.08            # tempo for long read-outs: the Pokédex/field-guide hint and the fact
 max_tts_chars_per_run: 20000    # aborts a run that would blow through a paid TTS tier
 
 # Publishing -----------------------------------------------------------------

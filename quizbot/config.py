@@ -73,6 +73,8 @@ class Settings:
     title_style: str = "question"        # Shorts title: question | challenge (A/B)
     tts_pace: str = "brisk"              # brisk | quick   (how fast the host talks; A/B)
     tts_energy: str = "host"             # host | showman  (game-show energy level; A/B)
+    tts_speed: float = 1.05              # post-synthesis tempo on every line, pitch preserved (1.0 = as spoken)
+    tts_speed_long: float = 1.08         # tempo for long read-outs (Pokédex / field-guide hint, the fact)
     short_hints: int = 0                 # Shorts: keep only the last N hints (0 = all)
     packs_enabled: list = field(default_factory=lambda: ["pokemon"])   # rotation order for --pack auto
     longs_per_pack_per_week: int = 1     # long-form cadence per pack (the long cron runs daily and skips when met)
