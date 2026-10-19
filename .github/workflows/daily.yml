@@ -11,7 +11,7 @@ on:
     - cron: "5 * * * *"
   workflow_dispatch:
     inputs:
-      format: { default: short, type: choice, options: [short, long] }
+      format: { default: auto, type: choice, options: [auto, short, long], description: "auto = whatever the ledger says is due (safe to call any time)" }
       theme: { default: "" }
       force: { default: false, type: boolean, description: "ignore the daily cap (manual test runs)" }
       pack: { default: "auto", description: "pokemon | birds | auto (rotate)" }
@@ -69,7 +69,7 @@ jobs:
       - name: decide format
         id: fmt
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then echo "format=${{ github.event.inputs.format }}" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.format }}" != "auto" ]; then echo "format=${{ github.event.inputs.format }}" >> $GITHUB_OUTPUT
           else echo "format=$(python scripts/due.py)" >> $GITHUB_OUTPUT; fi
           cat $GITHUB_OUTPUT
       - name: run
