@@ -65,7 +65,10 @@ def cmd_run(args, settings: Settings) -> int:
     if str(settings.track_used).lower() in (ep.format, "all", "true"):
         state.mark_used(ep.pack, ep.format, [i.id for i in ep.items], ep.slug)
     try:
-        result = Renderer(settings, pack, TTS(settings)).render(ep)
+        tts = TTS(settings)
+        result = Renderer(settings, pack, tts).render(ep)
+        if getattr(tts, "fell_back_to", None):                # voice experiment: this one is not a clean sample
+            ep.tags = [t if not t.startswith("exp:voice=") else "exp:voice=fallback" for t in ep.tags]
     except Exception:
         state.release(ep.pack, ep.slug)
         state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "failed", error=traceback.format_exc()[-2000:])

@@ -46,3 +46,17 @@ experiments:
     variants:
       host:    { tts_energy: host }
       showman: { tts_energy: showman }
+
+  # Runs alongside the sequential queue; 4 arms = exactly one ElevenLabs Short per day at 4 Shorts/day.
+  # Judged on the same rule but with a higher bar: it costs money, so it must win clearly.
+  - id: voice
+    parallel: true
+    question: "Which voice holds viewers: OpenAI coral / ash / sage, or ElevenLabs Liam?"
+    min_n: 6
+    max_n: 12
+    min_lead: 0.15
+    variants:
+      coral: { tts_provider: openai, tts_voice: coral }
+      ash:   { tts_provider: openai, tts_voice: ash }
+      sage:  { tts_provider: openai, tts_voice: sage }
+      liam:  { tts_provider: elevenlabs, tts_voice: "name:Liam" }

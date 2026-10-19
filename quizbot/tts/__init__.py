@@ -66,6 +66,16 @@ class TTS:
         try:
             getattr(self, f"_{self.provider}")(text, raw)
         except Exception as e:
+            if self.provider == "elevenlabs" and os.environ.get("OPENAI_API_KEY"):
+                # paid provider down or out of credits: finish the video on OpenAI and flag it so the
+                # experiment ignores this one
+                print(f"[tts] elevenlabs failed ({str(e)[:120]}); falling back to openai for this run")
+                self.fell_back_to = "openai"
+                self.provider, self.voice = "openai", "coral"
+                self.settings.tts_provider, self.settings.tts_voice = "openai", "coral"
+                self.cache = self.settings.cache_dir / "tts" / "openai"
+                self.cache.mkdir(parents=True, exist_ok=True)
+                return self.say(text, style, notes)
             import importlib.util
             if importlib.util.find_spec("kokoro") is None:     # no local fallback installed: fail loudly, never ship a worse voice
                 raise
@@ -140,9 +150,20 @@ class TTS:
         ) as r:
             r.stream_to_file(out)
 
+    def _eleven_voice_id(self, name: str) -> str:
+        import requests
+        r = requests.get("https://api.elevenlabs.io/v1/voices", headers={"xi-api-key": os.environ["ELEVENLABS_API_KEY"]}, timeout=30)
+        r.raise_for_status()
+        for v in r.json()["voices"]:
+            if v["name"].split(" - ")[0].strip().lower() == name.lower():
+                return v["voice_id"]
+        raise RuntimeError(f"ElevenLabs voice '{name}' not found")
+
     def _elevenlabs(self, text: str, out: Path) -> None:
         import requests
         voice = self.voice or "21m00Tcm4TlvDq8ikWAM"
+        if voice.startswith("name:"):
+            voice = self._eleven_voice_id(voice[5:])
         r = requests.post(
             f"https://api.elevenlabs.io/v1/text-to-speech/{voice}",
             headers={"xi-api-key": os.environ["ELEVENLABS_API_KEY"], "accept": "audio/mpeg"},
