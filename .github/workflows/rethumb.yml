@@ -1,9 +1,9 @@
 # On demand: regenerate every existing video's thumbnail with the current generator and re-upload it.
 # Long-form videos get an `exp:thumb=<arm>` tag so they count in the thumbnail A/B.
 name: rethumb
+# Manual only: thumbnail changes share a small daily YouTube budget with new uploads, so a backfill must not
+# run unattended. New uploads set their own thumbnail (and retry the next run if limited).
 on:
-  schedule:
-    - cron: "30 5 * * *"       # daily, in the quiet gap between the 23:00 and 11:00 UTC Shorts; no-op once all are tagged
   workflow_dispatch:
     inputs:
       format:

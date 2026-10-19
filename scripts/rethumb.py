@@ -94,7 +94,8 @@ def main() -> None:
         e = _E(); e.items = items
         out = s.out_dir / slug / "thumbnail.jpg"
         out.parent.mkdir(parents=True, exist_ok=True)
-        scene.thumbnail(thumb_items(e), ep.get("theme", ""), out, style=style, short=(fmt == "short"),
+        e.theme = ep.get("theme", "")
+        scene.thumbnail(thumb_items(e, pack), e.theme, out, style=style, short=(fmt == "short"),
                         rounds=len(items), tint=items[0].tint)
         line = f"{'would set' if a.dry_run else 'set'} {vid} ({fmt}, {style}{', tagged' if 'exp:thumb=' + str(arm) in tags and fmt == 'long' else ''}): {slug}"
         print(line); summary.append(line)

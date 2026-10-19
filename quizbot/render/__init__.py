@@ -65,8 +65,22 @@ class Timeline:
         self.events.append(Event(self.t, kind, dur, data))
 
 
-def thumb_items(ep) -> list:
-    """The episode's best-known items first (lowest difficulty), for the thumbnail subjects."""
+def thumb_items(ep, pack=None) -> list:
+    """Thumbnail subjects: well-known items from the same theme that are NOT in the episode, so neither the
+    silhouette nor the colour-art style gives an answer away (a silhouette identifies a Pokémon to any fan).
+    Falls back to the episode's own items only when the theme has nothing else."""
+    in_ep = {i.id for i in ep.items}
+    if pack is not None:
+        try:
+            theme = next((t for t in pack.themes() if t["label"] == ep.theme), None)
+            pool = pack.candidates(theme) if theme else []
+            decoys = [i for i in pool if i.id not in in_ep and i.reveal_image]
+            famous = [i for i in decoys if pack.famous(i)] or decoys
+            famous.sort(key=lambda i: i.difficulty)
+            if famous:
+                return famous
+        except Exception as e:
+            print(f"[thumb] decoy lookup failed ({str(e)[:80]}); using episode items")
     return sorted(ep.items, key=lambda i: i.difficulty)
 
 
@@ -409,7 +423,7 @@ class Renderer:
                "-af", self.loudnorm_linear(mix), "-c:v", "copy", *AUD, "-movflags", "+faststart", str(final)))
 
         thumb = self.s.out_dir / ep.slug / "thumbnail.jpg"
-        self.scene.thumbnail(thumb_items(ep), ep.theme, thumb, style=str(self.s.thumb_style), short=short,
+        self.scene.thumbnail(thumb_items(ep, self.pack), ep.theme, thumb, style=str(self.s.thumb_style), short=short,
                              rounds=len(ep.items), tint=ep.items[0].tint)
 
         (self.s.out_dir / ep.slug / "episode.json").write_text(json.dumps({

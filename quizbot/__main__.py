@@ -120,6 +120,21 @@ def cmd_retry_uploads(args, settings: Settings) -> int:
 
     state = State(settings.state_dir / "quizbot.db")
     rc = 0
+    # thumbnails that hit YouTube's daily change limit at upload time
+    pend = sorted(settings.out_dir.glob("*/thumbnail.pending"), key=lambda p: p.stat().st_mtime)
+    if pend:
+        from googleapiclient.discovery import build
+        from .upload import _creds, set_thumbnail
+        yt = build("youtube", "v3", credentials=_creds(settings, interactive=False))
+        for marker in pend:
+            vid = marker.read_text().strip()
+            if not marker.with_suffix(".jpg").exists():
+                marker.unlink(missing_ok=True)
+                continue
+            if set_thumbnail(yt, vid, marker.with_suffix(".jpg")):
+                print(f"[upload] thumbnail set on retry for {vid}")
+            else:
+                break                                          # still limited today; the rest wait
     for row in state.episodes("rendered"):
         meta_path = Path(row["video_path"]).parent / "episode.json"
         if not meta_path.exists() or not Path(row["video_path"]).exists():

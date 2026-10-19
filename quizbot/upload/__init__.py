@@ -59,6 +59,23 @@ def authorize(settings: Settings) -> None:
     print("YouTube auth OK; token saved to state/youtube_token.json")
 
 
+def set_thumbnail(yt, vid: str, thumb) -> bool:
+    """Custom thumbnail; YouTube allows only a handful of thumbnail changes per day, so on a 429 a marker file is
+    left next to the thumbnail and `retry-uploads` tries again on the next run (otherwise YouTube keeps an auto
+    frame, which for us is often the reveal — a spoiler)."""
+    from pathlib import Path
+    thumb = Path(thumb)
+    pending = thumb.with_suffix(".pending")
+    try:
+        yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(thumb))).execute()
+        pending.unlink(missing_ok=True)
+        return True
+    except Exception as e:  # rate limit, or an unverified channel; never fail the run over it
+        print(f"[upload] thumbnail not set ({str(e)[:100]}); will retry next run")
+        pending.write_text(vid)
+        return False
+
+
 def upload(settings: Settings, ep: Episode, result: RenderResult) -> str:
     from googleapiclient.discovery import build
     from googleapiclient.http import MediaFileUpload
@@ -91,10 +108,7 @@ def upload(settings: Settings, ep: Episode, result: RenderResult) -> str:
         if progress:
             print(f"[upload] {int(progress.progress() * 100)}%")
     vid = resp["id"]
-    try:
-        yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(result.thumbnail))).execute()
-    except Exception as e:  # thumbnails need a verified channel; don't fail the run over it
-        print(f"[upload] thumbnail skipped: {e}")
+    set_thumbnail(yt, vid, result.thumbnail)
     try:
         add_to_playlist(yt, vid, playlist_title(ep, settings))
     except Exception as e:  # organisation only; never fail a run over it
