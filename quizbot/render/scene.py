@@ -324,13 +324,29 @@ class Scene:
                     self.text(d, (rx_, y), ln, entry_sz, fill=(175, 178, 196), bold=False, anchor=ranchor, alpha=a)
                     y += int(entry_sz * 1.45 * self.u)
         else:
+            title_on = self.portrait and not st["hints"] and st.get("title")
+            if title_on:
+                cx, ty = g["art"][0], int(self.H * 0.64)
+                for ln in self.wrap_fit(st["title"], 72, g["text_w"], 2, bold=True)[0]:
+                    self.text(d, (cx, ty), ln, 72, fill=accent, anchor="mm")
+                    ty += int(84 * self.u)
+                ty += int(6 * self.u)
+                for ln in self.wrap_fit(st["rule"], 36, g["text_w"], 2, bold=False)[0]:
+                    self.text(d, (cx, ty), ln, 36, fill=(200, 202, 214), bold=False, anchor="mm")
+                    ty += int(46 * self.u)
             if st["caption"] and not st["hints"]:
-                lines = self.wrap_fit(st["caption"], 56, g["text_w"], 3, bold=True)[0]
-                if not self.portrait:
-                    y = g["art"][1] - int(36 * self.u) * len(lines)
-                for ln in lines:
-                    self.text(d, (x, y), ln, 56, anchor=anchor)
-                    y += int(72 * self.u)
+                if title_on:          # the spoken opening line sits in the status slot, above the title block
+                    cy = g["wave"][1] + int(60 * self.u)
+                    for ln in self.wrap_fit(st["caption"], 44, g["text_w"], 2, bold=True)[0]:
+                        self.text(d, (g["art"][0], cy), ln, 44, anchor="mm")
+                        cy += int(54 * self.u)
+                else:
+                    lines = self.wrap_fit(st["caption"], 56, g["text_w"], 3, bold=True)[0]
+                    if not self.portrait:
+                        y = g["art"][1] - int(36 * self.u) * len(lines)
+                    for ln in lines:
+                        self.text(d, (x, y), ln, 56, anchor=anchor)
+                        y += int(72 * self.u)
             elif st["status"] and not st["hints"]:
                 if self.portrait:
                     self.text(d, (g["art"][0], y), st["status"], 40, fill=(200, 202, 214), bold=False, anchor="mm")

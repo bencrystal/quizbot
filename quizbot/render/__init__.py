@@ -290,7 +290,11 @@ class Renderer:
                   points=None, points_age=99.0, tint=it.tint if it else None, tint_p=0.0, stage=0, stages=1, arc=0.0,
                   art=it.reveal_image if it else None, shape_p=0.0, reveal_p=0.0, wave=None, think=None,
                   status="", caption="", hints=[], answer=it.answer if it else "", subtitle=it.subtitle if it else "",
-                  fact=it.fact if it else "", entry=(it.meta.get("entry", "") if it else ""), aka=(it.meta.get("aka") or []) if it else [], choices=None)
+                  fact=it.fact if it else "", entry=(it.meta.get("entry", "") if it else ""), aka=(it.meta.get("aka") or []) if it else [], choices=None,
+                  # Shorts open with the game's name and its one rule on screen until the first hint, so a viewer
+                  # who swiped in mid-sound knows what this is without a word being spoken
+                  title=(self.pack.display_name.upper() if total == 1 else ""),
+                  rule="Name it from the sound alone. Every hint costs a point.")
         wave = np.zeros(28)
         for ev in T.events:
             if ev.at > t:
