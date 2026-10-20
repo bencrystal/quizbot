@@ -250,8 +250,14 @@ class Renderer:
             T.add(None, S + 1, "think")
             T.add(None, 0.25)
 
-        T.mark("reveal")
+        # Reveal beat: sting on the silhouette, the sound one more time while it is still a silhouette, THEN the
+        # colour art and the name. Besides being a better "ta-da", it keeps the answer out of the last quarter of
+        # a Short: YouTube picks Shorts thumbnails from frames at roughly 25/50/75 % (no custom thumbnails for
+        # Shorts outside the Partner Program), and with the sound played after the name the 75 % frame was the reveal.
         T.add(self.sting(work), 0.9)
+        T.add(snd, snd_d, "sound")
+        T.add(None, 0.2)
+        T.mark("reveal")
         T.mark("caption", text=self.pack.reveal_line.format(answer=it.answer))
         say_part(self.pack.reveal_line.format(answer=it.answer),
                  style="This is the reveal: a little brighter and more delighted, like sharing the answer with a friend.")
@@ -260,13 +266,11 @@ class Renderer:
             T.add(None, 0.15)
             say_part(reaction)
         T.add(None, 0.3)
-        T.add(snd, snd_d, "sound")
-        T.add(None, 0.3)
         say_part(it.fact)
         if short:
             T.add(None, 0.3)
             say_part(ep.outro)
-            T.add(None, 1.5)
+            T.add(None, 0.6)
         else:
             T.add(None, 0.9)
         return T

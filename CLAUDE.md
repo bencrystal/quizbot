@@ -36,6 +36,9 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
 - Ledger: Shorts never repeat an item (`track_used: short`); long-form draws freely.
 - Pokémon Shorts use the famous subset; type-theme long episodes open with a Gen 1-3 Pokémon.
 - Public immediately on upload; no scheduled publishAt.
+- Thumbnails: long-form gets a custom one (decoy subjects from the theme, never the episode's answers; sil/art A/B).
+  Shorts cannot have custom thumbnails outside the Partner Program — YouTube picks a frame at ~25/50/75 %, so the
+  reveal must stay in the last ~22 % of a Short (sting → sound on the silhouette → art + name). Keep it that way.
 - Rules Ben owns (never change unasked): `youtube_privacy`, `upload`, `max_episodes_per_day`, `made_for_kids`.
 
 ## Operations
