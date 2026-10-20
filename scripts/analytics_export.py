@@ -155,7 +155,11 @@ def main() -> None:
     # YouTube Analytics lags the public counters by 2-3 days (and longer for a new channel); until it has rows, use
     # the Data API view counts so the dashboard never shows 0 for a channel that plainly has views
     ypp["analytics_live"] = bool(daily)
-    if not daily:
+    ypp["analytics_through"] = daily[-1]["day"] if daily else None      # Analytics runs 2-3 days behind the public counters
+    # While the channel is younger than the 90-day window, the public lifetime counts are the better estimate of
+    # the window (Analytics only has the days it has processed so far); after that the window itself is right.
+    first_pub = min((v["published"][:10] for v in videos.values()), default=today)
+    if (dt.date.today() - dt.date.fromisoformat(first_pub)).days < 90:
         ypp["shorts_views_90d"] = max(ypp["shorts_views_90d"], sum(v["views"] for v in videos.values() if v["format"] == "short"))
 
     # ---- budget: paid TTS credits (ElevenLabs), so a dry account is visible before a Short falls back
