@@ -15,19 +15,24 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from quizbot.config import Settings  # noqa: E402
 from quizbot.state import State  # noqa: E402
 
-SHORT_SLOTS = (11, 15, 19, 23)
-LONG_FROM = (12, 30)
+DAY_START = 10                       # the broadcast day runs 10:00 UTC → 10:00 UTC, so the 23:00 slot can still
+SHORT_SLOTS = (11, 15, 19, 23)       # catch up after midnight instead of being forgotten at the UTC date change
+LONG_FROM = 12.5
 
 
 def main() -> None:
     s = Settings.load()
     now = dt.datetime.now(dt.timezone.utc)
-    day0 = now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+    start = now.replace(hour=DAY_START, minute=0, second=0, microsecond=0)
+    if now < start:
+        start -= dt.timedelta(days=1)
+    hours = (now - start).total_seconds() / 3600
+    day0 = start.timestamp()
     st = State(s.state_dir / "quizbot.db")
     shorts_today = st.count_episodes("short", since=day0)
     longs_today = st.count_episodes("long", since=day0)
-    slots_passed = sum(1 for h in SHORT_SLOTS if now.hour >= h)
-    long_due = (now.hour, now.minute) >= LONG_FROM and longs_today == 0
+    slots_passed = sum(1 for h in SHORT_SLOTS if hours >= h - DAY_START)
+    long_due = hours >= LONG_FROM - DAY_START and longs_today == 0
     # long-form first when both are due: it is the one with a weekly quota to meet
     if long_due:
         print("long")
