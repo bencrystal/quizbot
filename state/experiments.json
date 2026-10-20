@@ -5,18 +5,18 @@
  "results": {
   "open": {
    "cold": {
-    "n": 0,
-    "avp": null,
-    "views": null,
+    "n": 1,
+    "avp": 44.3,
+    "views": 133.0,
     "metric": "avp",
-    "score": null
+    "score": 44.3
    },
    "announce": {
-    "n": 0,
-    "avp": null,
-    "views": null,
+    "n": 1,
+    "avp": 44.5,
+    "views": 652.0,
     "metric": "avp",
-    "score": null
+    "score": 44.5
    }
   },
   "voice": {
