@@ -138,6 +138,11 @@ def cmd_retry_uploads(args, settings: Settings) -> int:
     for row in state.episodes("rendered"):
         meta_path = Path(row["video_path"]).parent / "episode.json"
         if not meta_path.exists() or not Path(row["video_path"]).exists():
+            # the render cache was evicted: this one can never upload, so stop showing it as stuck
+            state.release(row["pack"], row["slug"])
+            state.upsert_episode(row["slug"], row["pack"], row["title"], row["theme"], "failed",
+                                 error="video file gone from the cache before upload")
+            print(f"[retry] {row['slug']}: video file gone; marked failed")
             continue
         m = json.loads(meta_path.read_text())
         ep = Episode(slug=m["slug"], pack=m["pack"], title=m["title"], description=m["description"],

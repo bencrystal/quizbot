@@ -47,6 +47,14 @@ experiments:
       host:    { tts_energy: host }
       showman: { tts_energy: showman }
 
+  # Post-synthesis tempo (pitch kept). gpt-4o-mini-tts ignores the API's speed parameter, so this is the
+  # precise speed knob; `pace` above tests delivery via instructions instead.
+  - id: tempo
+    question: "Current tempo (+5 %, long read-outs +8 %) or a touch faster (+10 % / +14 %)?"
+    variants:
+      t105: { tts_speed: 1.05, tts_speed_long: 1.08 }
+      t110: { tts_speed: 1.10, tts_speed_long: 1.14 }
+
   # Runs alongside the sequential queue; 4 arms = exactly one ElevenLabs Short per day at 4 Shorts/day.
   # Judged on the same rule but with a higher bar: it costs money, so it must win clearly.
   - id: voice

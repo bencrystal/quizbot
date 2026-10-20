@@ -152,6 +152,11 @@ def main() -> None:
            "watch_hours_365d": round(_window(long_ids, 365, "estimatedMinutesWatched") / 60, 1) if long_ids else 0.0,
            "watch_hours_needed": 4000,
            "shorts_views_90d": int(_window(short_ids, 90, "views")) if short_ids else 0, "shorts_views_needed": 10_000_000}
+    # YouTube Analytics lags the public counters by 2-3 days (and longer for a new channel); until it has rows, use
+    # the Data API view counts so the dashboard never shows 0 for a channel that plainly has views
+    ypp["analytics_live"] = bool(daily)
+    if not daily:
+        ypp["shorts_views_90d"] = max(ypp["shorts_views_90d"], sum(v["views"] for v in videos.values() if v["format"] == "short"))
 
     # ---- budget: paid TTS credits (ElevenLabs), so a dry account is visible before a Short falls back
     budget: dict[str, dict] = {}
