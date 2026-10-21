@@ -1,22 +1,47 @@
 {
- "decided": {},
- "active": "open",
- "log": [],
+ "decided": {
+  "open": "cold"
+ },
+ "active": "title",
+ "log": [
+  {
+   "when": "2026-10-21",
+   "experiment": "open",
+   "winner": "cold",
+   "rows": {
+    "cold": {
+     "n": 4,
+     "avp": 47.975,
+     "views": 162.25,
+     "metric": "avp",
+     "score": 47.975
+    },
+    "announce": {
+     "n": 5,
+     "avp": 28.02,
+     "views": 245.2,
+     "metric": "avp",
+     "score": 28.02
+    }
+   },
+   "reason": "lead 71% on avp"
+  }
+ ],
  "results": {
   "open": {
    "cold": {
-    "n": 1,
-    "avp": 44.3,
-    "views": 133.0,
+    "n": 4,
+    "avp": 47.975,
+    "views": 162.25,
     "metric": "avp",
-    "score": 44.3
+    "score": 47.975
    },
    "announce": {
-    "n": 1,
-    "avp": 44.5,
-    "views": 652.0,
+    "n": 5,
+    "avp": 28.02,
+    "views": 245.2,
     "metric": "avp",
-    "score": 44.5
+    "score": 28.02
    }
   },
   "voice": {
@@ -42,11 +67,11 @@
     "score": null
    },
    "liam": {
-    "n": 0,
-    "avp": null,
-    "views": null,
+    "n": 1,
+    "avp": 21.6,
+    "views": 17.0,
     "metric": "avp",
-    "score": null
+    "score": 21.6
    }
   },
   "thumb": {
