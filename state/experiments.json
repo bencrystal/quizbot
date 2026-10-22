@@ -34,18 +34,38 @@
  "results": {
   "open": {
    "cold": {
-    "n": 4,
-    "avp": 47.975,
-    "views": 162.25,
+    "n": 6,
+    "avp": 48.48333333333333,
+    "views": 324.1666666666667,
     "metric": "avp",
-    "score": 47.975
+    "score": 48.48333333333333,
+    "packs": {
+     "birds": {
+      "n": 1,
+      "score": 0.0
+     },
+     "pokemon": {
+      "n": 5,
+      "score": 58.17999999999999
+     }
+    }
    },
    "announce": {
-    "n": 5,
-    "avp": 28.02,
-    "views": 245.2,
+    "n": 6,
+    "avp": 27.28333333333333,
+    "views": 241.33333333333334,
     "metric": "avp",
-    "score": 28.02
+    "score": 27.28333333333333,
+    "packs": {
+     "birds": {
+      "n": 5,
+      "score": 23.279999999999998
+     },
+     "pokemon": {
+      "n": 1,
+      "score": 47.3
+     }
+    }
    }
   },
   "voice": {
@@ -54,28 +74,68 @@
     "avp": 61.1,
     "views": 237.0,
     "metric": "avp",
-    "score": 61.1
+    "score": 61.1,
+    "packs": {
+     "birds": {
+      "n": 0,
+      "score": null
+     },
+     "pokemon": {
+      "n": 1,
+      "score": 61.1
+     }
+    }
    },
    "ash": {
     "n": 2,
     "avp": 37.65,
     "views": 474.5,
     "metric": "avp",
-    "score": 37.65
+    "score": 37.65,
+    "packs": {
+     "birds": {
+      "n": 1,
+      "score": 18.9
+     },
+     "pokemon": {
+      "n": 1,
+      "score": 56.4
+     }
+    }
    },
    "sage": {
     "n": 0,
     "avp": null,
     "views": null,
     "metric": "avp",
-    "score": null
+    "score": null,
+    "packs": {
+     "birds": {
+      "n": 0,
+      "score": null
+     },
+     "pokemon": {
+      "n": 0,
+      "score": null
+     }
+    }
    },
    "liam": {
     "n": 1,
     "avp": 27.8,
     "views": 37.0,
     "metric": "avp",
-    "score": 27.8
+    "score": 27.8,
+    "packs": {
+     "birds": {
+      "n": 1,
+      "score": 27.8
+     },
+     "pokemon": {
+      "n": 0,
+      "score": null
+     }
+    }
    }
   },
   "thumb": {
@@ -84,14 +144,16 @@
     "avp": null,
     "views": null,
     "metric": "views7d",
-    "score": null
+    "score": null,
+    "packs": {}
    },
    "art": {
     "n": 0,
     "avp": null,
     "views": null,
     "metric": "views7d",
-    "score": null
+    "score": null,
+    "packs": {}
    }
   },
   "title": {
