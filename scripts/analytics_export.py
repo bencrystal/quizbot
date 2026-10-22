@@ -64,6 +64,7 @@ def main() -> None:
                 "format": "short" if "#shorts" in sn["title"].lower() else "long", "variant": variant, "theme": theme,
                 "duration": iso_dur(v["contentDetails"].get("duration")), "privacy": v.get("status", {}).get("privacyStatus"),
                 "views": int(st.get("viewCount", 0)), "likes": int(st.get("likeCount", 0)), "comments": int(st.get("commentCount", 0)),
+                "tier": next((t.split(":", 1)[1] for t in tags if t.startswith("tier:")), None),
                 "avd": None, "avp": None, "minutes": None, "subs": None, "tags": [t for t in tags if t.startswith("exp:")]
                         # the first day's Shorts predate exp: tags; they belong to the 'open' experiment
                         + ([f"exp:open={'cold' if variant == 'coldopen' else 'announce'}"] if variant and not any(t.startswith("exp:open=") for t in tags) else []),
@@ -292,7 +293,8 @@ if __name__ == "__main__":
 # packs: {name: {display_name, noun}}
 # videos: [{id, title, published, pack, format(short|long), variant(coldopen|announce|null), theme, duration(s),
 #           privacy, views, likes, comments, avd(avg view duration s), avp(avg % viewed), minutes, subs,
-#           views7d (views in the first 7 full days; null until the window closes), tags: [exp:...]}]
+#           views7d (views in the first 7 full days; null until the window closes), tags: [exp:...],
+#           tier (icon|known|deep: item fame bucket for Shorts; null before 2026-10-22)}]
 # ledger: {episodes: [{slug, pack, title, theme, status, youtube_id, created_at}], used: {pack: {short: n, long: n}}}
 # platforms: {slug: {instagram: {id, views, reach, likes, ...}, facebook: {id, ...}}}  (also on each video as .platforms)
 # platform_summary: {youtube|instagram|facebook: {handle, followers, posts, views, reach?, likes?, ...}}

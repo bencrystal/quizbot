@@ -108,13 +108,25 @@ def _judge_one(cfg: dict, st: dict, ex: dict, videos: list[dict]) -> dict:
     names = list(ex["variants"])
 
     def rows_for(vs: list[dict]) -> dict:
-        out = {}
+        out, sel_by = {}, {}
         for name in names:
             sel = [v for v in vs if f"exp:{ex['id']}={name}" in (v.get("tags") or []) and v.get(metric) is not None]
+            sel_by[name] = sel
             out[name] = {"n": len(sel),
                          "avp": (sum(v["avp"] for v in sel if v.get("avp") is not None) / max(1, sum(1 for v in sel if v.get("avp") is not None))) if sel else None,
                          "views": (sum(v["views"] for v in sel) / len(sel)) if sel else None,
                          "metric": metric, "score": (sum(v[metric] for v in sel) / len(sel)) if sel else None}
+        # Item fame is the biggest peripheral factor (Charmander vs Beldum), so when every arm has videos in the
+        # same fame tiers, score each arm as the equal-weight mean over those tiers instead of the raw mean.
+        tiers = None
+        for name in names:
+            have = {v.get("tier") for v in sel_by[name] if v.get("tier")}
+            tiers = have if tiers is None else tiers & have
+        if tiers:
+            for name in names:
+                means = [sum(v[metric] for v in sel_by[name] if v.get("tier") == t) / sum(1 for v in sel_by[name] if v.get("tier") == t) for t in sorted(tiers)]
+                out[name]["score"] = sum(means) / len(means)
+                out[name]["balanced_on"] = sorted(tiers)
         return out
 
     pool = [v for v in videos if v.get("format") == fmt]

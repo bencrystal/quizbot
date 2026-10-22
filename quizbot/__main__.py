@@ -63,6 +63,8 @@ def cmd_run(args, settings: Settings) -> int:
     else:
         ep.tags += exp_tags
     ep.tags.append(f"thumb:{settings.thumb_style}")        # which thumbnail generator/style this upload carries
+    if ep.format == "short":
+        ep.tags.append(f"tier:{pack.tier(ep.items[0])}")   # item fame bucket, so experiments can balance it out
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned", meta={"manual": bool(args.force)})
     if str(settings.track_used).lower() in (ep.format, "all", "true"):

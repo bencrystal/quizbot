@@ -211,6 +211,10 @@ class BirdsPack(Pack):
     def famous(self, item: QuizItem) -> bool:
         return item.difficulty <= 1
 
+    def tier(self, item: QuizItem) -> str:
+        """icon = backyard birds everyone has seen (difficulty 0-1); known = 2; deep = 3."""
+        return "icon" if item.difficulty <= 1 else "known" if item.difficulty <= 2 else "deep"
+
     def candidates(self, theme: dict) -> list[QuizItem]:
         items = []
         for row in SPECIES:

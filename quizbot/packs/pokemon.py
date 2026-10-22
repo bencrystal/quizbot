@@ -226,6 +226,11 @@ class PokemonPack(Pack):
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
         )
 
+    def tier(self, item: QuizItem) -> str:
+        """icon = the mascots everyone knows (FAMOUS set); known = other Gen 1-3; deep = the rest."""
+        dex, gen = item.meta.get("dex"), item.meta.get("gen", 9)
+        return "icon" if dex in FAMOUS else "known" if gen <= 3 else "deep"
+
     @staticmethod
     def _difficulty(pid: int, gen: int, species: dict) -> float:
         """Rough fame heuristic: starters/legendaries/mascots and early gens are easier."""

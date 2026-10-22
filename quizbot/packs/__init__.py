@@ -50,6 +50,12 @@ class Pack(ABC):
     def famous(self, item: QuizItem) -> bool:   # packs override to define their "well-known" subset
         return True
 
+    def tier(self, item: QuizItem) -> str:
+        """Coarse popularity bucket (icon | known | deep), tagged on every upload as `tier:<x>` so experiments can
+        be judged with item fame balanced out: a Charmander Short and a Beldum Short are not the same test."""
+        d = item.difficulty
+        return "icon" if d <= 0 else "known" if d <= 2 else "deep"
+
     def select(self, items: list[QuizItem], used: set[str], n: int, rng: random.Random, famous_only=False,
                theme: dict | None = None) -> list[QuizItem]:
         if famous_only:
