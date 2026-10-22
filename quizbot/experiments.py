@@ -55,8 +55,12 @@ def _apply(settings, overrides: dict) -> None:
             setattr(settings, k, v)
 
 
-def assign(settings, state, fmt: str = "short") -> tuple[str | None, str | None, list[str]]:
-    """Baseline = every decided winner; then alternate the active experiment's variants per episode of `fmt`."""
+def assign(settings, state, fmt: str = "short", pack: str | None = None) -> tuple[str | None, str | None, list[str]]:
+    """Baseline = every decided winner; then alternate the active experiment's variants per episode of `fmt`.
+
+    Alternation is counted *within the pack*: packs rotate per Short too, so counting across packs locked
+    variant to pack (every Pokémon Short cold, every bird Short announce) and the first decision compared packs,
+    not openings. Judging is stratified by pack for the same reason (see _judge_one)."""
     cfg, st = load_config(), load_state()
     tags: list[str] = []
     for ex in cfg.get("experiments", []):
@@ -64,7 +68,7 @@ def assign(settings, state, fmt: str = "short") -> tuple[str | None, str | None,
         if win and win in ex["variants"] and ex.get("format", "short") == fmt:
             _apply(settings, ex["variants"][win])
             tags.append(f"exp:{ex['id']}={win}*")       # * = decided winner, not under test
-    n = state.count_episodes(fmt)
+    n = state.count_episodes(fmt, pack=pack)
     ex = active_experiment(cfg, st, fmt)
     exp_id = variant = None
     stride = 1
@@ -101,25 +105,52 @@ def _judge_one(cfg: dict, st: dict, ex: dict, videos: list[dict]) -> dict:
     fmt, metric = ex.get("format", "short"), ex.get("metric", "avp")
     # metric: avp (average % viewed; the swipe-away signal) or views7d (views in the first 7 full days; the
     # click-through proxy — YouTube's API does not expose impressions/CTR). views7d only counts videos ≥7 d old.
-    rows = {}
-    for name in ex["variants"]:
-        vs = [v for v in videos if v.get("format") == fmt and f"exp:{ex['id']}={name}" in (v.get("tags") or [])
-              and v.get(metric) is not None]
-        rows[name] = {"n": len(vs), "avp": (sum(v["avp"] for v in vs if v.get("avp") is not None) / max(1, sum(1 for v in vs if v.get("avp") is not None))) if vs else None,
-                      "views": (sum(v["views"] for v in vs) / len(vs)) if vs else None,
-                      "metric": metric, "score": (sum(v[metric] for v in vs) / len(vs)) if vs else None}
+    names = list(ex["variants"])
+
+    def rows_for(vs: list[dict]) -> dict:
+        out = {}
+        for name in names:
+            sel = [v for v in vs if f"exp:{ex['id']}={name}" in (v.get("tags") or []) and v.get(metric) is not None]
+            out[name] = {"n": len(sel),
+                         "avp": (sum(v["avp"] for v in sel if v.get("avp") is not None) / max(1, sum(1 for v in sel if v.get("avp") is not None))) if sel else None,
+                         "views": (sum(v["views"] for v in sel) / len(sel)) if sel else None,
+                         "metric": metric, "score": (sum(v[metric] for v in sel) / len(sel)) if sel else None}
+        return out
+
+    pool = [v for v in videos if v.get("format") == fmt]
+    rows = rows_for(pool)
+    # Stratified by pack: packs differ hugely in baseline retention, so each pack is its own comparison and
+    # the verdict is the average of the packs' relative scores (each pack's arms divided by that pack's mean).
+    packs = sorted({v.get("pack") for v in pool if v.get("pack") and v.get("pack") != "unknown"})
+    by_pack = {pk: rows_for([v for v in pool if v.get("pack") == pk]) for pk in packs}
+    by_pack = {pk: r for pk, r in by_pack.items() if any(x["n"] for x in r.values())}
+    for name in names:
+        rows[name]["packs"] = {pk: {"n": r[name]["n"], "score": r[name]["score"]} for pk, r in by_pack.items()}
     st.setdefault("results", {})[ex["id"]] = rows
-    ns = [r["n"] for r in rows.values()]
-    if min(ns) < min_n:
+    if not by_pack:
         return st
-    ranked = sorted(rows.items(), key=lambda kv: (kv[1]["score"], kv[1]["views"]), reverse=True)
+    ready = [pk for pk, r in by_pack.items() if min(x["n"] for x in r.values()) >= min_n]
+    if len(ready) < len(by_pack):                      # every pack that has started must reach min_n per arm
+        return st
+    rel = {name: 0.0 for name in names}
+    for pk in ready:
+        mean = sum(by_pack[pk][n]["score"] for n in names) / len(names)
+        for name in names:
+            rel[name] += (by_pack[pk][name]["score"] / mean if mean else 1.0) / len(ready)
+    ranked = sorted(names, key=lambda n: (rel[n], rows[n]["views"] or 0), reverse=True)
     best, second = ranked[0], ranked[1]
-    rel = (best[1]["score"] - second[1]["score"]) / max(second[1]["score"], 1e-9)
-    decided = rel >= lead or min(ns) >= max_n
+    gap = (rel[best] - rel[second]) / max(rel[second], 1e-9)
+    # a winner must also lead inside every pack (no pack-specific reversal), unless max_n has been reached
+    agree = all(by_pack[pk][best]["score"] >= max(by_pack[pk][n]["score"] for n in names if n != best) for pk in ready)
+    maxed = all(min(x["n"] for x in by_pack[pk].values()) >= max_n for pk in ready)
+    decided = (gap >= lead and agree) or maxed
+    for name in names:
+        rows[name]["rel"] = round(rel[name], 3)
     if decided:
-        st["decided"][ex["id"]] = best[0]
-        st["log"].append({"when": dt.date.today().isoformat(), "experiment": ex["id"], "winner": best[0],
-                          "rows": rows, "reason": f"lead {rel:.0%} on {metric}" if rel >= lead else f"max_n reached; leader by {metric}"})
+        st["decided"][ex["id"]] = best
+        st["log"].append({"when": dt.date.today().isoformat(), "experiment": ex["id"], "winner": best, "rows": rows,
+                          "reason": (f"lead {gap:.0%} on {metric}, pack-adjusted, leading in every pack ({', '.join(ready)})"
+                                     if gap >= lead and agree else f"max_n reached in every pack; leader by pack-adjusted {metric}")})
         nxt = active_experiment(cfg, st, "short")
         st["active"] = nxt["id"] if nxt else None
     return st

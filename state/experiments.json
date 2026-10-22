@@ -1,8 +1,6 @@
 {
- "decided": {
-  "open": "cold"
- },
- "active": "title",
+ "decided": {},
+ "active": "open",
  "log": [
   {
    "when": "2026-10-21",
@@ -25,6 +23,12 @@
     }
    },
    "reason": "lead 71% on avp"
+  },
+  {
+   "when": "2026-10-22",
+   "experiment": "open",
+   "winner": null,
+   "reason": "reopened by Ben: the 2026-10-21 'cold' verdict compared Pok\u00e9mon (all cold) with birds (all announce); assignment and judging are now stratified by pack"
   }
  ],
  "results": {

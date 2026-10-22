@@ -48,7 +48,7 @@ def cmd_run(args, settings: Settings) -> int:
     if settings.tts_provider != "dev":   # no experiments in the offline smoke test
         forced = str(settings.shorts_cold_open).lower()          # workflow input overrides the experiment
         from .experiments import assign
-        exp_id, variant, exp_tags = assign(settings, state, settings.format)
+        exp_id, variant, exp_tags = assign(settings, state, settings.format, pack_name)
         if forced in ("1", "true", "yes", "0", "false", "no"):
             settings.shorts_cold_open = forced
         if exp_id:

@@ -81,7 +81,7 @@ def main() -> None:
         for row in rep.get("rows", []):
             d = dict(zip(cols, row))
             v = videos.get(d["video"])
-            if v:
+            if v and int(d["views"]) > 0:        # a 0-view row means Analytics has not processed the video yet
                 v.update(views=int(d["views"]), minutes=round(d["estimatedMinutesWatched"], 1),
                          avd=round(d["averageViewDuration"], 1), avp=round(d["averageViewPercentage"], 1),
                          likes=int(d["likes"]), comments=int(d["comments"]), subs=int(d["subscribersGained"]))

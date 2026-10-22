@@ -27,9 +27,11 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
 
 ## Conventions (what makes series comparable)
 - Every upload has tags `pack:<name>` and, for Shorts, `coldopen`/`announce` plus `exp:<id>=<variant>` from
-  `config/experiments.yaml` (sequential A/B; one active at a time, variants alternate per Short). The nightly
-  analytics job judges the active experiment on average % viewed (`quizbot/experiments.py`), writes the winner
-  to `state/experiments.json` (committed), and the winner becomes the baseline. Add experiments to the yaml;
+  `config/experiments.yaml` (sequential A/B; one active at a time, variants alternate per Short *within each
+  pack* — packs rotate per Short too, so counting across packs locks variant to pack). The nightly analytics job
+  judges on average % viewed stratified by pack (`quizbot/experiments.py`: per-pack relative scores averaged,
+  winner must lead in every pack), writes the winner to `state/experiments.json` (committed), and the winner
+  becomes the baseline. Add experiments to the yaml;
   never edit decisions by hand unless Ben asks.
 - Ledger backup: every run pushes `state/quizbot.db` to the `ledger` branch; runs restore from it if the cache
   is empty. Analytics JSON goes to the portfolio repo's `quizbot-data` branch (dashboard at /quizbot).
