@@ -46,18 +46,18 @@
   },
   "voice": {
    "coral": {
-    "n": 0,
-    "avp": null,
-    "views": null,
+    "n": 1,
+    "avp": 61.1,
+    "views": 237.0,
     "metric": "avp",
-    "score": null
+    "score": 61.1
    },
    "ash": {
-    "n": 0,
-    "avp": null,
-    "views": null,
+    "n": 2,
+    "avp": 37.65,
+    "views": 474.5,
     "metric": "avp",
-    "score": null
+    "score": 37.65
    },
    "sage": {
     "n": 0,
@@ -68,10 +68,10 @@
    },
    "liam": {
     "n": 1,
-    "avp": 21.6,
-    "views": 17.0,
+    "avp": 27.8,
+    "views": 37.0,
     "metric": "avp",
-    "score": 21.6
+    "score": 27.8
    }
   },
   "thumb": {
@@ -87,6 +87,22 @@
     "avp": null,
     "views": null,
     "metric": "views7d",
+    "score": null
+   }
+  },
+  "title": {
+   "question": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "metric": "avp",
+    "score": null
+   },
+   "challenge": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "metric": "avp",
     "score": null
    }
   }
