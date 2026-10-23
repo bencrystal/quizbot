@@ -320,8 +320,9 @@ class BirdsPack(Pack):
         return keep
 
     def _audio(self, rec: dict, name: str) -> Path:
-        """Download, trim to the first 4 s of the recording, fade, 48 kHz."""
-        out = self.cache / f"call-{slug(name)}.wav"
+        """Download, trim to the first 3 s of the recording, fade, 48 kHz. (Was 4 s: three plays of a 4-s call
+        made bird Shorts ~60 s against ~42 s for Pokémon, with viewers leaving around 15-20 s either way.)"""
+        out = self.cache / f"call3-{slug(name)}.wav"
         if out.exists():
             return out
         raw = self.cache / f"call-{slug(name)}.src"
@@ -329,8 +330,8 @@ class BirdsPack(Pack):
             r = requests.get(rec["file"], headers=UA, timeout=120)
             r.raise_for_status()
             raw.write_bytes(r.content)
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-t", "4",
-                        "-af", "highpass=f=250,afade=t=in:d=0.05,afade=t=out:st=3.6:d=0.4",
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-t", "3",
+                        "-af", "highpass=f=250,afade=t=in:d=0.05,afade=t=out:st=2.6:d=0.4",
                         "-ar", "48000", "-ac", "2", str(out)], check=True)
         return out
 

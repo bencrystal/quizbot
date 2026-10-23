@@ -17,6 +17,12 @@ experiments:
       cold:     { shorts_cold_open: "true" }
       announce: { shorts_cold_open: "false" }
 
+  - id: hints
+    question: "Two hints or just the Pokédex/field-guide hint?"
+    variants:
+      two: { short_hints: 2 }
+      one: { short_hints: 1 }
+
   - id: title
     question: "Question title or challenge title?"
     variants:
@@ -28,12 +34,6 @@ experiments:
     variants:
       s25: { stage_seconds: 2.5 }
       s20: { stage_seconds: 2.0 }
-
-  - id: hints
-    question: "Two hints or just the Pokédex/field-guide hint?"
-    variants:
-      two: { short_hints: 2 }
-      one: { short_hints: 1 }
 
   - id: pace
     question: "Brisk or quick delivery?"
