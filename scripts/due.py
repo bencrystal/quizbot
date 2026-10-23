@@ -32,7 +32,14 @@ def main() -> None:
     shorts_today = st.count_episodes("short", since=day0)
     longs_today = st.count_episodes("long", since=day0)
     slots_passed = sum(1 for h in SHORT_SLOTS if hours >= h - DAY_START)
-    long_due = hours >= LONG_FROM - DAY_START and longs_today == 0
+    # long-form is due only when some pack still lacks this week's episode — otherwise `run --format long`
+    # renders nothing and, if we kept reporting "long", the day's Shorts would never get their turn
+    # (2026-10-20..23: one Short a day instead of four)
+    import time as _t
+    week_ago = _t.time() - 7 * 86400
+    packs = list(s.packs_enabled) or ["pokemon"]
+    long_owed = any(st.count_episodes("long", pk, week_ago) < s.longs_per_pack_per_week for pk in packs)
+    long_due = hours >= LONG_FROM - DAY_START and longs_today == 0 and long_owed
     # long-form first when both are due: it is the one with a weekly quota to meet
     if long_due:
         print("long")
