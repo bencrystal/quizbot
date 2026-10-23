@@ -368,7 +368,7 @@ class BirdsPack(Pack):
         audio = self._audio(rec, name)
         photo = self._photo(info["image"], name)
 
-        where = ", ".join(REGION_NAMES[c] for c in regions if c in REGION_NAMES) if regions != "A" else "most of the United States"
+        where = region_phrase(regions)
         region_hint = f"It lives in {where}, in {habitat}."
         fam_word = re.sub(r"^(a|an)\s+", "", family).split(",")[0].split(" ")[0]
         if fam_word and fam_word in size:                       # "a sparrow … the size of a sparrow"
@@ -442,8 +442,10 @@ def first_sentences(text: str, n: int) -> str:
 def redact(text: str, name: str) -> str:
     """Hide the bird's name. The full name becomes 'this bird'; a lone distinctive word of it (junco, towhee,
     'the robin') becomes plain 'bird'/'birds', so 'a species of junco' reads 'a species of bird'."""
-    t = re.sub(rf"\b(a|an|the)\s+{re.escape(name)}s?\b", "this bird", text, flags=re.I)
-    t = re.sub(rf"\b{re.escape(name)}s?\b", "this bird", t, flags=re.I)
+    # plural first ("Barred owls are mainly black" → "these birds are …"), then singular, so verbs still agree
+    t = re.sub(rf"\b(the\s+)?{re.escape(name)}s\b", "these birds", text, flags=re.I)
+    t = re.sub(rf"\b(a|an|the)\s+{re.escape(name)}\b", "this bird", t, flags=re.I)
+    t = re.sub(rf"\b{re.escape(name)}\b", "this bird", t, flags=re.I)
     generic = {"american", "common", "northern", "eastern", "western", "great", "house", "black", "white", "red",
                "blue", "yellow", "brown", "gray", "grey", "green", "golden", "wood", "song", "winter", "tree"}
     for w in re.split(r"[\s\-']+", name):
@@ -456,6 +458,22 @@ def redact(text: str, name: str) -> str:
     t = re.sub(r"\bthis bird is a (species|kind|type) of bird\b", "this bird is a bird", t, flags=re.I)
     t = re.sub(r"\bis a bird, (a group|a genus|a family) of\b", r"belongs to \1 of", t, flags=re.I)
     return re.sub(r"(^|[.!?]\s+)([a-z])", lambda m: m.group(1) + m.group(2).upper(), t)
+
+
+def region_phrase(regions: str) -> str:
+    """'E' → 'the Eastern United States'; 'EW' → 'the Eastern and Western United States';
+    'EC' → 'the Eastern United States and the Great Plains'; 'A' → 'most of the United States'."""
+    if regions == "A" or set(regions) >= {"E", "W", "C"}:
+        return "most of the United States"
+    us = [c for c in "EW" if c in regions]
+    parts = []
+    if len(us) == 2:
+        parts.append("the Eastern and Western United States")
+    elif us:
+        parts.append(REGION_NAMES[us[0]])
+    if "C" in regions:
+        parts.append(REGION_NAMES["C"])
+    return " and ".join(parts) if parts else "the United States"
 
 
 def lic_short(url: str) -> str:
