@@ -14,6 +14,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 from ..config import Settings
+from . import visuals as hint_visuals
 
 FONT_BOLD = "DejaVuSans-Bold.ttf"
 FONT_REG = "DejaVuSans.ttf"
@@ -466,6 +467,24 @@ class Scene:
                 for ln in lines:
                     self.text(d, (x, yy), ln, size, bold=False, anchor=anchor, alpha=0.55)
                     yy += int(size * 1.4 * self.u)
+
+            # Hint visual: a standardised graphic for the newest hint (range map, size ladder, type pills),
+            # drawn under the hint block, fading in with it. Portrait keeps it above the Shorts UI safe line.
+            if hints:
+                spec = (st.get("visuals") or {}).get(hints[-1][0])
+                if spec:
+                    lines, size, _ = new_lay[latest]
+                    block_bottom = new_y[latest] + len(lines) * int(size * 1.4 * self.u) + int(24 * self.u)
+                    vh = int(230 * self.u)
+                    limit = int(self.H * 0.73) if self.portrait else int(self.H * 0.93)
+                    if block_bottom + vh <= limit:
+                        layer = hint_visuals.render(spec, vh, accent, self.fonts_dir)
+                        if layer is not None:
+                            if p_new < 1:
+                                alpha = layer.getchannel("A").point(lambda v: int(v * p_new))
+                                layer.putalpha(alpha)
+                            vx = (g["art"][0] - layer.width // 2) if self.portrait else x
+                            img.paste(layer, (int(vx), int(block_bottom)), layer)
 
         return img
 

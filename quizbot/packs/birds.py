@@ -384,6 +384,10 @@ class BirdsPack(Pack):
         lead_in = {"voice": "Birders describe the call like this:", "looks": "From the field guide:",
                    "behaviour": "From the field guide:"}[guide_kind]
         hints = [region_hint, family_hint, f"{lead_in} {guide}"]
+        from ..render.visuals import size_rank
+        visuals = {region_hint: {"kind": "map", "regions": regions}}
+        if size_rank(size) is not None:
+            visuals[family_hint] = {"kind": "size", "rank": size_rank(size)}
         aka = aliases(info["extract"], name)
         if "region" in theme:
             hints.remove(region_hint)
@@ -397,7 +401,7 @@ class BirdsPack(Pack):
             tint=(110, 190, 130) if "W" not in regions else (200, 170, 90),
             shape_hint=False,                      # photos have no silhouette; the last hint is the field-guide line
             difficulty=float(diff), pronunciation=None,
-            meta={"family": family, "regions": regions, "credit": credit, "wiki": info.get("url", ""),
+            meta={"family": family, "regions": regions, "credit": credit, "wiki": info.get("url", ""), "visuals": visuals,
                   "entry": redact_clean_lead(info["extract"]), "aka": aka},
         )
 
