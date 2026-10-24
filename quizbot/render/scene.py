@@ -323,6 +323,12 @@ class Scene:
                 for ln in entry_lines:
                     self.text(d, (rx_, y), ln, entry_sz, fill=(175, 178, 196), bold=False, anchor=ranchor, alpha=a)
                     y += int(entry_sz * 1.45 * self.u)
+            if self.portrait and st["caption"]:
+                # snappy Shorts: the score prompt as a line under the fact instead of a spoken outro
+                y += int(26 * self.u)
+                for ln in self.wrap_fit(st["caption"], 40, g["text_w"], 2, bold=True)[0]:
+                    self.text(d, (rx_, y), ln, 40, fill=accent, anchor="mm", alpha=a)
+                    y += int(50 * self.u)
         else:
             title_on = self.portrait and not st["hints"] and st.get("title")
             if title_on:

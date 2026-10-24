@@ -233,7 +233,7 @@ class Renderer:
                 say_part(hint)
                 T.mark("points", value=pts)
                 T.mark("stage", index=h_i + 1, count=n_hints + 1)
-                if h_i == 0:
+                if h_i == 0 and (not short or str(self.s.short_replay).lower() not in ("0", "false", "no")):
                     T.add(None, 0.2)
                     T.add(snd, snd_d, "sound")
                 T.add(None, 0.25)
@@ -261,17 +261,23 @@ class Renderer:
         T.mark("caption", text=self.pack.reveal_line.format(answer=it.answer))
         say_part(self.pack.reveal_line.format(answer=it.answer),
                  style="This is the reveal: a little brighter and more delighted, like sharing the answer with a friend.")
+        T.mark("caption", text="")
         reaction = ep.banter.get(i) or (rng.choice(self.pack.reactions) if total > 1 and self.pack.reactions else "")
         if reaction:
             T.add(None, 0.15)
             say_part(reaction)
         T.add(None, 0.3)
-        say_part(it.fact)
-        if short:
+        if short and str(self.s.short_outro) == "caption":   # snappy: the score prompt is on screen, not spoken
+            T.mark("caption", text=ep.outro)
+            say_part(it.fact)
+            T.add(None, 1.0)
+        elif short:
+            say_part(it.fact)
             T.add(None, 0.3)
             say_part(ep.outro)
             T.add(None, 0.6)
         else:
+            say_part(it.fact)
             T.add(None, 0.9)
         return T
 

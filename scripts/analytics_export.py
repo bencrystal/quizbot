@@ -100,6 +100,20 @@ def main() -> None:
         except Exception as e:
             print(f"views7d skipped for {v['id']}: {str(e)[:80]}")
 
+    # ---- retention curves (where in the video people leave) for the 40 newest public videos with Analytics data
+    retention: dict[str, list] = {}
+    for v in sorted(videos.values(), key=lambda v: v["published"], reverse=True)[:40]:
+        if v["avp"] is None or v["privacy"] != "public":
+            continue
+        try:
+            rep = yta.reports().query(ids="channel==MINE", startDate=START, endDate=today, dimensions="elapsedVideoTimeRatio",
+                                      metrics="audienceWatchRatio", filters=f"video=={v['id']}", maxResults=100).execute()
+            pts = [[round(float(r[0]), 2), round(float(r[1]), 3)] for r in rep.get("rows", [])]
+            if pts:
+                retention[v["id"]] = pts
+        except Exception as e:
+            print(f"retention skipped for {v['id']}: {str(e)[:80]}")
+
     # ---- channel by day
     rep = yta.reports().query(ids="channel==MINE", startDate=START, endDate=today, dimensions="day",
                               metrics="views,estimatedMinutesWatched,subscribersGained,subscribersLost", sort="day").execute()
@@ -270,6 +284,7 @@ def main() -> None:
         "platforms": platforms,
         "platform_summary": platform_summary,
         "audience": audience,
+        "retention": retention,
         "ypp": ypp,
         "budget": budget,
         "comments": comments[:60],
@@ -301,5 +316,6 @@ if __name__ == "__main__":
 # audience: {countries: [{country, views, estimatedMinutesWatched}], ages: [{ageGroup, gender, viewerPercentage}],
 #            traffic: [{insightTrafficSourceType, views, ...}], devices: [{deviceType, views}]}
 # ypp: {subscribers, subscribers_needed, watch_hours_365d, watch_hours_needed, shorts_views_90d, shorts_views_needed}
+# retention: {video_id: [[elapsed_ratio 0..1, audience_watch_ratio], ...]} for recent videos (where viewers drop)
 # budget: {elevenlabs: {tier, used, limit, resets}}
 # experiments: {config: experiments.yaml, state: experiments.json (decided, active, results, log)}

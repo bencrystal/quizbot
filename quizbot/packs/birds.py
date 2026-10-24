@@ -378,6 +378,8 @@ class BirdsPack(Pack):
             family_hint = f"It's {family}, about the size of {size}."
         guide_src, guide_kind = field_guide_text(info, name)
         guide = redact(first_sentences(guide_src, 2), name)
+        if len(guide) > 150:                                    # two long sentences read for 10 s; one is plenty
+            guide = redact(first_sentences(guide_src, 1), name)
         lead_in = {"voice": "Birders describe the call like this:", "looks": "From the field guide:",
                    "behaviour": "From the field guide:"}[guide_kind]
         hints = [region_hint, family_hint, f"{lead_in} {guide}"]
