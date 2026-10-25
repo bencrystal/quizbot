@@ -150,6 +150,9 @@ class TTS:
         tempo = [] if abs(speed - 1.0) < 0.005 else ["-af", f"atempo={speed:.3f}"]
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), *tempo,
                         "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", str(out)], check=True)
+        if out.stat().st_size < 1000:                 # never cache an empty line
+            out.unlink(missing_ok=True)
+            raise RuntimeError("TTS produced an empty file")
         if self.provider != "dev":
             tighten(out)
         raw.unlink(missing_ok=True)
