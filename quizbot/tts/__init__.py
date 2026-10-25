@@ -24,6 +24,52 @@ class TTSBudgetExceeded(RuntimeError):
     pass
 
 
+def tighten(wav: Path, gap_keep: float = 0.12, gap_min: float = 0.25, rel_db: float = -30.0, floor_db: float = -45.0) -> None:
+    """Cut breaths and dead air inside a spoken line: any stretch quieter than (line level + rel_db, and below
+    floor_db) lasting ≥ gap_min s is shortened to gap_keep s with 10 ms crossfades; leading/trailing quiet is
+    trimmed to gap_keep too. In place. (ffmpeg's silenceremove misbehaves in 6.x, hence numpy.)"""
+    import numpy as np
+    import soundfile as sf
+    data, sr = sf.read(str(wav), dtype="float32", always_2d=True)
+    win = sr // 50                                   # 20 ms
+    n = len(data) // win
+    if n < 10:
+        return
+    rms = np.sqrt((data[: n * win].mean(axis=1).reshape(n, win) ** 2).mean(axis=1)) + 1e-9
+    db = 20 * np.log10(rms)
+    level = np.percentile(db, 90)
+    quiet = db < min(level + rel_db, floor_db)
+    keep = np.ones(n, dtype=bool)
+    i = 0
+    kmin, kkeep = int(gap_min / 0.02), int(gap_keep / 0.02)
+    while i < n:
+        if quiet[i]:
+            j = i
+            while j < n and quiet[j]:
+                j += 1
+            if j - i >= kmin or i == 0 or j == n:
+                keep[i + kkeep // 2: j - (kkeep - kkeep // 2)] = False     # keep a little on both sides
+                if i == 0:
+                    keep[:j - kkeep] = False
+                if j == n:
+                    keep[i + kkeep:] = False
+            i = j
+        else:
+            i += 1
+    if keep.all():
+        return
+    pieces, fade = [], max(1, sr // 100)
+    idx = np.flatnonzero(np.diff(np.concatenate([[0], keep.astype(int), [0]])))
+    for a, b in zip(idx[::2], idx[1::2]):
+        seg = data[a * win: b * win].copy()
+        if len(seg) > 2 * fade:
+            seg[:fade] *= np.linspace(0, 1, fade)[:, None]
+            seg[-fade:] *= np.linspace(1, 0, fade)[:, None]
+        pieces.append(seg)
+    if pieces:
+        sf.write(str(wav), np.concatenate(pieces), sr, subtype="PCM_16")
+
+
 class TTS:
     def __init__(self, settings: Settings):
         self.settings = settings
@@ -59,7 +105,7 @@ class TTS:
         # little more. Applied with ffmpeg atempo (pitch preserved) so it works the same for every provider.
         speed = float(self.settings.tts_speed_long if len(text) > 90 else self.settings.tts_speed)
         speed = min(max(speed, 0.9), 1.3)
-        key = hashlib.sha1(f"{self.provider}|{self.voice}|{direction}|{style}|{speed:.3f}|{text}".encode()).hexdigest()[:20]
+        key = hashlib.sha1(f"{self.provider}|{self.voice}|{direction}|{style}|{speed:.3f}|tight1|{text}".encode()).hexdigest()[:20]
         out = self.cache / f"{key}.wav"
         if out.exists():
             return out
@@ -104,6 +150,8 @@ class TTS:
         tempo = [] if abs(speed - 1.0) < 0.005 else ["-af", f"atempo={speed:.3f}"]
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), *tempo,
                         "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", str(out)], check=True)
+        if self.provider != "dev":
+            tighten(out)
         raw.unlink(missing_ok=True)
         return out
 
@@ -149,6 +197,7 @@ class TTS:
             return os.environ["QUIZBOT_TTS_STYLE"]
         s = self.settings
         return (self.ENERGY.get(s.tts_energy, self.ENERGY["host"]) + " " + self.PACE.get(s.tts_pace, self.PACE["brisk"]) + " "
+                "No audible breaths, sighs or lip smacks between phrases. "
                 "Pronounce Pokémon as 'POH-kee-mon' with the stress on POH. Hyphenated words are single names "
                 "written phonetically (capitals mark the stressed syllable), e.g. 'LOO-gee-uh' is one name said "
                 "smoothly — never spell letters out, never pause before them.")
