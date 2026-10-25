@@ -25,7 +25,10 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     rng = random.Random(seed)
     themes = pack.themes()
     theme = next((t for t in themes if t["id"] == theme_id), None) if theme_id else None
-    theme = theme or pack.pick_theme(state.recent_themes(pack.name), rng)
+    # Avoid the pack's last ten themes (any format) and the last six of this format: with four Shorts a day the
+    # weekly long-form otherwise forgets its own history and repeats a theme two weeks running (Gen 1, Oct 18 + 25).
+    recent = state.recent_themes(pack.name) + state.recent_themes(pack.name, n=6, fmt=settings.format)
+    theme = theme or pack.pick_theme(recent, rng)
     print(f"[plan] format={settings.format} mechanic={settings.mechanic} theme={theme['label']}")
 
     pool = pack.candidates(theme)

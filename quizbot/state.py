@@ -126,8 +126,14 @@ class State:
         return self.conn.execute("SELECT COUNT(*) FROM episodes WHERE created_at>=? AND status!='failed' "
                                  "AND COALESCE(meta,'') NOT LIKE '%\"manual\": true%'", (start,)).fetchone()[0]
 
-    def recent_themes(self, pack: str, n: int = 10) -> list[str]:
-        rows = self.conn.execute(
-            "SELECT theme FROM episodes WHERE pack=? ORDER BY created_at DESC LIMIT ?", (pack, n)
-        ).fetchall()
+    def recent_themes(self, pack: str, n: int = 10, fmt: str | None = None) -> list[str]:
+        """Themes of the pack's last n episodes; with fmt, only episodes of that format (slug is <pack>-<fmt>-…)."""
+        if fmt:
+            rows = self.conn.execute(
+                "SELECT theme FROM episodes WHERE pack=? AND slug LIKE ? ORDER BY created_at DESC LIMIT ?",
+                (pack, f"{pack}-{fmt}-%", n)).fetchall()
+        else:
+            rows = self.conn.execute(
+                "SELECT theme FROM episodes WHERE pack=? ORDER BY created_at DESC LIMIT ?", (pack, n)
+            ).fetchall()
         return [r["theme"] for r in rows if r["theme"]]
