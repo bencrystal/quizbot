@@ -26,7 +26,11 @@ US = [(-124.7, 48.4), (-123.3, 49.0), (-95.2, 49.0), (-94.6, 48.7), (-89.5, 48.0
       (-106.5, 31.8), (-108.2, 31.3), (-111.1, 31.3), (-114.8, 32.5), (-117.1, 32.5), (-118.5, 34.0), (-120.6, 34.6),
       (-121.9, 36.6), (-122.5, 37.8), (-124.0, 40.0), (-124.4, 42.0), (-123.9, 46.2), (-124.7, 48.4)]
 LON0, LON1, LAT0, LAT1 = -125.0, -66.5, 24.5, 49.5
-# region bands by longitude: W = Rockies and westward, C = the Plains, E = Mississippi eastward
+# Region bands by longitude. These illustrate the *hint*, which is coarse by design (the curated list gives each
+# species E/W/C letters, not a range polygon): W = the Mountain and Pacific states (west of ~104° W, the
+# Rockies' eastern front), C = the Great Plains (104° W to the Mississippi, ~90° W), E = everything east of the
+# Mississippi. "Eastern United States" therefore means east of the Mississippi, coast to river, not just the
+# seaboard; a species lit E+W but not C is one with a gap across the Plains (e.g. Barred Owl).
 BANDS = {"W": (LON0, -104.0), "C": (-104.0, -90.0), "E": (-90.0, LON1)}
 
 SIZE_LADDER = ["sparrow", "robin", "crow", "goose"]

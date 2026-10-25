@@ -393,7 +393,13 @@ class Scene:
                         y += int(72 * self.u)
             elif st["status"] and not st["hints"]:
                 if self.portrait:
-                    self.text(d, (g["art"][0], y), st["status"], 40, fill=(200, 202, 214), bold=False, anchor="mm")
+                    # "Listen" breathes: a trailing ellipsis that fills one dot at a time (2 s cycle) and a very
+                    # slow brightness swell, so the frame is alive without anything moving across it
+                    status = st["status"]
+                    if status == "Listen":
+                        status = "Listen" + "." * (1 + int((st["t"] % 2.0) / 2.0 * 3))
+                    pulse = 0.82 + 0.18 * (0.5 + 0.5 * math.sin(st["t"] * 2 * math.pi / 2.4))
+                    self.text(d, (g["art"][0], y), status, 52, fill=(200, 202, 214), bold=False, anchor="mm", alpha=pulse)
                 else:
                     self.text(d, (x, g["art"][1]), st["status"], 44, fill=(200, 202, 214), bold=False, anchor="lm")
             hints = st["hints"]
@@ -475,9 +481,9 @@ class Scene:
                 if spec:
                     lines, size, _ = new_lay[latest]
                     block_bottom = new_y[latest] + len(lines) * int(size * 1.4 * self.u) + int(24 * self.u)
-                    vh = int(230 * self.u)
-                    limit = int(self.H * 0.73) if self.portrait else int(self.H * 0.93)
-                    if block_bottom + vh <= limit:
+                    limit = int(self.H * 0.745) if self.portrait else int(self.H * 0.93)
+                    vh = min(int((300 if self.portrait else 250) * self.u), limit - block_bottom)   # as big as the slot allows
+                    if vh >= int(130 * self.u):
                         layer = hint_visuals.render(spec, vh, accent, self.fonts_dir)
                         if layer is not None:
                             if p_new < 1:
