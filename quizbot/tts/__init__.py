@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 import subprocess
 from pathlib import Path
 
@@ -134,6 +135,9 @@ class TTS:
                 self.settings.tts_provider, self.settings.tts_voice = "openai", "coral"
                 self.cache = self.settings.cache_dir / "tts" / "openai"
                 self.cache.mkdir(parents=True, exist_ok=True)
+                # the text was wrapped for ElevenLabs (<phoneme alphabet="ipa" ph="…">Gabite</phoneme>); OpenAI
+                # would read the markup aloud, so hand it the bare names
+                text = re.sub(r'<phoneme\b[^>]*>(.*?)</phoneme>', r"\1", text, flags=re.S)
                 return self.say(text, style, notes)
             import importlib.util
             if importlib.util.find_spec("kokoro") is None:     # no local fallback installed: fail loudly, never ship a worse voice
