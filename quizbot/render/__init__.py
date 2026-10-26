@@ -202,8 +202,9 @@ class Renderer:
             T.add(snd, snd_d, "sound")
             T.add(None, 0.3)
         if short:
-            T.mark("caption", text=self.pack.opening_line)
-            say_part(self.pack.opening_line)
+            opener = self.pack.punch_line if str(self.s.opening_style) == "punch" else self.pack.opening_line
+            T.mark("caption", text=opener)
+            say_part(opener, style="Quick and punchy, like a game-show buzzer line." if opener == self.pack.punch_line else "")
             T.mark("caption", text="")
         else:
             say_part(self.pack.question_line.format(n=i))
@@ -300,7 +301,7 @@ class Renderer:
                   # Shorts open with the game's name and its one rule on screen until the first hint, so a viewer
                   # who swiped in mid-sound knows what this is without a word being spoken
                   title=(self.pack.display_name.upper() if total == 1 else ""),
-                  rule="Name it from the sound alone. Every hint costs a point.")
+                  rule="Name it from the sound. Every hint costs a point.")
         wave = np.zeros(28)
         for ev in T.events:
             if ev.at > t:

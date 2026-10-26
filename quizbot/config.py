@@ -70,6 +70,7 @@ class Settings:
     # Content selection
     shorts_famous_only: bool = True      # Shorts draw from the well-known subset; long-form can go deep
     shorts_cold_open: str = "auto"       # auto (alternate per Short, for A/B) | true | false
+    opening_style: str = "question"      # question ("How fast can you name…?") | punch ("Name this Pokémon!")
     title_style: str = "question"        # Shorts title: question | challenge (A/B)
     tts_pace: str = "brisk"              # brisk | quick   (how fast the host talks; A/B)
     tts_energy: str = "host"             # host | showman  (game-show energy level; A/B)

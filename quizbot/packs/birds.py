@@ -192,6 +192,7 @@ class BirdsPack(Pack):
     question_line = "Round {n}."
     reveal_line = "It's the {answer}."
     opening_line = "How fast can you name this bird?"
+    punch_line = "Name this bird!"
     channel_blurb = "Can you name the bird from its call alone?"
     accent_color = (120, 200, 140)
     bg_color = (18, 30, 24)

@@ -172,11 +172,14 @@ class Scene:
             # Shorts safe area: YouTube overlays the right ~18% (like/comment/share) from ~40% down,
             # and the bottom ~22% (title/subscribe). Everything important lives above y=0.74H, left of x=0.80W.
             cx = self.W // 2
-            return dict(art=(cx, int(self.H * 0.30)), box=int(self.W * 0.62),
-                        wave=(cx, int(self.H * 0.505), int(self.W * 0.52)),
-                        dots=(cx, int(self.H * 0.465)),
-                        text_x=int(self.W * 0.13), text_w=int(self.W * 0.74), text_y=int(self.H * 0.56), center=False,
-                        name_y=int(self.H * 0.56))
+            # Platform chrome (measured on YouTube Shorts, Instagram Reels, TikTok): a header strip in the top
+            # ~10 %, like/comment/share buttons on the right ~15 % from mid-frame down, caption/title in the
+            # bottom ~25 %. Everything of ours lives in y 8.5 %–74.5 %, x 15 %–85 %.
+            return dict(art=(cx, int(self.H * 0.33)), box=int(self.W * 0.57),
+                        wave=(cx, int(self.H * 0.535), int(self.W * 0.52)),
+                        dots=(cx, int(self.H * 0.498)),
+                        text_x=int(self.W * 0.17), text_w=int(self.W * 0.66), text_y=int(self.H * 0.585), center=False,
+                        name_y=int(self.H * 0.585))
         return dict(art=(int(self.W * 0.72), int(self.H * 0.46)), box=int(self.H * 0.6),
                     wave=(int(self.W * 0.72), int(self.H * 0.84), int(self.W * 0.3)),
                     dots=(int(self.W * 0.72), int(self.H * 0.79)),
@@ -206,16 +209,29 @@ class Scene:
                 self.text(d, (self.W // 2, self.H - int(110 * self.u)), foot, 34, fill=(190, 190, 200), bold=False)
             return img
 
-        # header
-        self.text(d, (m, m), st["header"], 36, fill=accent, anchor="lm")
+        # header row: below the platforms' top strip in portrait (0.085 H), margin-aligned in landscape
+        hy = int(self.H * 0.125) if self.portrait else m
+        self.text(d, (m, hy), st["header"], 36, fill=accent, anchor="lm")
+        if self.portrait and st["t"] < 3.2 and not st["card"]:
+            # "♪ SOUND ON" for the first three seconds: Instagram and Facebook feeds start muted, and this is an
+            # audio quiz. Fades out; YouTube viewers lose nothing.
+            a = 1.0 if st["t"] < 2.4 else max(0.0, 1 - (st["t"] - 2.4) / 0.8)
+            label = "♪  SOUND ON"
+            f = self.font(30)
+            w = f.getlength(label) + int(40 * self.u)
+            h = int(54 * self.u)
+            cx_ = self.W // 2 + int(60 * self.u)
+            col = tuple(int(c * a) for c in accent)
+            d.rounded_rectangle((cx_ - w / 2, hy - h // 2, cx_ + w / 2, hy + h // 2), radius=h // 2, outline=col, width=3)
+            self.text(d, (cx_, hy), label, 30, fill=col)
         if st["points"] is not None:
             label = f"{st['points']} PT{'S' if st['points'] != 1 else ''}"
             pop = 1 + 0.25 * math.sin(math.pi * ease(st["points_age"] / 0.35)) if st["points_age"] < 0.35 else 1
             f = self.font(int(36 * pop))
             w = f.getlength(label) + int(44 * self.u * pop)
             h = int(62 * self.u * pop)
-            d.rounded_rectangle((right - w, m - h // 2, right, m + h // 2), radius=h // 2, fill=accent)
-            self.text(d, (right - w / 2, m), label, int(36 * pop), fill=bg)
+            d.rounded_rectangle((right - w, hy - h // 2, right, hy + h // 2), radius=h // 2, fill=accent)
+            self.text(d, (right - w / 2, hy), label, int(36 * pop), fill=bg)
 
         # art region
         cx, cy = g["art"]
@@ -332,14 +348,14 @@ class Scene:
         else:
             title_on = self.portrait and not st["hints"] and st.get("title")
             if title_on:
-                cx, ty = g["art"][0], int(self.H * 0.64)
-                for ln in self.wrap_fit(st["title"], 72, g["text_w"], 2, bold=True)[0]:
-                    self.text(d, (cx, ty), ln, 72, fill=accent, anchor="mm")
-                    ty += int(84 * self.u)
+                cx, ty = g["art"][0], int(self.H * 0.635)
+                for ln in self.wrap_fit(st["title"], 64, g["text_w"], 2, bold=True)[0]:
+                    self.text(d, (cx, ty), ln, 64, fill=accent, anchor="mm")
+                    ty += int(72 * self.u)
                 ty += int(6 * self.u)
-                for ln in self.wrap_fit(st["rule"], 36, g["text_w"], 2, bold=False)[0]:
-                    self.text(d, (cx, ty), ln, 36, fill=(200, 202, 214), bold=False, anchor="mm")
-                    ty += int(46 * self.u)
+                for ln in self.wrap_fit(st["rule"], 32, g["text_w"], 2, bold=False)[0]:
+                    self.text(d, (cx, ty), ln, 32, fill=(200, 202, 214), bold=False, anchor="mm")
+                    ty += int(40 * self.u)
             if st["caption"] and not st["hints"]:
                 if title_on:          # the spoken opening line sits in the status slot, above the title block
                     cy = g["wave"][1] + int(60 * self.u)

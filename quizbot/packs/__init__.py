@@ -76,6 +76,7 @@ class Pack(ABC):
 
     # Narration hooks a pack may override
     opening_line: str = "How fast can you name this sound?"
+    punch_line: str = "Name this sound!"            # the two-word opener (experiment `open`, arm `punch`)
     spoken_replacements: dict = {}
 
     def spoken(self, text: str) -> str:

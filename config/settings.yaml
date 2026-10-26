@@ -32,7 +32,7 @@ planner: template               # template | claude   (claude = titles, intros, 
 claude_model: claude-sonnet-4-5
 
 # Content selection ------------------------------------------------------------
-packs_enabled: [pokemon, birds]  # rotation for --pack auto: Shorts round-robin; long-form one per pack per week
+packs_enabled: [pokemon]        # birds paused 2026-10-26 (10× lower reach); re-add to resume
 longs_per_pack_per_week: 1
 shorts_famous_only: true        # Shorts use the well-known subset (Gen 1-4 + famous later ones)
 shorts_cold_open: auto          # auto = alternate per Short (A/B test) | true | false. Cold open = cry before the question line

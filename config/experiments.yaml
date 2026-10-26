@@ -14,8 +14,9 @@ experiments:
   - id: open
     question: "Cold open (sound first) or announce the question first?"
     variants:
-      cold:     { shorts_cold_open: "true" }
-      announce: { shorts_cold_open: "false" }
+      cold:     { shorts_cold_open: "true",  opening_style: question }
+      announce: { shorts_cold_open: "false", opening_style: question }
+      punch:    { shorts_cold_open: "false", opening_style: punch }      # "Name this Pokémon!" then the cry
 
   # Viewers leave at ~23 s whatever the length (they answer on the first sound); the reveal lands at ~30 s.
   # snappy = one hint, 2 s thinks, no replay after the hint → reveal at ~22 s. Is that enough to play along?

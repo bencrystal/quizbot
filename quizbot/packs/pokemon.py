@@ -73,6 +73,7 @@ class PokemonPack(Pack):
     question_line = "Round {n}."
     reveal_line = "It's {answer}."
     opening_line = "How fast can you name this Pokémon?"
+    punch_line = "Name this Pokémon!"
     spoken_replacements = PRONUNCIATIONS
 
     def __init__(self, settings):
