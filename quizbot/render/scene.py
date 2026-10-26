@@ -233,6 +233,27 @@ class Scene:
             d.rounded_rectangle((right - w, hy - h // 2, right, hy + h // 2), radius=h // 2, fill=accent)
             self.text(d, (right - w / 2, hy), label, int(36 * pop), fill=bg)
 
+        # rapid-fire strip: one small disc per sound, under the header — answered ones show the art, the current
+        # one is ringed in the accent, the rest are "?". Any frame then reads as "five-question quiz, n done".
+        if st.get("strip"):
+            n = len(st["strip"])
+            r = int(44 * self.u)
+            gap = int(22 * self.u)
+            total_w = n * 2 * r + (n - 1) * gap
+            sx = self.W // 2 - total_w // 2 + r
+            sy = hy + int(92 * self.u)
+            for k, path in enumerate(st["strip"], 1):
+                done = k < st["strip_i"] or (k == st["strip_i"] and st["reveal_p"] > 0)
+                cur = k == st["strip_i"] and not done
+                ring = accent if (done or cur) else (70, 72, 90)
+                d.ellipse((sx - r, sy - r, sx + r, sy + r), fill=(10, 10, 14), outline=ring, width=3 if cur else 2)
+                if done and path:
+                    mini = self.art(Path(path), int(r * 1.6), "color")
+                    self.paste_center(img, mini, sx, sy)
+                else:
+                    self.text(d, (sx, sy), "?", 40, fill=accent if cur else (120, 122, 140))
+                sx += 2 * r + gap
+
         # art region
         cx, cy = g["art"]
         box = g["box"]

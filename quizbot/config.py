@@ -81,7 +81,7 @@ class Settings:
     tts_speed: float = 1.05              # post-synthesis tempo on every line, pitch preserved (1.0 = as spoken)
     tts_speed_long: float = 1.08         # tempo for long read-outs (Pokédex / field-guide hint, the fact)
     short_hints: int = 0                 # Shorts: keep only the last N hints (0 = all)
-    short_replay: bool = True            # Shorts: play the sound once more after hint 1 (A/B: snappy = off)
+    short_replay: bool = False           # Shorts: play the sound again after hint 1 (off: cry ×2 → hints → cry on the silhouette → reveal)
     short_outro: str = "spoken"          # Shorts: "drop your score" spoken | caption (on screen during the fact)
     packs_enabled: list = field(default_factory=lambda: ["pokemon"])   # rotation order for --pack auto
     longs_per_pack_per_week: int = 1     # long-form cadence per pack (the long cron runs daily and skips when met)
