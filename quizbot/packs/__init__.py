@@ -21,6 +21,7 @@ class Pack(ABC):
     name: str = "base"
     display_name: str = "Audio Quiz"
     noun: str = "sound"                 # what a single item is called in titles: "Can you name this {noun}…"
+    plural: str = ""                      # plural of noun when not noun+"s" (Pokémon)
     # Narration defaults a pack can override
     question_line: str = "Number {n}. What sound is this?"
     reveal_line: str = "It's {answer}!"

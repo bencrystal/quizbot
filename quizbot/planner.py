@@ -80,10 +80,11 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
         outro = "How many points did you get?"
         if settings.mechanic == "rapid":
             words = {3: "three", 4: "four", 5: "five", 6: "six"}
-            title = f"Name {n} {pack.noun}s from their sounds ({theme['label']}) #shorts"
+            plural = pack.plural or f"{pack.noun}s"
+            title = f"Name {n} {plural} from their sounds ({theme['label']}) #shorts"
             desc = (f"{pack.channel_blurb}\n\nRapid fire: {n} sounds, one point each, easy to hard, no hints. "
                     f"{theme['label']}.\n\nAnswers:\n{answers}\n\n{hashtags}")
-            intro = f"{words.get(n, n).title()} {pack.noun}s. One sound each. Name them all!"
+            intro = f"{words.get(n, n).title()} {plural}. One sound each. Name them all!"
             outro = f"How many did you get out of {n}?"
     else:
         title = f"{pack.display_name}: {theme['label']} ({n} Rounds)"

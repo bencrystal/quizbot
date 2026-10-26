@@ -86,7 +86,7 @@ def cmd_run(args, settings: Settings) -> int:
         return 1
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "rendered",
                          video_path=str(result.video), thumbnail_path=str(result.thumbnail))
-    variant = (" · cold open" if ep.meta.get("cold_open") else " · announce first") if ep.format == "short" else ""
+    variant = (" · cold open" if ep.meta.get("cold_open") else " · announce first") if ep.format == "short" and ep.mechanic != "rapid" else ""
     kind = "rapid-fire" if ep.mechanic == "rapid" else ep.format
     msg = f"🎬 {kind} rendered: {ep.title}{variant}  ({result.duration_seconds:.0f}s)\n{result.video}"
 
