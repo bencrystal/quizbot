@@ -58,10 +58,10 @@ def main() -> None:
                 pack = next((n for n, p in packs.items() if p.noun.lower() in sn["title"].lower()), "unknown")
             variant = "coldopen" if "coldopen" in tags else "announce" if "announce" in tags else None
             theme = next((t for t in tags if t not in {"quiz", "audio quiz", "trivia", "guessing game", "coldopen", "announce"}
-                          and not t.startswith("pack:") and t not in packs), "")
+                          and not t.startswith("pack:") and t not in packs and t != "rapid"), "")
             videos[v["id"]] = {
                 "id": v["id"], "title": sn["title"], "published": sn["publishedAt"], "pack": pack,
-                "format": "short" if "#shorts" in sn["title"].lower() else "long", "variant": variant, "theme": theme,
+                "format": ("rapid" if "rapid" in tags else "short") if "#shorts" in sn["title"].lower() else "long", "variant": variant, "theme": theme,
                 "duration": iso_dur(v["contentDetails"].get("duration")), "privacy": v.get("status", {}).get("privacyStatus"),
                 "views": int(st.get("viewCount", 0)), "likes": int(st.get("likeCount", 0)), "comments": int(st.get("commentCount", 0)),
                 "tier": next((t.split(":", 1)[1] for t in tags if t.startswith("tier:")), None),

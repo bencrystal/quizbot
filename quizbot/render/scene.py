@@ -212,7 +212,7 @@ class Scene:
         # header row: below the platforms' top strip in portrait (0.085 H), margin-aligned in landscape
         hy = int(self.H * 0.125) if self.portrait else m
         self.text(d, (m, hy), st["header"], 36, fill=accent, anchor="lm")
-        if self.portrait and st["t"] < 3.2 and not st["card"]:
+        if self.portrait and st["t"] < 3.2 and not st["card"] and st.get("first", True):
             # "♪ SOUND ON" for the first three seconds: Instagram and Facebook feeds start muted, and this is an
             # audio quiz. Fades out; YouTube viewers lose nothing.
             a = 1.0 if st["t"] < 2.4 else max(0.0, 1 - (st["t"] - 2.4) / 0.8)
@@ -346,7 +346,7 @@ class Scene:
                     self.text(d, (rx_, y), ln, 40, fill=accent, anchor="mm", alpha=a)
                     y += int(50 * self.u)
         else:
-            title_on = self.portrait and not st["hints"] and st.get("title")
+            title_on = self.portrait and not st["hints"] and st.get("title") and st["t"] < 4.0
             if title_on:
                 cx, ty = g["art"][0], int(self.H * 0.635)
                 for ln in self.wrap_fit(st["title"], 64, g["text_w"], 2, bold=True)[0]:

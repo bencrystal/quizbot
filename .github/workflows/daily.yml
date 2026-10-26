@@ -11,7 +11,7 @@ on:
     - cron: "5 * * * *"
   workflow_dispatch:
     inputs:
-      format: { default: auto, type: choice, options: [auto, short, long], description: "auto = whatever the ledger says is due (safe to call any time)" }
+      format: { default: auto, type: choice, options: [auto, short, long, rapid], description: "auto = whatever the ledger says is due (safe to call any time); rapid = five-sound Short" }
       theme: { default: "" }
       force: { default: false, type: boolean, description: "ignore the daily cap (manual test runs)" }
       pack: { default: "auto", description: "pokemon | birds | auto (rotate)" }
@@ -90,7 +90,9 @@ jobs:
         run: |
           set -o pipefail
           (python -m quizbot retry-uploads || true) 2>&1 | tee -a state/run.log
-          python -m quizbot run --format ${{ steps.fmt.outputs.format }} --pack ${{ github.event.inputs.pack || 'auto' }} \
+          FMT=${{ steps.fmt.outputs.format }}; MECH=""
+          if [ "$FMT" = "rapid" ]; then FMT=short; MECH="--mechanic rapid"; fi
+          python -m quizbot run --format $FMT $MECH --pack ${{ github.event.inputs.pack || 'auto' }} \
             ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }} \
             ${{ github.event.inputs.force == 'true' && '--force' || '' }} 2>&1 | tee -a state/run.log
       - uses: actions/cache/save@v4           # hourly 'none' runs save nothing, so the token caches are not churned out
@@ -120,8 +122,9 @@ jobs:
         run: |
           LINE=$(grep -E "🎬|📺|📱|⏸|❌|\[meta\]" state/run.log | tail -8 | sed 's/^/    /')
           BODY="[run ${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) · ${{ steps.fmt.outputs.format }} · $(date -u +%FT%TZ)"$'\n'"$LINE"
-          N=$(gh issue list -R ${{ github.repository }} --search "Episode log in:title" --state open --json number --jq '.[0].number')
-          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Episode log" --body "$BODY"; else gh issue comment -R ${{ github.repository }} "$N" --body "$BODY"; fi
+          TITLE="Episode log"; [ "${{ steps.fmt.outputs.format }}" = "rapid" ] && TITLE="Rapid-fire log"
+          N=$(gh issue list -R ${{ github.repository }} --search "$TITLE in:title" --state open --json number --jq '.[0].number')
+          if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "$TITLE" --body "$BODY"; else gh issue comment -R ${{ github.repository }} "$N" --body "$BODY"; fi
       - name: report failure to the "Run failures" issue
         if: failure()
         env:

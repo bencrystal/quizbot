@@ -45,7 +45,7 @@ def cmd_run(args, settings: Settings) -> int:
         print(f"[plan] pack: {pack_name} (auto)")
     pack = get_pack(pack_name, settings)
     exp_tags: list[str] = []
-    if settings.tts_provider != "dev":   # no experiments in the offline smoke test
+    if settings.tts_provider != "dev" and settings.mechanic != "rapid":   # no experiments offline; rapid-fire is its own thing
         forced = str(settings.shorts_cold_open).lower()          # workflow input overrides the experiment
         from .experiments import assign
         exp_id, variant, exp_tags = assign(settings, state, settings.format, pack_name)
@@ -54,7 +54,7 @@ def cmd_run(args, settings: Settings) -> int:
         if exp_id:
             print(f"[plan] experiment {exp_id}: variant {variant}")
     ep = plan_episode(pack, settings, state, seed=args.seed, theme_id=args.theme)
-    if ep.format == "short":
+    if ep.format == "short" and ep.mechanic != "rapid":
         mode = str(settings.shorts_cold_open).lower()
         cold = (state.count_episodes("short") % 2 == 0) if mode == "auto" else mode in ("1", "true", "yes")
         ep.meta["cold_open"] = cold
@@ -67,7 +67,10 @@ def cmd_run(args, settings: Settings) -> int:
         ep.tags.append(f"tier:{pack.tier(ep.items[0])}")   # item fame bucket, so experiments can balance it out
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned", meta={"manual": bool(args.force)})
-    if str(settings.track_used).lower() in (ep.format, "all", "true"):
+    if ep.mechanic == "rapid":
+        state.mark_used(ep.pack, "rapid", [i.id for i in ep.items], ep.slug)
+        ep.tags.append("rapid")
+    elif str(settings.track_used).lower() in (ep.format, "all", "true"):
         state.mark_used(ep.pack, ep.format, [i.id for i in ep.items], ep.slug)
     try:
         tts = TTS(settings)
@@ -84,7 +87,8 @@ def cmd_run(args, settings: Settings) -> int:
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "rendered",
                          video_path=str(result.video), thumbnail_path=str(result.thumbnail))
     variant = (" · cold open" if ep.meta.get("cold_open") else " · announce first") if ep.format == "short" else ""
-    msg = f"🎬 {ep.format} rendered: {ep.title}{variant}  ({result.duration_seconds:.0f}s)\n{result.video}"
+    kind = "rapid-fire" if ep.mechanic == "rapid" else ep.format
+    msg = f"🎬 {kind} rendered: {ep.title}{variant}  ({result.duration_seconds:.0f}s)\n{result.video}"
 
     if args.upload or settings.upload:
         try:
@@ -199,7 +203,7 @@ def main(argv=None) -> int:
     r = sub.add_parser("run")
     r.add_argument("--pack", default="auto", help="pack name, or auto = rotate through settings.packs_enabled")
     r.add_argument("--format", choices=["long", "short"])
-    r.add_argument("--mechanic", choices=["ladder", "choice", "cold"])
+    r.add_argument("--mechanic", choices=["ladder", "choice", "cold", "rapid"])
     r.add_argument("--theme", help="theme id (see `themes`); random if omitted")
     r.add_argument("--rounds", type=int)
     r.add_argument("--seed", type=int)

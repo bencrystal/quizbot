@@ -40,7 +40,10 @@ class Settings:
 
     # Game
     format: str = "long"                 # long | short  (overridden by --format)
-    mechanic: str = "ladder"             # ladder | choice | cold
+    mechanic: str = "ladder"             # ladder | choice | cold | rapid (Shorts: five cries, no hints)
+    rapid_rounds: int = 5                # rapid-fire Shorts: sounds per video
+    rapid_per_day: int = 1               # rapid-fire Shorts per day (takes one of the four Short slots)
+    rapid_reuse_days: int = 90           # rapid-fire may repeat an item after this many days (its own list)
     rounds_per_episode: int = 0          # 0 = format default (10 long / 1 short)
     stage_seconds: float = 0             # 0 = format default
     fps: int = 24
@@ -140,6 +143,8 @@ class Settings:
 
     @property
     def rounds(self) -> int:
+        if self.mechanic == "rapid":
+            return self.rounds_per_episode or self.rapid_rounds
         return self.rounds_per_episode or FORMATS[self.format]["rounds"]
 
     @property

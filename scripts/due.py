@@ -41,8 +41,14 @@ def main() -> None:
     long_owed = any(st.count_episodes("long", pk, week_ago) < s.longs_per_pack_per_week for pk in packs)
     long_due = hours >= LONG_FROM - DAY_START and longs_today == 0 and long_owed
     # long-form first when both are due: it is the one with a weekly quota to meet
+    # rapid-fire takes the 15:00 slot (the second Short of the day) when enabled; its episodes carry "-rapid"
+    rapid_today = st.conn.execute("SELECT COUNT(*) FROM episodes WHERE slug LIKE '%-rapid%' AND status!='failed' AND created_at>=?",
+                                  (day0,)).fetchone()[0]
+    rapid_due = int(getattr(s, "rapid_per_day", 0)) > rapid_today and hours >= 15 - DAY_START and shorts_today < slots_passed
     if long_due:
         print("long")
+    elif rapid_due:
+        print("rapid")
     elif shorts_today < slots_passed:
         print("short")
     else:

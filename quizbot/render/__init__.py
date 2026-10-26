@@ -282,6 +282,42 @@ class Renderer:
             T.add(None, 0.9)
         return T
 
+    def build_rapid_round(self, i: int, total: int, it: QuizItem, ep: Episode, work: Path) -> Timeline:
+        """Rapid fire: sound → short think → name, no hints, no sting. Item 1 opens with the one-line intro;
+        the last item carries the outro. Five of these make a ~30 s Short."""
+        T = Timeline()
+        snd = self.norm(it.prompt_audio, work)
+        snd_d = self.dur(snd)
+        S = ep.stage_seconds
+
+        def say_part(text, kind=None, style="", **data):
+            p = self.say(text, style)
+            return T.add(p, self.dur(p), kind, **data)
+
+        if i == 1:
+            T.mark("caption", text=ep.intro)
+            say_part(ep.intro, style="Quick and punchy, like a game-show buzzer line.")
+            T.mark("caption", text="")
+            self.bed_delay = T.t
+        T.mark("status", text="Listen")
+        T.add(None, 0.2)
+        T.add(snd, snd_d, "sound")
+        T.mark("status", text="Your guess?")
+        T.add(None, 0.15)
+        T.add(None, S, "think")
+        if it.shape_hint and it.reveal_image:
+            T.mark("shape", dur=0.5)
+            T.add(None, 0.5)
+        T.mark("tint")
+        T.mark("reveal")
+        say_part(it.answer, style="Just the name, bright and quick.")
+        T.add(None, 0.5 if i < total else 0.3)
+        if i == total:
+            T.mark("caption", text=ep.outro)
+            say_part(ep.outro)
+            T.add(None, 0.8)
+        return T
+
     def build_card(self, text: str, title: str, sub: str, foot: str, lead: float, tail: float) -> Timeline:
         T = Timeline()
         T.mark("card", title=title, sub=sub, foot=foot)
@@ -293,15 +329,16 @@ class Renderer:
 
     # ---- state at time t ------------------------------------------------------
     def state(self, T: Timeline, t: float, it: QuizItem | None, i: int, total: int, work: Path) -> dict:
-        st = dict(t=t, card=None, header=f"ROUND {i} / {total}" if total > 1 else self.s.channel_name.upper(),
+        rapid = self.s.mechanic == "rapid"
+        st = dict(t=t, first=(i <= 1), card=None, header=(f"{i} / {total}" if rapid else f"ROUND {i} / {total}") if total > 1 else self.s.channel_name.upper(),
                   points=None, points_age=99.0, tint=it.tint if it else None, tint_p=0.0, stage=0, stages=1, arc=0.0,
                   art=it.reveal_image if it else None, shape_p=0.0, reveal_p=0.0, wave=None, think=None,
                   status="", caption="", hints=[], answer=it.answer if it else "", subtitle=it.subtitle if it else "",
                   fact=it.fact if it else "", entry=(it.meta.get("entry", "") if it else ""), aka=(it.meta.get("aka") or []) if it else [], choices=None,
                   # Shorts open with the game's name and its one rule on screen until the first hint, so a viewer
                   # who swiped in mid-sound knows what this is without a word being spoken
-                  title=(self.pack.display_name.upper() if total == 1 else ""),
-                  rule="Name it from the sound. Every hint costs a point.")
+                  title=(self.pack.display_name.upper() if total == 1 or (rapid and i == 1) else ""),
+                  rule=(f"{total} sounds. Name them all." if rapid else "Name it from the sound. Every hint costs a point."))
         wave = np.zeros(28)
         for ev in T.events:
             if ev.at > t:
@@ -408,7 +445,10 @@ class Renderer:
             segs.append(self.encode(T, None, 0, total, work, work / "00-intro.mp4"))
         for i, it in enumerate(ep.items, 1):
             print(f"[render] round {i}/{total}: {it.answer}")
-            T = self.build_round(i, total, it, ep, rng, work)
+            if ep.mechanic == "rapid":
+                T = self.build_rapid_round(i, total, it, ep, work)
+            else:
+                T = self.build_round(i, total, it, ep, rng, work)
             segs.append(self.encode(T, it, i, total, work, work / f"{i:02d}.mp4"))
         if not short:
             maxp = total * (1 + len(ep.items[0].hints)) if ep.mechanic == "ladder" else total

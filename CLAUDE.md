@@ -7,8 +7,12 @@ run anything by hand.
 ## What it makes
 Audio quizzes: play a sound → hints → reveal. Two formats from the same code:
 - **Shorts** (9:16, one round, ~45 s): `How fast can you name this X?` → sound → hints → reveal. 4 per day.
+- **Rapid-fire Shorts** (mechanic `rapid`): five sounds, ~3 s each, name only, no hints, ~35 s. One a day in the
+  15:00 UTC slot; its own no-repeat list (`fmt=rapid`, reusable after `rapid_reuse_days`), its own GitHub issue
+  ("Rapid-fire log"), tag `rapid`, format `rapid` in analytics; excluded from the Shorts experiments.
 - **Long form** (16:9, 10 rounds, easy → hard, ~7 min): one per pack per week.
-Series ("packs") share everything except the data. Live: `pokemon` (cries), `birds` (xeno-canto calls).
+Series ("packs") share everything except the data. Live: `pokemon` (cries). Paused 2026-10-26: `birds` (xeno-canto calls; a tenth of the reach — resume via
+`packs_enabled` or spin out as its own channel).
 Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
 
 ## Architecture (one repo, packs isolated)

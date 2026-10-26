@@ -32,7 +32,10 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     print(f"[plan] format={settings.format} mechanic={settings.mechanic} theme={theme['label']}")
 
     pool = pack.candidates(theme)
-    used = state.used_ids(pack.name, settings.format) if str(settings.track_used).lower() in (settings.format, "all", "true") else set()
+    if settings.mechanic == "rapid":      # its own no-repeat list, expiring, so five-a-day doesn't drain the pool
+        used = state.used_ids(pack.name, "rapid", within_days=settings.rapid_reuse_days)
+    else:
+        used = state.used_ids(pack.name, settings.format) if str(settings.track_used).lower() in (settings.format, "all", "true") else set()
     items = pack.select(pool, used, settings.rounds, rng,
                         famous_only=(settings.format == "short" and settings.shorts_famous_only), theme=theme)
     if not items:
@@ -75,6 +78,13 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
                 f"Full {n if n > 1 else 10}-round quizzes every week.\n\nAnswer: {items[0].answer}\n\n{hashtags}")
         intro = pack.opening_line
         outro = "How many points did you get?"
+        if settings.mechanic == "rapid":
+            words = {3: "three", 4: "four", 5: "five", 6: "six"}
+            title = f"Name {n} {pack.noun}s from their sounds ({theme['label']}) #shorts"
+            desc = (f"{pack.channel_blurb}\n\nRapid fire: {n} sounds, one point each, easy to hard, no hints. "
+                    f"{theme['label']}.\n\nAnswers:\n{answers}\n\n{hashtags}")
+            intro = f"{words.get(n, n).title()} {pack.noun}s. One sound each. Name them all!"
+            outro = f"How many did you get out of {n}?"
     else:
         title = f"{pack.display_name}: {theme['label']} ({n} Rounds)"
         desc = (f"{pack.channel_blurb}\n\n{n} rounds of {theme['label']}. Guess after the sound alone for the most "

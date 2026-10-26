@@ -57,9 +57,14 @@ class State:
         self.conn.executescript(SCHEMA)
 
     # ---- items -------------------------------------------------------------
-    def used_ids(self, pack: str, fmt: str) -> set[str]:
-        """Items already featured in this format (Shorts and long-form keep separate lists)."""
-        rows = self.conn.execute("SELECT item_id FROM used_by_format WHERE pack=? AND fmt=?", (pack, fmt)).fetchall()
+    def used_ids(self, pack: str, fmt: str, within_days: float | None = None) -> set[str]:
+        """Items already featured in this format (Shorts, long-form and rapid-fire keep separate lists).
+        within_days limits it to recent uses (rapid-fire may repeat an item after a quiet spell)."""
+        if within_days:
+            rows = self.conn.execute("SELECT item_id FROM used_by_format WHERE pack=? AND fmt=? AND used_at>=?",
+                                     (pack, fmt, time.time() - within_days * 86400)).fetchall()
+        else:
+            rows = self.conn.execute("SELECT item_id FROM used_by_format WHERE pack=? AND fmt=?", (pack, fmt)).fetchall()
         return {r["item_id"] for r in rows}
 
     def mark_used(self, pack: str, fmt: str, item_ids: list[str], slug: str) -> None:
