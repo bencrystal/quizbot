@@ -337,6 +337,7 @@ class Renderer:
                   fact=it.fact if it else "", entry=(it.meta.get("entry", "") if it else ""), aka=(it.meta.get("aka") or []) if it else [], choices=None,
                   # Shorts open with the game's name and its one rule on screen until the first hint, so a viewer
                   # who swiped in mid-sound knows what this is without a word being spoken
+                  visuals=(it.meta.get("visuals") or {}) if it else {},
                   # rapid-fire progress strip: art of the answers already revealed, "?" for the rest
                   strip=([x.reveal_image for x in self._ep.items] if rapid and it else None), strip_i=i,
                   title=(self.pack.display_name.upper() if total == 1 or (rapid and i == 1) else ""),

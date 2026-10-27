@@ -201,6 +201,7 @@ class PokemonPack(Pack):
         redacted = re.sub(r"(^|[.!?]\s+)(its|this Pokémon)", lambda m: m.group(1) + m.group(2)[0].upper() + m.group(2)[1:], redacted)
         region_hint = f"It was first seen in the {REGIONS[gen]} region."
         hints = [type_hint, region_hint, f"From the Pokédex: {redacted}"]
+        visuals = {type_hint: {"kind": "types", "types": type_names}, region_hint: {"kind": "chip", "text": REGIONS[gen]}}
         theme = theme or {}
         if "gen" in theme:          # a Generation episode already tells you the region
             hints.remove(region_hint)
@@ -224,7 +225,7 @@ class PokemonPack(Pack):
             tint=TYPE_COLORS.get(type_names[0].lower()),
             difficulty=self._difficulty(pid, gen, species),
             pronunciation=pron,
-            meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact,
+            meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact, "visuals": visuals,
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
         )
 
