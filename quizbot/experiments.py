@@ -115,6 +115,7 @@ def _judge_one(cfg: dict, st: dict, ex: dict, videos: list[dict]) -> dict:
             out[name] = {"n": len(sel),
                          "avp": (sum(v["avp"] for v in sel if v.get("avp") is not None) / max(1, sum(1 for v in sel if v.get("avp") is not None))) if sel else None,
                          "views": (sum(v["views"] for v in sel) / len(sel)) if sel else None,
+                         "subs": (sum(v.get("subs") or 0 for v in sel) / len(sel)) if sel else None,
                          "metric": metric, "score": (sum(v[metric] for v in sel) / len(sel)) if sel else None}
         # Item fame is the biggest peripheral factor (Charmander vs Beldum), so when every arm has videos in the
         # same fame tiers, score each arm as the equal-weight mean over those tiers instead of the raw mean.

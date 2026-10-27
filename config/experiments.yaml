@@ -26,6 +26,14 @@ experiments:
       standard: { short_hints: 0, stage_seconds: 2.5, short_replay: "false", short_outro: spoken }
       snappy:   { short_hints: 1, stage_seconds: 2.0, short_replay: "false", short_outro: caption }
 
+  # The one closing ask: score prompt (comments) or subscribe (the slower YPP gate). Judged on % viewed as
+  # always; the dashboard rows also show subscribers gained per video so the trade is visible.
+  - id: cta
+    question: "Close on 'How many points did you get?' or 'New quiz every day. Subscribe!'?"
+    variants:
+      score:     { short_cta: score }
+      subscribe: { short_cta: subscribe }
+
   - id: hints
     question: "Two hints or just the Pokédex/field-guide hint?"
     variants:

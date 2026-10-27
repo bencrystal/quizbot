@@ -83,6 +83,7 @@ class Settings:
     short_hints: int = 0                 # Shorts: keep only the last N hints (0 = all)
     short_replay: bool = False           # Shorts: play the sound again after hint 1 (off: cry ×2 → hints → cry on the silhouette → reveal)
     short_outro: str = "spoken"          # Shorts: "drop your score" spoken | caption (on screen during the fact)
+    short_cta: str = "score"             # the one closing ask: score ("How many points did you get?") | subscribe
     packs_enabled: list = field(default_factory=lambda: ["pokemon"])   # rotation order for --pack auto
     longs_per_pack_per_week: int = 1     # long-form cadence per pack (the long cron runs daily and skips when met)
     track_used: str = "short"            # which formats never repeat a Pokémon: short | long | all | none
