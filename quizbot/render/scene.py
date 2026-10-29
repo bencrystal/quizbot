@@ -66,8 +66,52 @@ class Scene:
     def font(self, size: int, bold=True) -> ImageFont.FreeTypeFont:
         k = (max(10, int(size * self.u)), bold)
         if k not in self._fonts:
-            self._fonts[k] = ImageFont.truetype(str(self.fonts_dir / (FONT_BOLD if bold else FONT_REG)), k[0])
+            if str(getattr(self.s, "captions", "kinetic")) == "kinetic":        # rounded display face (OFL)
+                name = "Poppins-Bold.ttf" if bold else "Poppins-Medium.ttf"
+            else:
+                name = FONT_BOLD if bold else FONT_REG
+            self._fonts[k] = ImageFont.truetype(str(self.fonts_dir / name), k[0])
         return self._fonts[k]
+
+    @staticmethod
+    def lit_sets(lines: list[str], spoken: str, word_i, shown: str) -> list[set]:
+        """Per-line sets of local word indices to light: the spoken word (global index word_i in `spoken`)
+        when the displayed text is the spoken text (first letter may be capitalised)."""
+        out = [set() for _ in lines]
+        if word_i is None or not spoken or not shown:
+            return out
+        if shown.strip().lower()[:40] != spoken.strip().lower()[:40]:
+            return out
+        g = 0
+        for li, ln in enumerate(lines):
+            for k, _ in enumerate(ln.split(" ")):
+                if g == word_i:
+                    out[li].add(k)
+                g += 1
+        return out
+
+    @property
+    def kinetic(self) -> bool:
+        return str(getattr(self.s, "captions", "kinetic")) == "kinetic"
+
+    def text_lit(self, d, xy, line: str, size, fill, accent, lit_words: set[str] | None, anchor="lm", alpha=1.0, bold=True):
+        """A line of words where the current spoken word is in the accent colour. Kinetic mode also outlines text
+        for legibility over art. lit_words: the exact tokens to light (matched by identity of the word index)."""
+        f = self.font(size, bold)
+        words = line.split(" ")
+        widths = [f.getlength(w) for w in words]
+        space = f.getlength(" ")
+        total = sum(widths) + space * (len(words) - 1)
+        x, y = xy
+        x0 = x - total / 2 if anchor[0] == "m" else x
+        stroke = max(2, int(size * 0.09 * self.u)) if self.kinetic else 0
+        for k, (w, ww) in enumerate(zip(words, widths)):
+            col = accent if (lit_words and k in lit_words) else fill
+            if alpha < 1:
+                col = tuple(int(c * alpha) for c in col)
+            d.text((x0, y), w, font=f, fill=col, anchor="l" + anchor[1], stroke_width=stroke,
+                   stroke_fill=(10, 10, 14) if stroke else None)
+            x0 += ww + space
 
     def text(self, d, xy, s, size, fill=WHITE, bold=True, anchor="mm", max_width=None, alpha=1.0):
         f = self.font(size, bold)
@@ -217,7 +261,7 @@ class Scene:
             # "♪ SOUND ON" for the first three seconds: Instagram and Facebook feeds start muted, and this is an
             # audio quiz. Fades out; YouTube viewers lose nothing.
             a = 1.0 if st["t"] < 2.4 else max(0.0, 1 - (st["t"] - 2.4) / 0.8)
-            label = "♪  SOUND ON"
+            label = "SOUND ON"
             f = self.font(30)
             w = f.getlength(label) + int(40 * self.u)
             h = int(54 * self.u)
@@ -353,8 +397,8 @@ class Scene:
                                 fill=tuple(int(c * a) for c in accent))
             self.text(d, (px + w / 2, y), label, 34, fill=bg, alpha=a)
             y += int((98 if self.portrait else 100) * self.u)
-            for ln in fact_lines:
-                self.text(d, (rx_, y), ln, fact_sz, fill=(230, 230, 238), bold=False, anchor=ranchor, alpha=a)
+            for ln, lw in zip(fact_lines, self.lit_sets(fact_lines, st.get("spoken", ""), st.get("word_i"), st["fact"])):
+                self.text_lit(d, (rx_, y), ln, fact_sz, (230, 230, 238), accent, lw, anchor=ranchor, alpha=a, bold=False)
                 y += int(fact_sz * 1.4 * self.u)
             if entry_lines:
                 y += int(30 * self.u)
@@ -381,15 +425,16 @@ class Scene:
             if st["caption"] and not st["hints"]:
                 if title_on:          # the spoken opening line sits in the status slot, above the title block
                     cy = g["wave"][1] + int(60 * self.u)
-                    for ln in self.wrap_fit(st["caption"], 44, g["text_w"], 2, bold=True)[0]:
-                        self.text(d, (g["art"][0], cy), ln, 44, anchor="mm")
+                    clines = self.wrap_fit(st["caption"], 44, g["text_w"], 2, bold=True)[0]
+                    for ln, lw in zip(clines, self.lit_sets(clines, st.get("spoken", ""), st.get("word_i"), st["caption"])):
+                        self.text_lit(d, (g["art"][0], cy), ln, 44, WHITE, accent, lw, anchor="mm")
                         cy += int(54 * self.u)
                 else:
                     lines = self.wrap_fit(st["caption"], 56, g["text_w"], 3, bold=True)[0]
                     if not self.portrait:
                         y = g["art"][1] - int(36 * self.u) * len(lines)
-                    for ln in lines:
-                        self.text(d, (x, y), ln, 56, anchor=anchor)
+                    for ln, lw in zip(lines, self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), st["caption"])):
+                        self.text_lit(d, (x, y), ln, 56, WHITE, accent, lw, anchor=anchor)
                         y += int(72 * self.u)
             elif st["status"] and not st["hints"]:
                 if self.portrait:
@@ -448,8 +493,9 @@ class Scene:
                     a = p_new
                     dx = int((1 - p_new) * 60 * self.u)
                     yy = new_y[i]
-                    for ln in lines:
-                        self.text(d, (x + dx, yy), ln, size, bold=True, anchor=anchor, alpha=a)
+                    lit = self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), hints[-1][0])
+                    for ln, lw in zip(lines, lit):
+                        self.text_lit(d, (x + dx, yy), ln, size, WHITE, accent, lw, anchor=anchor, alpha=a)
                         yy += int(size * 1.4 * self.u)
                     continue
                 if i == latest - 1 and p_new < 1:

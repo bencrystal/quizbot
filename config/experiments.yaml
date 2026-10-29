@@ -34,6 +34,14 @@ experiments:
       score:     { short_cta: score }
       subscribe: { short_cta: subscribe }
 
+  # Visual (1 of the 4-per-queue allowance): rounded display font + the spoken word lit as it is said, vs the
+  # previous static captions. Shipped as the default pending this read.
+  - id: captions
+    question: "Kinetic captions (word lit as spoken, rounded font) or static?"
+    variants:
+      kinetic: { captions: kinetic }
+      static:  { captions: static }
+
   - id: hints
     question: "Two hints or just the Pokédex/field-guide hint?"
     variants:
