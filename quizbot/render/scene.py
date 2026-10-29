@@ -462,7 +462,7 @@ class Scene:
                     s_ = hint[0].upper() + hint[1:]
                     full = (k == len(items) - 1) and not collapse_last
                     if full:
-                        lines, size = self.wrap_fit(s_, 40, g["text_w"], max_lines=7, bold=True)
+                        lines, size = self.wrap_fit(s_, 48 if (self.portrait and self.kinetic) else 40, g["text_w"], max_lines=6, bold=True)
                     else:
                         lines, size = self.wrap_fit(s_, 32, g["text_w"], max_lines=1, bold=False)
                         if lines and not s_.endswith(lines[-1]):
@@ -494,8 +494,10 @@ class Scene:
                     dx = int((1 - p_new) * 60 * self.u)
                     yy = new_y[i]
                     lit = self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), hints[-1][0])
+                    centred = self.portrait and self.kinetic          # Shorts: the live hint reads as a caption
                     for ln, lw in zip(lines, lit):
-                        self.text_lit(d, (x + dx, yy), ln, size, WHITE, accent, lw, anchor=anchor, alpha=a)
+                        self.text_lit(d, ((g["art"][0] if centred else x) + dx, yy), ln, size, WHITE, accent, lw,
+                                      anchor=("mm" if centred else anchor), alpha=a)
                         yy += int(size * 1.4 * self.u)
                     continue
                 if i == latest - 1 and p_new < 1:
@@ -503,21 +505,24 @@ class Scene:
                     ol, osz, _ = old_lay[i]
                     yy_old, yy_new = old_y[i], new_y[i]
                     yy = int(yy_old + (yy_new - yy_old) * p_new)
+                    cx_ = g["art"][0] if (self.portrait and self.kinetic) else x
+                    an_ = "mm" if cx_ != x else anchor
                     if p_new < 0.5:
                         a = 1.0 - p_new * 2 * 0.45
                         for ln in ol:
-                            self.text(d, (x, yy), ln, osz, bold=True, anchor=anchor, alpha=a * (1 - p_new * 2))
+                            self.text(d, (cx_, yy), ln, osz, bold=True, anchor=an_, alpha=a * (1 - p_new * 2))
                             yy += int(osz * 1.4 * self.u)
                     else:
                         for ln in lines:
-                            self.text(d, (x, yy), ln, size, bold=False, anchor=anchor, alpha=0.55 * ((p_new - 0.5) * 2))
+                            self.text(d, (cx_, yy), ln, size, bold=False, anchor=an_, alpha=0.55 * ((p_new - 0.5) * 2))
                             yy += int(size * 1.4 * self.u)
                     continue
                 # older collapsed hints: slide from their old slot to the new one
                 yy_old = old_y[i] if i < len(old_y) else new_y[i]
                 yy = int(yy_old + (new_y[i] - yy_old) * p_new)
+                cx_ = g["art"][0] if (self.portrait and self.kinetic) else x
                 for ln in lines:
-                    self.text(d, (x, yy), ln, size, bold=False, anchor=anchor, alpha=0.55)
+                    self.text(d, (cx_, yy), ln, size, bold=False, anchor=("mm" if cx_ != x else anchor), alpha=0.55)
                     yy += int(size * 1.4 * self.u)
 
             # Hint visual: a standardised graphic for the newest hint (range map, size ladder, type pills),

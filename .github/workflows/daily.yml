@@ -14,6 +14,7 @@ on:
       format: { default: auto, type: choice, options: [auto, short, long, rapid], description: "auto = whatever the ledger says is due (safe to call any time); rapid = five-sound Short" }
       theme: { default: "" }
       force: { default: false, type: boolean, description: "ignore the daily cap (manual test runs)" }
+      preview: { default: false, type: boolean, description: "render only: no upload, items released; download the mp4 from the run's artifact" }
       pack: { default: "auto", description: "pokemon | birds | auto (rotate)" }
       cold_open: { default: "auto", type: choice, options: [auto, "true", "false"], description: "Shorts: cry before the question line (auto = alternate)" }
 
@@ -94,7 +95,7 @@ jobs:
           if [ "$FMT" = "rapid" ]; then FMT=short; MECH="--mechanic rapid"; fi
           python -m quizbot run --format $FMT $MECH --pack ${{ github.event.inputs.pack || 'auto' }} \
             ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }} \
-            ${{ github.event.inputs.force == 'true' && '--force' || '' }} 2>&1 | tee -a state/run.log
+            ${{ github.event.inputs.force == 'true' && '--force' || '' }} ${{ github.event.inputs.preview == 'true' && '--preview' || '' }} 2>&1 | tee -a state/run.log
       - uses: actions/cache/save@v4           # hourly 'none' runs save nothing, so the token caches are not churned out
         if: always() && steps.fmt.outputs.format != 'none'
         with:
