@@ -16,7 +16,8 @@ from quizbot.config import Settings  # noqa: E402
 from quizbot.state import State  # noqa: E402
 
 DAY_START = 10                       # the broadcast day runs 10:00 UTC → 10:00 UTC, so the 23:00 slot can still
-SHORT_SLOTS = (11, 15, 19, 23)       # catch up after midnight instead of being forgotten at the UTC date change
+SHORT_SLOTS = (11, 14, 17, 20, 23)   # catch up after midnight instead of being forgotten at the UTC date change
+RAPID_SLOTS = (14, 20)               # which of those are rapid-fire (rapid_per_day caps it)
 LONG_FROM = 12.5
 
 
@@ -44,7 +45,8 @@ def main() -> None:
     # rapid-fire takes the 15:00 slot (the second Short of the day) when enabled; its episodes carry "-rapid"
     rapid_today = st.conn.execute("SELECT COUNT(*) FROM episodes WHERE slug LIKE '%-rapid%' AND status!='failed' AND created_at>=?",
                                   (day0,)).fetchone()[0]
-    rapid_due = int(getattr(s, "rapid_per_day", 0)) > rapid_today and hours >= 15 - DAY_START and shorts_today < slots_passed
+    rapid_slots_passed = sum(1 for h in RAPID_SLOTS if hours >= h - DAY_START)
+    rapid_due = min(int(getattr(s, "rapid_per_day", 0)), rapid_slots_passed) > rapid_today and shorts_today < slots_passed
     if long_due:
         print("long")
     elif rapid_due:

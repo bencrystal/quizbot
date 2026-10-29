@@ -6,9 +6,9 @@ run anything by hand.
 
 ## What it makes
 Audio quizzes: play a sound → hints → reveal. Two formats from the same code:
-- **Shorts** (9:16, one round, ~45 s): `How fast can you name this X?` → sound → hints → reveal. 4 per day.
-- **Rapid-fire Shorts** (mechanic `rapid`): five sounds, ~3 s each, name only, no hints, ~35 s. One a day in the
-  15:00 UTC slot; its own no-repeat list (`fmt=rapid`, reusable after `rapid_reuse_days`), its own GitHub issue
+- **Shorts** (9:16, one round, ~40 s): `How fast can you name this X?` → sound → hints → reveal. 3 per day.
+- **Rapid-fire Shorts** (mechanic `rapid`): five sounds, ~3 s each, name only, no hints, ~35 s. Two a day (14:00 and
+  20:00 UTC slots; themes include a random Mix, Ash's Pokémon, Kanto gym leaders); its own no-repeat list (`fmt=rapid`, reusable after `rapid_reuse_days`), its own GitHub issue
   ("Rapid-fire log"), tag `rapid`, format `rapid` in analytics; excluded from the Shorts experiments.
 - **Long form** (16:9, 10 rounds, easy → hard, ~7 min): one per pack per week.
 Series ("packs") share everything except the data. Live: `pokemon` (cries). Paused 2026-10-26: `birds` (xeno-canto calls; a tenth of the reach and a different audience). Plan: a second
@@ -49,7 +49,7 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
 
 ## Operations
 - `.github/workflows/daily.yml`: runs hourly; `scripts/due.py` decides from the ledger whether a Short (slots
-  11/15/19/23 UTC), the long-form (from 12:30 UTC; skips packs that already had one this week) or nothing is due.
+  11/14/17/20/23 UTC; 14 and 20 are rapid-fire), the long-form (from 12:30 UTC; skips packs that already had one this week) or nothing is due.
   GitHub cron drops/delays firings, so missed slots catch up on the next hour. 'none' runs post nothing. `workflow_dispatch` inputs: format, theme, force, cold_open, pack.
   Runs are serialized (`concurrency`); the state cache (`state/`, `out/`) is restored from the latest run.
 - Results → GitHub issue "Episode log" (#2); failures with log tail → "Run failures" (#1). Actions logs are

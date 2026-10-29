@@ -28,7 +28,7 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     # Avoid the pack's last ten themes (any format) and the last six of this format: with four Shorts a day the
     # weekly long-form otherwise forgets its own history and repeats a theme two weeks running (Gen 1, Oct 18 + 25).
     recent = state.recent_themes(pack.name) + state.recent_themes(pack.name, n=6, fmt=settings.format)
-    theme = theme or pack.pick_theme(recent, rng)
+    theme = theme or pack.pick_theme(recent, rng, mechanic=settings.mechanic)
     print(f"[plan] format={settings.format} mechanic={settings.mechanic} theme={theme['label']}")
 
     pool = pack.candidates(theme)
@@ -37,7 +37,7 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     else:
         used = state.used_ids(pack.name, settings.format) if str(settings.track_used).lower() in (settings.format, "all", "true") else set()
     items = pack.select(pool, used, settings.rounds, rng,
-                        famous_only=(settings.format == "short" and settings.shorts_famous_only), theme=theme)
+                        famous_only=(settings.format == "short" and settings.shorts_famous_only and not theme.get("curated")), theme=theme)
     if not items:
         raise SystemExit(f"No candidates for theme {theme['label']}")
     if settings.mechanic == "choice":

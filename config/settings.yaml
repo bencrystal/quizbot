@@ -39,8 +39,8 @@ shorts_cold_open: auto          # auto = alternate per Short (A/B test) | true |
 track_used: short               # formats that never repeat a Pokémon: short | long | all | none. Long-form draws freely.
 
 # Safety rails for unattended runs --------------------------------------------
-max_episodes_per_day: 5         # scheduler never renders more than this, whatever happens
-rapid_per_day: 1                # rapid-fire Shorts per day (five sounds, no hints; takes the 15:00 UTC slot)
+max_episodes_per_day: 6         # 3 Shorts + 2 rapid-fire + the weekly long (Ben, 2026-10-29)         # scheduler never renders more than this, whatever happens
+rapid_per_day: 2                # rapid-fire Shorts per day (five sounds, no hints; the 14:00 and 20:00 UTC slots)
 rapid_rounds: 5
 rapid_reuse_days: 90            # rapid-fire keeps its own no-repeat list and may reuse an item after this long
 tts_speed: 1.05                 # tempo applied to every spoken line after synthesis (pitch kept); A/B-able

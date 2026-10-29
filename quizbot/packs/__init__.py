@@ -43,10 +43,12 @@ class Pack(ABC):
     def candidates(self, theme: dict) -> list[QuizItem]:
         """All items that fit a theme (may be large). Fetching/caching happens here."""
 
-    def pick_theme(self, recent: list[str], rng: random.Random) -> dict:
-        """Default: random theme not used recently. Planner may override via Claude."""
-        options = [t for t in self.themes() if t["label"] not in recent] or self.themes()
-        return rng.choice(options)
+    def pick_theme(self, recent: list[str], rng: random.Random, mechanic: str = "ladder") -> dict:
+        """Random theme not used recently (weighted; rapid_only themes only for rapid-fire). Planner may override."""
+        pool = [t for t in self.themes() if (mechanic == "rapid") or not t.get("rapid_only")]
+        options = [t for t in pool if t["label"] not in recent] or pool
+        weights = [int(t.get("weight", 1)) for t in options]
+        return rng.choices(options, weights=weights, k=1)[0]
 
     def famous(self, item: QuizItem) -> bool:   # packs override to define their "well-known" subset
         return True

@@ -98,6 +98,10 @@ class PokemonPack(Pack):
             out.append({"id": f"type-{t}", "label": f"{t.title()}-type Pokémon", "type": t})
         out.append({"id": "starters", "label": "Starter Pokémon", "ids": STARTERS})
         out.append({"id": "legendaries", "label": "Legendary Pokémon", "ids": LEGENDARIES})
+        # rapid-fire only: a random mix (the default, half the time) and two curated, verifiable sets
+        out.append({"id": "mix", "label": "Pokémon Mix", "ids": MIX, "rapid_only": True, "weight": 3, "curated": True})
+        out.append({"id": "ash", "label": "Ash's Pokémon", "ids": ASH, "rapid_only": True, "curated": True})
+        out.append({"id": "kanto-gyms", "label": "Kanto Gym Leaders' Pokémon", "ids": KANTO_GYMS, "rapid_only": True, "curated": True})
         return out
 
     # ---- data ---------------------------------------------------------------
@@ -257,6 +261,21 @@ TYPE_COLORS = {
 
 FAMOUS = {1, 3, 4, 6, 7, 9, 25, 26, 39, 52, 54, 94, 129, 130, 131, 133, 143, 149, 150, 151,
           152, 155, 158, 172, 175, 196, 197, 249, 250, 252, 255, 258, 282, 384, 445, 448, 658, 778}
+
+# Ash Ketchum's own Pokémon across the anime (caught or raised, National Dex numbers; evolutions as he had them)
+ASH = [25, 1, 4, 6, 7, 12, 18, 99, 89, 128, 131, 143, 214, 153, 155, 156, 158, 164, 232, 254, 277, 341, 324, 362,
+       392, 398, 389, 418, 472, 443, 501, 495, 498, 499, 521, 559, 542, 536, 525, 553, 658, 663, 701, 706, 715,
+       722, 745, 727, 809, 804, 149, 94, 448, 865, 882, 133]
+# Kanto gym leaders' signature Pokémon (Red/Blue/Yellow): Brock, Misty, Lt. Surge, Erika, Koga, Sabrina, Blaine, Giovanni
+KANTO_GYMS = [95, 121, 26, 45, 110, 65, 59, 112]
+# "Mix": a shuffle of the well-known ones from every generation — the rapid-fire default
+MIX = sorted({1, 3, 4, 6, 7, 9, 25, 26, 39, 52, 54, 94, 129, 130, 131, 133, 143, 149, 150, 151, 152, 155, 158, 172, 175,
+              196, 197, 249, 250, 252, 255, 258, 282, 384, 445, 448, 658, 778, 12, 35, 37, 58, 59, 63, 65, 66, 68, 74,
+              79, 81, 92, 95, 104, 105, 106, 107, 113, 115, 116, 120, 121, 122, 123, 124, 125, 126, 127, 128, 132, 134,
+              135, 136, 137, 139, 142, 144, 145, 146, 147, 148, 179, 181, 183, 185, 190, 202, 208, 212, 214, 227, 229,
+              230, 243, 244, 245, 248, 254, 257, 260, 263, 280, 281, 286, 302, 303, 306, 319, 330, 334, 350, 359, 373,
+              376, 380, 381, 382, 383, 386, 387, 390, 393, 392, 395, 398, 405, 407, 428, 429, 437, 443, 444, 446, 447,
+              448, 461, 462, 466, 467, 468, 470, 471, 475, 477, 479, 483, 484, 487, 491, 492, 493})
 
 STARTERS = [1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501,
             650, 653, 656, 722, 725, 728, 810, 813, 816, 906, 909, 912]
