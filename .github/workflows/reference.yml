@@ -1,0 +1,71 @@
+# On demand: study a reference Short. Downloads it, tiles 24 frames into a contact sheet, measures its cut
+# rate, and transcribes the voice-over, then commits all of it to the `reference` branch under
+# docs/reference/<video id>/ so a Claude session can read the frames (the sandbox cannot reach YouTube).
+# Study only — nothing from a reference video is ever reused in our output.
+name: reference study
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "YouTube Short/video URL to study"
+        required: true
+      frames:
+        description: "frames on the contact sheet"
+        default: "24"
+permissions:
+  contents: write
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: sudo apt-get update -qq && sudo apt-get -qq install -y ffmpeg && pip install -q yt-dlp pillow numpy requests
+      - name: download + analyse
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -e
+          mkdir -p ref && cd ref
+          yt-dlp -q -f "bv*[height<=1080]+ba/b" --merge-output-format mp4 -o "video.%(ext)s" --write-info-json "${{ inputs.url }}"
+          python - <<'EOF'
+          import json, subprocess, re, os, sys
+          info = json.load(open("video.info.json"))
+          vid = info["id"]
+          dur = float(info.get("duration") or 0)
+          # cut rate: scene changes above a modest threshold
+          r = subprocess.run(["ffmpeg", "-hide_banner", "-i", "video.mp4", "-vf", "select='gt(scene,0.3)',showinfo", "-an", "-f", "null", "-"],
+                             capture_output=True, text=True)
+          cuts = [float(x) for x in re.findall(r"pts_time:([0-9.]+)", r.stderr)]
+          summary = {"id": vid, "title": info.get("title"), "channel": info.get("channel") or info.get("uploader"),
+                     "views": info.get("view_count"), "likes": info.get("like_count"), "comments": info.get("comment_count"),
+                     "upload_date": info.get("upload_date"), "duration_s": dur, "width": info.get("width"), "height": info.get("height"),
+                     "scene_changes": len(cuts), "cuts_per_10s": round(len(cuts) / max(dur, 1) * 10, 1),
+                     "cut_times": [round(c, 1) for c in cuts][:80],
+                     "description": (info.get("description") or "")[:1500], "tags": (info.get("tags") or [])[:30]}
+          # transcript (voice-over), if a key is present
+          key = os.environ.get("OPENAI_API_KEY")
+          if key:
+              subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", "video.mp4", "-vn", "-ac", "1", "-ar", "16000", "audio.mp3"], check=True)
+              import requests
+              with open("audio.mp3", "rb") as f:
+                  tr = requests.post("https://api.openai.com/v1/audio/transcriptions", headers={"Authorization": f"Bearer {key}"},
+                                     files={"file": ("audio.mp3", f, "audio/mpeg")},
+                                     data={"model": "whisper-1", "response_format": "verbose_json", "timestamp_granularities[]": "segment"}, timeout=300).json()
+              summary["transcript"] = [{"t": round(s["start"], 1), "text": s["text"].strip()} for s in tr.get("segments", [])]
+          json.dump(summary, open("summary.json", "w"), indent=1, ensure_ascii=False)
+          print(json.dumps({k: v for k, v in summary.items() if k not in ("description", "transcript", "cut_times")}, indent=1))
+          EOF
+          cd .. && python scripts/contact_sheet.py ref/video.mp4 -o ref/sheet.png -n "${{ inputs.frames }}"
+      - name: commit to the reference branch
+        run: |
+          VID=$(python -c "import json;print(json.load(open('ref/summary.json'))['id'])")
+          rm -rf /tmp/refrepo && mkdir /tmp/refrepo && cd /tmp/refrepo && git init -q
+          git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}"
+          git fetch -q origin reference && git checkout -q -b reference FETCH_HEAD || git checkout -q --orphan reference
+          mkdir -p "docs/reference/$VID"
+          cp "$GITHUB_WORKSPACE/ref/sheet.png" "$GITHUB_WORKSPACE/ref/summary.json" "docs/reference/$VID/"
+          git add -A && git commit -q -m "reference study: $VID" && git push -q origin reference
+          echo "docs/reference/$VID/ on branch reference"
