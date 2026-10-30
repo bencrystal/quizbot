@@ -65,6 +65,27 @@ class Timeline:
         self.events.append(Event(self.t, kind, dur, data))
 
 
+def word_times(text: str, start: float, dur: float) -> list[tuple[str, float, float]]:
+    """Spread a spoken line's duration over its words by length (punctuation adds a beat). The TTS gives no
+    word timestamps; this lands within a syllable of the voice, which is all a highlight needs."""
+    words = text.split()
+    if not words:
+        return []
+    weights = []
+    for w in words:
+        core = len(w.strip(".,;:!?…")) + 1.0
+        if w[-1] in ".,;:!?…":
+            core += 2.5
+        weights.append(core)
+    total = sum(weights)
+    out, t = [], start
+    for w, wt in zip(words, weights):
+        d = dur * wt / total
+        out.append((w, t, t + d))
+        t += d
+    return out
+
+
 def thumb_items(ep, pack=None) -> list:
     """Thumbnail subjects: well-known items from the same theme that are NOT in the episode, so neither the
     silhouette nor the colour-art style gives an answer away (a silhouette identifies a Pokémon to any fan).
@@ -194,6 +215,8 @@ class Renderer:
 
         def say_part(text, kind=None, style="", **data):
             p = self.say(text, style)
+            start = T.t
+            T.mark("words", text=text, words=word_times(text, start, self.dur(p)))
             return T.add(p, self.dur(p), kind, **data)
 
         T.mark("status", text="Listen")
@@ -210,7 +233,7 @@ class Renderer:
             say_part(self.pack.question_line.format(n=i))
         if short:                # Shorts: the music bed only comes in after the hook, never a note before it
             self.bed_delay = T.t
-        T.add(None, 0.3)
+        T.add(None, 0.1 if short else 0.3)   # the question runs straight into the sound
         T.add(snd, snd_d, "sound")
         if not (short and cold):   # cold-open shorts already had it once; keep it to two plays
             T.add(None, 0.4)
@@ -292,6 +315,8 @@ class Renderer:
 
         def say_part(text, kind=None, style="", **data):
             p = self.say(text, style)
+            start = T.t
+            T.mark("words", text=text, words=word_times(text, start, self.dur(p)))
             return T.add(p, self.dur(p), kind, **data)
 
         if i == 1:
@@ -330,7 +355,7 @@ class Renderer:
     # ---- state at time t ------------------------------------------------------
     def state(self, T: Timeline, t: float, it: QuizItem | None, i: int, total: int, work: Path) -> dict:
         rapid = self.s.mechanic == "rapid"
-        st = dict(t=t, first=(i <= 1), card=None, header=(f"{i} / {total}" if rapid else f"ROUND {i} / {total}") if total > 1 else self.s.channel_name.upper(),
+        st = dict(t=t, first=(i <= 1), card=None, spoken="", word_i=None, header=(f"{i} / {total}" if rapid else f"ROUND {i} / {total}") if total > 1 else self.s.channel_name.upper(),
                   points=None, points_age=99.0, tint=it.tint if it else None, tint_p=0.0, stage=0, stages=1, arc=0.0,
                   art=it.reveal_image if it else None, shape_p=0.0, reveal_p=0.0, wave=None, think=None,
                   status="", caption="", hints=[], answer=it.answer if it else "", subtitle=it.subtitle if it else "",
@@ -338,6 +363,7 @@ class Renderer:
                   # Shorts open with the game's name and its one rule on screen until the first hint, so a viewer
                   # who swiped in mid-sound knows what this is without a word being spoken
                   visuals=(it.meta.get("visuals") or {}) if it else {},
+                  tint2=(it.meta.get("tint2") if it else None),
                   # rapid-fire progress strip: art of the answers already revealed, "?" for the rest
                   strip=([x.reveal_image for x in self._ep.items] if rapid and it else None), strip_i=i,
                   title=(self.pack.display_name.upper() if total == 1 or (rapid and i == 1) else ""),
@@ -353,6 +379,11 @@ class Renderer:
                 st["status"] = ev.data["text"]
             elif ev.kind == "caption":
                 st["caption"] = ev.data["text"]
+            elif ev.kind == "words":
+                st["spoken"] = ev.data["text"]
+                st["word_i"] = next((k for k, (_, a, b) in enumerate(ev.data["words"]) if a <= t < b), None)
+                if t >= (ev.data["words"][-1][2] if ev.data["words"] else 0):
+                    st["word_i"] = None
             elif ev.kind == "points":
                 st["points"], st["points_age"] = ev.data["value"], age
             elif ev.kind == "tint":

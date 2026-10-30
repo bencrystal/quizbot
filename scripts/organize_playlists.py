@@ -53,11 +53,13 @@ for k in range(0, len(ids), 50):
             print(f"skip {v['id']}: cannot tell the pack from '{sn['title']}'")
             continue
         short = "#shorts" in sn["title"].lower()
-        title = f"{packs[pack].display_name} ({'Shorts' if short else 'Long Form'})"
-        if title in filed.get(v["id"], set()):
+        fmt = 'Shorts' if short else 'Long Form'
+        title = f"{packs[pack].display_name} ({fmt})"
+        former = [f"{n} ({fmt})" for n in packs[pack].former_names]
+        if filed.get(v["id"], set()) & {title, *former}:     # already in it (under its current or former name)
             continue
         try:
-            add_to_playlist(yt, v["id"], title)
+            add_to_playlist(yt, v["id"], title, former)
             moved += 1
         except Exception as e:
             print(f"could not file {v['id']} ({sn['title']}): {str(e)[:120]}")

@@ -14,6 +14,7 @@ on:
       format: { default: auto, type: choice, options: [auto, short, long, rapid], description: "auto = whatever the ledger says is due (safe to call any time); rapid = five-sound Short" }
       theme: { default: "" }
       force: { default: false, type: boolean, description: "ignore the daily cap (manual test runs)" }
+      preview: { default: false, type: boolean, description: "render only: no upload, items released; download the mp4 from the run's artifact" }
       pack: { default: "auto", description: "pokemon | birds | auto (rotate)" }
       cold_open: { default: "auto", type: choice, options: [auto, "true", "false"], description: "Shorts: cry before the question line (auto = alternate)" }
 
@@ -94,7 +95,7 @@ jobs:
           if [ "$FMT" = "rapid" ]; then FMT=short; MECH="--mechanic rapid"; fi
           python -m quizbot run --format $FMT $MECH --pack ${{ github.event.inputs.pack || 'auto' }} \
             ${{ github.event.inputs.theme && format('--theme {0}', github.event.inputs.theme) || '' }} \
-            ${{ github.event.inputs.force == 'true' && '--force' || '' }} 2>&1 | tee -a state/run.log
+            ${{ github.event.inputs.force == 'true' && '--force' || '' }} ${{ github.event.inputs.preview == 'true' && '--preview' || '' }} 2>&1 | tee -a state/run.log
       - uses: actions/cache/save@v4           # hourly 'none' runs save nothing, so the token caches are not churned out
         if: always() && steps.fmt.outputs.format != 'none'
         with:
@@ -103,6 +104,18 @@ jobs:
             state/cache
             out
           key: quizbot-state-${{ github.run_id }}
+      - name: preview — frame sheet to the `reference` branch so a Claude session can inspect the CI render
+        if: github.event.inputs.preview == 'true'
+        run: |
+          V=$(ls -t out/*/*.mp4 | head -1); [ -n "$V" ] || exit 0
+          python scripts/contact_sheet.py "$V" -o /tmp/sheet.png -n 28
+          rm -rf /tmp/refrepo && mkdir /tmp/refrepo && cd /tmp/refrepo && git init -q
+          git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}"
+          git fetch -q origin reference && git checkout -q -b reference FETCH_HEAD || git checkout -q --orphan reference
+          mkdir -p "docs/previews/${{ github.run_id }}" && cp /tmp/sheet.png "docs/previews/${{ github.run_id }}/sheet.png"
+          cp "$(dirname "$V")/episode.json" "docs/previews/${{ github.run_id }}/" 2>/dev/null || true
+          git add -A && git commit -q -m "preview ${{ github.run_id }}" && git push -q origin reference
       - name: ledger — back up to the `ledger` branch (survives cache eviction)
         if: always() && steps.fmt.outputs.format != 'none'
         run: |

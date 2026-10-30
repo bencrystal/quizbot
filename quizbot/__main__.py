@@ -90,6 +90,11 @@ def cmd_run(args, settings: Settings) -> int:
     kind = "rapid-fire" if ep.mechanic == "rapid" else ep.format
     msg = f"🎬 {kind} rendered: {ep.title}{variant}  ({result.duration_seconds:.0f}s)\n{result.video}"
 
+    if getattr(args, "preview", False):
+        state.release(ep.pack, ep.slug)
+        state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "preview", video_path=str(result.video))
+        notify(settings, msg + "\n👀 preview only — not uploaded; download it from this run's artifact")
+        return 0
     if args.upload or settings.upload:
         try:
             from .upload import upload
@@ -209,6 +214,7 @@ def main(argv=None) -> int:
     r.add_argument("--seed", type=int)
     r.add_argument("--upload", action="store_true")
     r.add_argument("--force", action="store_true", help="ignore the daily cap")
+    r.add_argument("--preview", action="store_true", help="render only (artifact), mark as preview, release the items")
     sub.add_parser("test")
     sub.add_parser("auth")
     sub.add_parser("status")

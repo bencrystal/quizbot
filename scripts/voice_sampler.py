@@ -8,7 +8,7 @@ from quizbot.packs import get_pack
 
 VOICES = (os.environ.get("VOICES") or "ash,coral,nova,echo,sage,ballad").split(",")
 LINES = [
-    ("Welcome to Guess That Pokémon. 10 rounds, easy to hard. Three points if you get it from the sound alone, then one less for every hint you need. Today's theme: Generation 2.", ""),
+    ("Welcome to Name That Pokémon. 10 rounds, easy to hard. Three points if you get it from the sound alone, then one less for every hint you need. Today's theme: Generation 2.", ""),
     ("Round 1.", ""),
     ("It's a Psychic and Flying type.", ""),
     ("Last hint, from the Pokédex: It is said to be the guardian of the seas. It is rumored to have been seen on the night of a storm.", ""),

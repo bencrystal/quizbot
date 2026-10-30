@@ -187,13 +187,14 @@ REGION_NAMES = {"E": "the Eastern United States", "W": "the Western United State
 
 class BirdsPack(Pack):
     name = "birds"
-    display_name = "Guess That Bird"
+    display_name = "Name That Bird"
+    former_names = ("Guess That Bird",)
     noun = "bird"
     question_line = "Round {n}."
     reveal_line = "It's the {answer}."
     opening_line = "How fast can you name this bird?"
     punch_line = "Name this bird!"
-    channel_blurb = "Can you name the bird from its call alone?"
+    channel_blurb = "Can you name the bird from its call alone? Guess that bird by ear."
     accent_color = (120, 200, 140)
     bg_color = (18, 30, 24)
     pronunciations = {"Pileated": "PIE-lee-ay-ted", "Phoebe": "FEE-bee", "Pewee": "PEE-wee", "Vireo": "VEER-ee-oh",

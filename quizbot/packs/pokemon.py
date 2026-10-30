@@ -68,7 +68,8 @@ def _raw_guide() -> dict[int, dict]:
 
 class PokemonPack(Pack):
     name = "pokemon"
-    display_name = "Guess That Pokémon"
+    display_name = "Name That Pokémon"
+    former_names = ("Guess That Pokémon",)
     noun = "Pokémon"
     question_line = "Round {n}."
     reveal_line = "It's {answer}."
@@ -86,7 +87,7 @@ class PokemonPack(Pack):
         self.ipa = {"Pokémon": "ˈpoʊkiˌmɑn", "Pokédex": "ˈpoʊkiˌdɛks"}               # for phoneme-capable TTS
         if not self.guide:
             print("  [pokemon] pronunciation guide missing; names will be read as written")
-    channel_blurb = "Can you name the Pokémon from its cry alone?"
+    channel_blurb = "Can you name the Pokémon from its cry alone? Guess that Pokémon by ear."
     accent_color = (255, 203, 5)
     bg_color = (24, 28, 58)
 
@@ -230,6 +231,8 @@ class PokemonPack(Pack):
             difficulty=self._difficulty(pid, gen, species),
             pronunciation=pron,
             meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact, "visuals": visuals,
+                  # dual types: the frame tints to the first type, the spoken-word highlight takes the second
+                  "tint2": TYPE_COLORS.get(type_names[1].lower()) if len(type_names) > 1 else None,
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
         )
 
