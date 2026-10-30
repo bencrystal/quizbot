@@ -22,6 +22,7 @@ FONT_REG = "DejaVuSans.ttf"
 WHITE = (255, 255, 255)
 NEUTRAL_BG = (16, 18, 28)
 NEUTRAL_ACCENT = (210, 214, 228)
+HIGHLIGHT = (255, 206, 66)        # karaoke gold: reads on white text and on the dark neutral background
 
 
 def lerp(a, b, t):
@@ -288,7 +289,9 @@ class Scene:
         bg = lerp_rgb(NEUTRAL_BG, lerp_rgb(NEUTRAL_BG, st["tint"], 0.14), st["tint_p"]) if st["tint"] else NEUTRAL_BG
         accent = lerp_rgb(NEUTRAL_ACCENT, st["tint"], st["tint_p"]) if st["tint"] else NEUTRAL_ACCENT
         # word highlight: the second type's colour on dual types (the frame already carries the first)
-        hl = lerp_rgb(NEUTRAL_ACCENT, st["tint2"], st["tint_p"]) if st.get("tint2") and st["tint"] else accent
+        # spoken-word highlight: game-show gold until the type colour arrives, then the (second) type colour
+        hl_to = st["tint2"] if st.get("tint2") else st["tint"]
+        hl = lerp_rgb(HIGHLIGHT, hl_to, st["tint_p"]) if (hl_to and st["tint"]) else HIGHLIGHT
         img = self.background(bg, accent, st["t"])
         d = ImageDraw.Draw(img)
         m = int(64 * self.u)
@@ -574,7 +577,9 @@ class Scene:
                     a = p_new
                     dx = int((1 - p_new) * 60 * self.u)
                     yy = new_y[i]
-                    lit = self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), hints[-1][0])
+                    # match on what is on screen (a chunk of a long hint, not the whole hint), so the word index
+                    # lines up in every chunk, not just the first
+                    lit = self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), " ".join(lines))
                     centred = self.portrait and self.kinetic          # Shorts: the live hint reads as a caption
                     if centred and live_label[0]:
                         self.text(d, (g["art"][0] + dx, yy - int(50 * self.u)), " ".join(live_label[0].upper()), 24,
