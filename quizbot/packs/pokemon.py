@@ -230,6 +230,8 @@ class PokemonPack(Pack):
             difficulty=self._difficulty(pid, gen, species),
             pronunciation=pron,
             meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact, "visuals": visuals,
+                  # dual types: the frame tints to the first type, the spoken-word highlight takes the second
+                  "tint2": TYPE_COLORS.get(type_names[1].lower()) if len(type_names) > 1 else None,
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
         )
 

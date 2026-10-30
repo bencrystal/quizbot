@@ -233,7 +233,7 @@ class Renderer:
             say_part(self.pack.question_line.format(n=i))
         if short:                # Shorts: the music bed only comes in after the hook, never a note before it
             self.bed_delay = T.t
-        T.add(None, 0.3)
+        T.add(None, 0.1 if short else 0.3)   # the question runs straight into the sound
         T.add(snd, snd_d, "sound")
         if not (short and cold):   # cold-open shorts already had it once; keep it to two plays
             T.add(None, 0.4)
@@ -363,6 +363,7 @@ class Renderer:
                   # Shorts open with the game's name and its one rule on screen until the first hint, so a viewer
                   # who swiped in mid-sound knows what this is without a word being spoken
                   visuals=(it.meta.get("visuals") or {}) if it else {},
+                  tint2=(it.meta.get("tint2") if it else None),
                   # rapid-fire progress strip: art of the answers already revealed, "?" for the rest
                   strip=([x.reveal_image for x in self._ep.items] if rapid and it else None), strip_i=i,
                   title=(self.pack.display_name.upper() if total == 1 or (rapid and i == 1) else ""),

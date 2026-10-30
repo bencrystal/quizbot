@@ -108,31 +108,24 @@ class Scene:
             fill = tuple(int(c * alpha) for c in fill)
         d.text((cxy[0] - (l + r) / 2, cxy[1] - (t_ + b) / 2), s, font=f, fill=fill, anchor="ls")
 
-    @staticmethod
-    def chunks(text: str, n: int = 8) -> list[list[int]]:
-        """Word-index groups of ≤ n words, preferring to break after punctuation."""
-        words = text.split()
-        out, cur = [], []
-        for k, w in enumerate(words):
-            cur.append(k)
-            if len(cur) >= n or (w[-1] in ".,;:!?" and len(cur) >= 4):
-                out.append(cur)
-                cur = []
-        if cur:
-            out.append(cur)
-        return out
-
-    def chunk_for(self, text: str, spoken: str, word_i) -> str:
-        """The chunk containing the spoken word; the first before speech, the last after it. Word indices are
-        offset so the lit word still lines up (handled by lit_sets through the chunk's own text)."""
-        words = text.split()
-        groups = self.chunks(text)
-        if word_i is None or spoken.strip().lower()[:40] != text.strip().lower()[:40]:
-            g = groups[-1] if spoken.strip().lower()[:40] == text.strip().lower()[:40] else groups[0]
+    def chunk_for(self, text: str, spoken: str, word_i, max_width: int, lines_per: int = 2) -> str:
+        """Wrap the whole hint at caption size, group the lines in pairs, and return the pair that holds the
+        spoken word (the first pair before speech, the last after it)."""
+        lines = self.wrap(text, 48, max_width, bold=True)
+        groups = [lines[k:k + lines_per] for k in range(0, len(lines), lines_per)]
+        same = spoken.strip().lower()[:40] == text.strip().lower()[:40]
+        if word_i is None or not same:
+            g = groups[-1] if same else groups[0]
         else:
-            g = next((gr for gr in groups if word_i in gr), groups[-1])
-        self._chunk_offset = g[0]
-        return " ".join(words[k] for k in g)
+            n = 0
+            g = groups[-1]
+            for grp in groups:
+                cnt = sum(len(l.split()) for l in grp)
+                if n <= word_i < n + cnt:
+                    g = grp
+                    break
+                n += cnt
+        return " ".join(g)
 
     @property
     def kinetic(self) -> bool:
@@ -282,6 +275,8 @@ class Scene:
         g = self.geom()
         bg = lerp_rgb(NEUTRAL_BG, lerp_rgb(NEUTRAL_BG, st["tint"], 0.14), st["tint_p"]) if st["tint"] else NEUTRAL_BG
         accent = lerp_rgb(NEUTRAL_ACCENT, st["tint"], st["tint_p"]) if st["tint"] else NEUTRAL_ACCENT
+        # word highlight: the second type's colour on dual types (the frame already carries the first)
+        hl = lerp_rgb(NEUTRAL_ACCENT, st["tint2"], st["tint_p"]) if st.get("tint2") and st["tint"] else accent
         img = self.background(bg, accent, st["t"])
         d = ImageDraw.Draw(img)
         m = int(64 * self.u)
@@ -424,7 +419,11 @@ class Scene:
             y = g["name_y"] - (int(14 * self.u) if self.portrait else 0)   # keep the block centred after the wider gaps
             # landscape: bigger type, plus the Pokédex entry under the one-liner so the column isn't empty
             name_sz, fact_sz, entry_sz = (104, 36, 0) if self.portrait else (124, 44, 32)
-            fact_lines = self.wrap(st["fact"], fact_sz, g["text_w"])[:4]
+            shown_fact = st["fact"]
+            if shown_fact.lower().startswith(st["answer"].lower() + ","):      # "Exeggutor, the Coconut Pokémon." → "The Coconut Pokémon."
+                shown_fact = shown_fact[len(st["answer"]) + 1:].strip()
+                shown_fact = shown_fact[:1].upper() + shown_fact[1:]
+            fact_lines = self.wrap(shown_fact, fact_sz, g["text_w"])[:4]
             if st.get("aka"):
                 fact_lines += self.wrap("Also known as " + ", ".join(st["aka"]) + ".", fact_sz, g["text_w"])[:2]
             entry_lines = self.wrap(st["entry"], entry_sz, g["text_w"])[:6] if entry_sz and st["entry"] else []
@@ -445,8 +444,8 @@ class Scene:
                                 fill=tuple(int(c * a) for c in accent))
             self.text(d, (px + w / 2, y), label, 34, fill=bg, alpha=a)
             y += int((98 if self.portrait else 100) * self.u)
-            for ln, lw in zip(fact_lines, self.lit_sets(fact_lines, st.get("spoken", ""), st.get("word_i"), st["fact"])):
-                self.text_lit(d, (rx_, y), ln, fact_sz, (230, 230, 238), accent, lw, anchor=ranchor, alpha=a, bold=False)
+            for ln, lw in zip(fact_lines, self.lit_sets(fact_lines, st.get("spoken", ""), st.get("word_i"), shown_fact)):
+                self.text_lit(d, (rx_, y), ln, fact_sz, (230, 230, 238), hl, lw, anchor=ranchor, alpha=a, bold=False)
                 y += int(fact_sz * 1.4 * self.u)
             if entry_lines:
                 y += int(30 * self.u)
@@ -470,14 +469,14 @@ class Scene:
                     cy = y + int(64 * self.u)
                     clines = self.wrap_fit(st["caption"], 48, g["text_w"], 3, bold=True)[0]
                     for ln, lw in zip(clines, self.lit_sets(clines, st.get("spoken", ""), st.get("word_i"), st["caption"])):
-                        self.text_lit(d, (g["art"][0], cy), ln, 48, WHITE, accent, lw, anchor="mm")
+                        self.text_lit(d, (g["art"][0], cy), ln, 48, WHITE, hl, lw, anchor="mm")
                         cy += int(60 * self.u)
                 else:
                     lines = self.wrap_fit(st["caption"], 56, g["text_w"], 3, bold=True)[0]
                     if not self.portrait:
                         y = g["art"][1] - int(36 * self.u) * len(lines)
                     for ln, lw in zip(lines, self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), st["caption"])):
-                        self.text_lit(d, (x, y), ln, 56, WHITE, accent, lw, anchor=anchor)
+                        self.text_lit(d, (x, y), ln, 56, WHITE, hl, lw, anchor=anchor)
                         y += int(72 * self.u)
             elif st["status"] and not st["hints"] and not title_on:
                 if self.portrait:
@@ -491,8 +490,10 @@ class Scene:
                         f = self.font(52, False)
                         widths = [f.getlength(c) for c in txt]
                         x0 = g["art"][0] - sum(widths) / 2
+                        phase = st["t"] % 1.0                      # one wave per second, then still
                         for k, (c, w) in enumerate(zip(txt, widths)):
-                            dy = int(5 * self.u * math.sin(st["t"] * 2 * math.pi / 1.6 - k * 0.55))
+                            u = (phase - k * 0.045) / 0.22            # each character's bump lasts 0.22 s
+                            dy = -int(6 * self.u * math.sin(math.pi * u)) if 0 <= u <= 1 else 0
                             d.text((x0 + w / 2, y + dy), c, font=f, fill=(200, 202, 214), anchor="mm")
                             x0 += w
                     else:
@@ -514,8 +515,8 @@ class Scene:
                     s_ = hint[0].upper() + hint[1:]
                     full = (k == len(items) - 1) and not collapse_last
                     if full and self.portrait and self.kinetic and len(s_.split()) > 14:
-                        # long hint (the Pokédex entry): show the ~8-word chunk being spoken, not the paragraph
-                        s_ = self.chunk_for(s_, st.get("spoken", ""), st.get("word_i"))
+                        # long hint (the Pokédex entry): two wrapped lines at a time, the pair being spoken
+                        s_ = self.chunk_for(s_, st.get("spoken", ""), st.get("word_i"), g["text_w"])
                     if full:
                         lines, size = self.wrap_fit(s_, 48 if (self.portrait and self.kinetic) else 40, g["text_w"], max_lines=6, bold=True)
                     else:
@@ -561,7 +562,7 @@ class Scene:
                     lit = self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), hints[-1][0])
                     centred = self.portrait and self.kinetic          # Shorts: the live hint reads as a caption
                     for ln, lw in zip(lines, lit):
-                        self.text_lit(d, ((g["art"][0] if centred else x) + dx, yy), ln, size, WHITE, accent, lw,
+                        self.text_lit(d, ((g["art"][0] if centred else x) + dx, yy), ln, size, WHITE, hl, lw,
                                       anchor=("mm" if centred else anchor), alpha=a)
                         yy += int(size * 1.4 * self.u)
                     continue
@@ -582,7 +583,10 @@ class Scene:
                             self.text(d, (cx_, yy), ln, size, bold=False, anchor=an_, alpha=0.55 * ((p_new - 0.5) * 2))
                             yy += int(size * 1.4 * self.u)
                     continue
-                # older collapsed hints: slide from their old slot to the new one
+                # older collapsed hints: slide from their old slot to the new one (hidden while the waveform
+                # plays over their strip during the pre-reveal beat in kinetic Shorts)
+                if self.portrait and self.kinetic and st["wave"] is not None:
+                    continue
                 yy_old = old_y[i] if i < len(old_y) else new_y[i]
                 yy = int(yy_old + (new_y[i] - yy_old) * p_new)
                 cx_ = g["art"][0] if (self.portrait and self.kinetic) else x

@@ -104,6 +104,18 @@ jobs:
             state/cache
             out
           key: quizbot-state-${{ github.run_id }}
+      - name: preview — frame sheet to the `reference` branch so a Claude session can inspect the CI render
+        if: github.event.inputs.preview == 'true'
+        run: |
+          V=$(ls -t out/*/*.mp4 | head -1); [ -n "$V" ] || exit 0
+          python scripts/contact_sheet.py "$V" -o /tmp/sheet.png -n 28
+          rm -rf /tmp/refrepo && mkdir /tmp/refrepo && cd /tmp/refrepo && git init -q
+          git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}"
+          git fetch -q origin reference && git checkout -q -b reference FETCH_HEAD || git checkout -q --orphan reference
+          mkdir -p "docs/previews/${{ github.run_id }}" && cp /tmp/sheet.png "docs/previews/${{ github.run_id }}/sheet.png"
+          cp "$(dirname "$V")/episode.json" "docs/previews/${{ github.run_id }}/" 2>/dev/null || true
+          git add -A && git commit -q -m "preview ${{ github.run_id }}" && git push -q origin reference
       - name: ledger — back up to the `ledger` branch (survives cache eviction)
         if: always() && steps.fmt.outputs.format != 'none'
         run: |
