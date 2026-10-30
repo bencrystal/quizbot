@@ -135,7 +135,7 @@ Rollout: week 1 render-only, watch them; week 2 `upload: true` + `private`; week
 ```python
 class BirdsPack(Pack):
     name = "birds"
-    display_name = "Guess That Bird"
+    display_name = "Name That Bird"
     question_line = "Round {n}. Which bird is calling?"
     def themes(self): return [{"id": "backyard-us", "label": "Backyard birds of the US"}]
     def candidates(self, theme):

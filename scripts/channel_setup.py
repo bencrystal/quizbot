@@ -19,7 +19,7 @@ DESCRIPTION = """Audio quizzes you can play with your eyes closed.
 
 Hear a sound, guess what it is, get a hint, guess again. Every hint is spoken, so you can play while walking, driving or doing the dishes.
 
-Right now: Guess That Pokémon (name it from its cry) and Guess That Bird (name it from its call). More quizzes on the way: video-game sounds and name-that-tune.
+Right now: Name That Pokémon (name it from its cry) and Name That Bird (name it from its call). More quizzes on the way: video-game sounds and name-that-tune.
 
 New Shorts every day · a full 10-round episode for each quiz every week.
 Score yourself and drop it in the comments.

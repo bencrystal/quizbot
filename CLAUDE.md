@@ -73,6 +73,9 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
    Short and one long, check the Episode log, watch them.
 
 ## Taste notes from Ben (keep)
+The verb is **name**, everywhere a viewer sees or hears it: series are "Name That X" (`display_name`; old names
+in `former_names` so playlists get renamed, not duplicated), questions "name this X", thumbnails "NAME THE SOUND".
+"Guess that X" survives only as a search phrase in descriptions.
 Voice natural and upbeat like a game-show host, never cheesy; no countdown ticks or chimes; music is his own
 bed (`assets/music/bed.wav`) kept low; captions on; hints as plain statements; reveal clean (no reactions);
 engagement over algorithm tricks — one "drop your score" at the end is enough.

@@ -20,6 +20,7 @@ from ..models import QuizItem
 class Pack(ABC):
     name: str = "base"
     display_name: str = "Audio Quiz"
+    former_names: tuple[str, ...] = ()   # earlier series names: playlists carrying one are renamed, not duplicated
     noun: str = "sound"                 # what a single item is called in titles: "Can you name this {noun}…"
     plural: str = ""                      # plural of noun when not noun+"s" (Pokémon)
     # Narration defaults a pack can override

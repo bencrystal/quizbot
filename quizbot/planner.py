@@ -90,7 +90,7 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
                      else f"How many did you get out of {n}?")
     else:
         title = f"{pack.display_name}: {theme['label']} ({n} Rounds)"
-        desc = (f"{pack.channel_blurb}\n\n{n} rounds of {theme['label']}. Guess after the sound alone for the most "
+        desc = (f"{pack.channel_blurb}\n\n{n} rounds of {theme['label']}. Name it after the sound alone for the most "
                 f"points, then one less for every hint you need. Play with your eyes closed if you like — "
                 f"every hint is spoken.\n\nAnswers:\n{answers}\n\n{hashtags}")
         maxp = 1 + len(items[0].hints) if settings.mechanic == "ladder" else 1

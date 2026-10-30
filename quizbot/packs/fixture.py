@@ -20,7 +20,7 @@ CRITTERS = [
 
 class FixturePack(Pack):
     name = "fixture"
-    display_name = "Guess That Critter"
+    display_name = "Name That Critter"
     noun = "critter"
     question_line = "Number {n}. Which critter makes this sound?"
     accent_color = (120, 220, 160)

@@ -110,7 +110,7 @@ def upload(settings: Settings, ep: Episode, result: RenderResult) -> str:
     vid = resp["id"]
     set_thumbnail(yt, vid, result.thumbnail)
     try:
-        add_to_playlist(yt, vid, playlist_title(ep, settings))
+        add_to_playlist(yt, vid, playlist_title(ep, settings), former_playlist_titles(ep, settings))
     except Exception as e:  # organisation only; never fail a run over it
         print(f"[upload] playlist skipped: {e}")
     print(f"[upload] https://youtu.be/{vid}")
@@ -118,21 +118,38 @@ def upload(settings: Settings, ep: Episode, result: RenderResult) -> str:
 
 
 def playlist_title(ep: Episode, settings: Settings) -> str:
-    """One playlist per pack and format, e.g. 'Guess That Pokémon (Shorts)' / 'Guess That Pokémon (Long Form)'."""
+    """One playlist per pack and format, e.g. 'Name That Pokémon (Shorts)' / 'Name That Pokémon (Long Form)'."""
     from ..packs import get_pack
     name = get_pack(ep.pack, settings).display_name
     return f"{name} ({'Shorts' if ep.format == 'short' else 'Long Form'})"
 
 
-def add_to_playlist(yt, video_id: str, title: str) -> None:
-    """Find the channel playlist with this title (create it if missing) and append the video."""
-    pid, page = None, None
-    while pid is None:
+def former_playlist_titles(ep: Episode, settings: Settings) -> list[str]:
+    """The same playlist under the pack's earlier series names (renamed on first use, never duplicated)."""
+    from ..packs import get_pack
+    fmt = 'Shorts' if ep.format == 'short' else 'Long Form'
+    return [f"{n} ({fmt})" for n in get_pack(ep.pack, settings).former_names]
+
+
+def add_to_playlist(yt, video_id: str, title: str, former: list[str] | None = None) -> None:
+    """Find the channel playlist with this title (create it if missing) and append the video. A playlist still
+    carrying one of the `former` titles is renamed to `title` instead of a second one being created."""
+    pid, page, found = None, None, {}
+    while True:
         r = yt.playlists().list(part="snippet", mine=True, maxResults=50, pageToken=page).execute()
-        pid = next((p["id"] for p in r.get("items", []) if p["snippet"]["title"] == title), None)
+        found.update({p["snippet"]["title"]: p for p in r.get("items", [])})
         page = r.get("nextPageToken")
         if not page:
             break
+    if title in found:
+        pid = found[title]["id"]
+    else:
+        old = next((found[t] for t in (former or []) if t in found), None)
+        if old is not None:
+            old["snippet"]["title"] = title
+            yt.playlists().update(part="snippet", body={"id": old["id"], "snippet": old["snippet"]}).execute()
+            print(f"[upload] playlist renamed to {title!r}")
+            pid = old["id"]
     if pid is None:
         r = yt.playlists().insert(part="snippet,status", body={
             "snippet": {"title": title, "description": "Audio quizzes — play with your eyes closed."},

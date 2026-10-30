@@ -679,7 +679,7 @@ class Scene:
             cx, cy = self.W // 2, int(self.H * 0.40)
             self._thumb_subject(img, d, it, box, cx, cy, style, accent, getattr(it, "shape_hint", True) if it else True)
             kicker = "CAN YOU NAME IT?"
-            lines = ["GUESS", "THE SOUND"]
+            lines = ["NAME", "THE SOUND"]
             y = int(self.H * 0.70)
             for ln in lines:
                 self._outlined(d, (self.W // 2, y), ln, 150, accent if ln == "THE SOUND" else WHITE)
@@ -700,7 +700,7 @@ class Scene:
             for ln in lines:
                 self._outlined(d, (56, y), ln, size, WHITE, anchor="lm")
                 y += int(size * 0.98)
-            self._outlined(d, (56, int(self.H * 0.17)), "GUESS THE SOUND", 56, accent, anchor="lm")
+            self._outlined(d, (56, int(self.H * 0.17)), "NAME THE SOUND", 56, accent, anchor="lm")
             if rounds > 1:
                 pill = f"{rounds} ROUNDS"
                 f = self.font(44, True)
