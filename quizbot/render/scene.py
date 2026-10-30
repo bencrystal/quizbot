@@ -7,6 +7,7 @@ the sound; the final hint morphs a '?' disc into the silhouette; reveal brings t
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -82,9 +83,9 @@ class Scene:
             return out
         if shown.strip().lower()[:40] != spoken.strip().lower()[:40]:
             # a chunk of the spoken text: match it by position instead
-            sw = spoken.split()
-            cw = " ".join(lines).split()
-            if not cw or " ".join(cw) not in spoken:
+            sw = spoken.lower().split()
+            cw = " ".join(lines).lower().split()
+            if not cw or " ".join(cw) not in spoken.lower():
                 return out
             start = next((k for k in range(len(sw) - len(cw) + 1) if sw[k:k + len(cw)] == cw), None)
             if start is None:
@@ -108,14 +109,25 @@ class Scene:
             fill = tuple(int(c * alpha) for c in fill)
         d.text((cxy[0] - (l + r) / 2, cxy[1] - (t_ + b) / 2), s, font=f, fill=fill, anchor="ls")
 
-    def chunk_for(self, text: str, spoken: str, word_i, max_width: int, lines_per: int = 2) -> str:
-        """Wrap the whole hint at caption size, group the lines in pairs, and return the pair that holds the
-        spoken word (the first pair before speech, the last after it)."""
+    def chunk_for(self, text: str, spoken: str, word_i, max_width: int, lines_per: int = 2) -> tuple[str, str]:
+        """Wrap the whole hint at caption size, group the lines in pairs, and return (label, pair): the pair that
+        holds the spoken word (the first pair before speech, the last after it). A short "Label:" lead-in
+        ("From the Pokédex:") is split off so the chunks start on the sentence itself; the scene draws it as a
+        small eyebrow above the caption."""
+        label = ""
+        m = re.match(r"^([A-Z][^:.!?]{2,24}):\s+\S", text)
+        if m:
+            label, text = m.group(1), text[m.end(1) + 1:].strip()
+            text = text[:1].upper() + text[1:]
+            if word_i is not None:
+                word_i -= len(label.split())
         lines = self.wrap(text, 48, max_width, bold=True)
         groups = [lines[k:k + lines_per] for k in range(0, len(lines), lines_per)]
-        same = spoken.strip().lower()[:40] == text.strip().lower()[:40]
+        same = spoken.strip().lower()[:40] == (label + ": " + text if label else text).strip().lower()[:40]
         if word_i is None or not same:
             g = groups[-1] if same else groups[0]
+        elif word_i < 0:
+            g = groups[0]
         else:
             n = 0
             g = groups[-1]
@@ -125,7 +137,7 @@ class Scene:
                     g = grp
                     break
                 n += cnt
-        return " ".join(g)
+        return label, " ".join(g)
 
     @property
     def kinetic(self) -> bool:
@@ -452,8 +464,9 @@ class Scene:
                 for ln in entry_lines:
                     self.text(d, (rx_, y), ln, entry_sz, fill=(175, 178, 196), bold=False, anchor=ranchor, alpha=a)
                     y += int(entry_sz * 1.45 * self.u)
-            if self.portrait and st["caption"]:
-                # snappy Shorts: the score prompt as a line under the fact instead of a spoken outro
+            if self.portrait and st["caption"] and st["answer"].lower() not in st["caption"].lower():
+                # snappy Shorts: the score prompt as a line under the fact instead of a spoken outro (the spoken
+                # "It's Lugia." stays voice-only: the name is already the headline)
                 y += int(26 * self.u)
                 for ln in self.wrap_fit(st["caption"], 40, g["text_w"], 2, bold=True)[0]:
                     self.text(d, (rx_, y), ln, 40, fill=accent, anchor="mm", alpha=a)
@@ -507,6 +520,8 @@ class Scene:
             T_IN = 0.45
             p_new = ease_out(hints[-1][1] / T_IN) if hints else 1.0
 
+            live_label = [""]
+
             def layout(items, collapse_last):
                 """[(lines, size, bold)] for a list of hints where all but the last are collapsed,
                 or all collapsed when collapse_last=True."""
@@ -516,7 +531,7 @@ class Scene:
                     full = (k == len(items) - 1) and not collapse_last
                     if full and self.portrait and self.kinetic and len(s_.split()) > 14:
                         # long hint (the Pokédex entry): two wrapped lines at a time, the pair being spoken
-                        s_ = self.chunk_for(s_, st.get("spoken", ""), st.get("word_i"), g["text_w"])
+                        live_label[0], s_ = self.chunk_for(s_, st.get("spoken", ""), st.get("word_i"), g["text_w"])
                     if full:
                         lines, size = self.wrap_fit(s_, 48 if (self.portrait and self.kinetic) else 40, g["text_w"], max_lines=6, bold=True)
                     else:
@@ -561,6 +576,9 @@ class Scene:
                     yy = new_y[i]
                     lit = self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), hints[-1][0])
                     centred = self.portrait and self.kinetic          # Shorts: the live hint reads as a caption
+                    if centred and live_label[0]:
+                        self.text(d, (g["art"][0] + dx, yy - int(50 * self.u)), " ".join(live_label[0].upper()), 24,
+                                  fill=(200, 202, 214), anchor="mm", alpha=a * 0.9)
                     for ln, lw in zip(lines, lit):
                         self.text_lit(d, ((g["art"][0] if centred else x) + dx, yy), ln, size, WHITE, hl, lw,
                                       anchor=("mm" if centred else anchor), alpha=a)
