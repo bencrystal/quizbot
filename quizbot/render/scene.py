@@ -490,10 +490,13 @@ class Scene:
                     self.text(d, (rx_, y), ln, 40, fill=accent, anchor="mm", alpha=a)
                     y += int(50 * self.u)
         else:
-            title_on = self.portrait and not st["hints"] and st.get("title") and st["t"] < 4.0
+            # "Listen..." is tied to the waveform: on screen exactly while a sound plays, gone with it. In the
+            # quiet moments before the first hint the small spaced series title holds the slot instead (with
+            # the spoken question as the caption under it when there is one).
+            listening = st["status"] == "Listen" and st["wave"] is not None
+            title_on = (self.portrait and not st["hints"] and st.get("title")
+                        and (bool(st["caption"]) or (st["status"] == "Listen" and not listening)))
             if title_on:
-                # the small spaced title takes the status slot for the first seconds; the spoken question is
-                # the caption under it. "Listen..." returns once the title is gone.
                 self.text(d, (g["art"][0], y), " ".join(st["title"]), 30, fill=accent, anchor="mm")
             if st["caption"] and not st["hints"]:
                 if title_on:          # the spoken opening line is the caption, under the small title
@@ -509,7 +512,7 @@ class Scene:
                     for ln, lw in zip(lines, self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), st["caption"])):
                         self.text_lit(d, (x, y), ln, 56, WHITE, hl, lw, anchor=anchor)
                         y += int(72 * self.u)
-            elif st["status"] and not st["hints"] and not title_on:
+            elif st["status"] and not st["hints"] and not title_on and (listening or st["status"] != "Listen" or not self.portrait):
                 if self.portrait:
                     # "Listen" breathes: a trailing ellipsis that fills one dot at a time (2 s cycle) and a very
                     # slow brightness swell, so the frame is alive without anything moving across it
