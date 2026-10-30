@@ -122,8 +122,23 @@ class Scene:
             text = text[:1].upper() + text[1:]
             if word_i is not None:
                 word_i -= len(label.split())
-        lines = self.wrap(text, 48, max_width, bold=True)
-        groups = [lines[k:k + lines_per] for k in range(0, len(lines), lines_per)]
+        # wrap sentence by sentence and group whole sentences into pairs of lines, so a chunk ends where a
+        # sentence does whenever it can (a sentence longer than two lines is split into line pairs)
+        groups, cur = [], []
+        for sent in re.split(r"(?<=[.!?])\s+", text):
+            sl = self.wrap(sent, 48, max_width, bold=True)
+            if cur and len(cur) + len(sl) > lines_per:
+                groups.append(cur)
+                cur = []
+            if len(sl) > lines_per:
+                pieces = [sl[k:k + lines_per] for k in range(0, len(sl), lines_per)]
+                groups += pieces[:-1]
+                cur = pieces[-1]          # a short tail may share its pair with the next sentence
+            else:
+                cur += sl
+        if cur:
+            groups.append(cur)
+        groups = [g for g in groups if g]
         same = spoken.strip().lower()[:40] == (label + ": " + text if label else text).strip().lower()[:40]
         if word_i is None or not same:
             g = groups[-1] if same else groups[0]
