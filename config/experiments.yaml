@@ -37,7 +37,12 @@ experiments:
   # Visual (1 of the 4-per-queue allowance): rounded display font + the spoken word lit as it is said, vs the
   # previous static captions. Shipped as the default pending this read.
   - id: captions
-    question: "Kinetic captions (word lit as spoken, rounded font) or static?"
+    # parallel since 2026-11-01: the kinetic look shipped as the baseline on 10-30 and the first two days
+    # looked soft, so this runs alongside `open` rather than waiting its turn in the queue
+    parallel: true
+    min_n: 6
+    max_n: 12
+    question: "Kinetic captions (word lit as spoken, rounded font) or the previous static layout?"
     variants:
       kinetic: { captions: kinetic }
       static:  { captions: static }

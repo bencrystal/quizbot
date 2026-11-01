@@ -33,9 +33,13 @@ def cmd_run(args, settings: Settings) -> int:
     if pack_name == "auto":
         rotation = list(settings.packs_enabled) or ["pokemon"]
         if settings.format == "long":
-            import time as _time
-            week_ago = _time.time() - 7 * 86400
-            due = [n for n in rotation if state.count_episodes("long", n, week_ago) < settings.longs_per_pack_per_week]
+            import datetime as _dt
+            now = _dt.datetime.now(_dt.timezone.utc)
+            day = now.replace(hour=10, minute=0, second=0, microsecond=0)      # broadcast day starts 10:00 UTC
+            if now < day:
+                day -= _dt.timedelta(days=1)
+            week0 = (day - _dt.timedelta(days=day.weekday())).timestamp()     # calendar week, same as scripts/due.py
+            due = [n for n in rotation if state.count_episodes("long", n, week0) < settings.longs_per_pack_per_week]
             if not due:
                 notify(settings, "⏸ every pack already has this week's long-form; nothing to render.")
                 return 0

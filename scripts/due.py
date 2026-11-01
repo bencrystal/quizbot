@@ -36,10 +36,11 @@ def main() -> None:
     # long-form is due only when some pack still lacks this week's episode — otherwise `run --format long`
     # renders nothing and, if we kept reporting "long", the day's Shorts would never get their turn
     # (2026-10-20..23: one Short a day instead of four)
-    import time as _t
-    week_ago = _t.time() - 7 * 86400
+    # "this week" is the calendar week (Monday 10:00 UTC, the broadcast day start), not a rolling 7 days: the
+    # rolling window slid the long-form a few hours later every week until it skipped a week (Oct 26 – Nov 1)
+    week0 = (start - dt.timedelta(days=start.weekday())).timestamp()
     packs = list(s.packs_enabled) or ["pokemon"]
-    long_owed = any(st.count_episodes("long", pk, week_ago) < s.longs_per_pack_per_week for pk in packs)
+    long_owed = any(st.count_episodes("long", pk, week0) < s.longs_per_pack_per_week for pk in packs)
     long_due = hours >= LONG_FROM - DAY_START and longs_today == 0 and long_owed
     # long-form first when both are due: it is the one with a weekly quota to meet
     # rapid-fire takes the 15:00 slot (the second Short of the day) when enabled; its episodes carry "-rapid"
