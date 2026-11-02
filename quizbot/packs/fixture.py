@@ -54,6 +54,6 @@ class FixturePack(Pack):
                                   tint=((hz * 7) % 200 + 55, 120, 255 - (hz * 3) % 200),
                                   difficulty=abs(hz - 440) / 100,
                                   # exercise every hint visual the real packs use (map, size ladder, type pills)
-                                  meta={"visuals": {f"Its pitch is {'above' if hz >= 300 else 'below'} 300 hertz.": {"kind": "map", "regions": "EW" if hz >= 300 else "C"},
+                                  meta={"types": ["Fire", "Flying"], "visuals": {f"Its pitch is {'above' if hz >= 300 else 'below'} 300 hertz.": {"kind": "map", "regions": "EW" if hz >= 300 else "C"},
                                                     f"Its name starts with {name[0]}.": {"kind": "size", "rank": i % 4} if i % 2 else {"kind": "types", "types": ["Fire", "Flying"]}}}))
         return items

@@ -252,8 +252,6 @@ class Renderer:
                 T.mark("hint", text=hint, index=h_i)
                 if h_i == 0:
                     T.mark("tint")
-                if last and it.shape_hint and it.reveal_image:
-                    T.mark("shape", dur=1.2)
                 say_part(hint)
                 T.mark("points", value=pts)
                 T.mark("stage", index=h_i + 1, count=n_hints + 1)
@@ -278,6 +276,11 @@ class Renderer:
         # colour art and the name. Besides being a better "ta-da", it keeps the answer out of the last quarter of
         # a Short: YouTube picks Shorts thumbnails from frames at roughly 25/50/75 % (no custom thumbnails for
         # Shorts outside the Partner Program), and with the sound played after the name the 75 % frame was the reveal.
+        # The silhouette is the final beat, not a hint: it morphs in under the sting and the sound plays on it
+        # (~2 s before the art). Shown with the Pokédex hint it sat for ~15 s and ended the game for anyone who
+        # knew the shape ("maybe don't show the shadow in the second hint", 2026-11-01).
+        if it.shape_hint and it.reveal_image:
+            T.mark("shape", dur=0.8)
         T.add(self.sting(work), 0.9)
         T.add(snd, snd_d, "sound")
         T.add(None, 0.2)
@@ -333,6 +336,12 @@ class Renderer:
         T.add(None, S, "think")
         if it.shape_hint and it.reveal_image:
             T.mark("shape", dur=0.5)
+        if str(self.s.rapid_replay).lower() in ("1", "true", "yes"):   # the sound once more, on the silhouette
+            T.add(None, 0.3)
+            T.mark("status", text="Listen")
+            T.add(snd, snd_d, "sound")
+            T.add(None, 0.15)
+        else:
             T.add(None, 0.5)
         T.mark("tint")
         T.mark("reveal")
@@ -367,6 +376,8 @@ class Renderer:
                   tint2=(it.meta.get("tint2") if it else None),
                   # rapid-fire progress strip: art of the answers already revealed, "?" for the rest
                   strip=([x.reveal_image for x in self._ep.items] if rapid and it else None), strip_i=i,
+                  # rapid-fire: silent type pills under the disc while thinking (no voice-over, no time cost)
+                  pills=(list(it.meta.get("types") or []) if rapid and it and str(self.s.rapid_pills).lower() in ("1", "true", "yes") else None),
                   title=(self.pack.display_name.upper() if total == 1 or (rapid and i == 1) else ""),
                   rule=(f"{total} sounds. Name them all." if rapid else "Name it from the sound. Every hint costs a point."))
         wave = np.zeros(28)

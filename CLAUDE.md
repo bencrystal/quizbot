@@ -45,6 +45,9 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
 - Thumbnails: long-form gets a custom one (decoy subjects from the theme, never the episode's answers; sil/art A/B).
   Shorts cannot have custom thumbnails outside the Partner Program — YouTube picks a frame at ~25/50/75 %, so the
   reveal must stay in the last ~22 % of a Short (sting → sound on the silhouette → art + name). Keep it that way.
+  The silhouette is that final beat only (morphs in under the sting, ~2 s before the art), never a hint.
+- Experiments have a `format` (short | rapid | long); rapid-fire has its own queue (`rapidbeat`). Pokémon cries:
+  `cry_version` latest|legacy (legacy = original Game Boy/DS cry, Gen 1-5 only); the `cry` A/B tags Gen 6+ as fallback.
 - Rules Ben owns (never change unasked): `youtube_privacy`, `upload`, `max_episodes_per_day`, `made_for_kids`.
 
 ## Operations

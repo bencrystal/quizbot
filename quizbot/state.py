@@ -95,8 +95,8 @@ class State:
         return self.conn.execute("SELECT * FROM posts WHERE post_id IS NOT NULL").fetchall()
 
     def count_episodes(self, fmt: str, pack: str | None = None, since: float = 0.0) -> int:
-        q = "SELECT COUNT(*) FROM episodes WHERE slug LIKE ? AND status!='failed' AND created_at>=?"
-        args: list = [f"%-{fmt}-%", since]
+        q = "SELECT COUNT(*) FROM episodes WHERE (slug LIKE ? OR slug LIKE ?) AND status!='failed' AND created_at>=?"
+        args: list = [f"%-{fmt}-%", f"%-{fmt}", since]      # rapid-fire slugs end in "-rapid"
         if pack:
             q += " AND pack=?"
             args.append(pack)
