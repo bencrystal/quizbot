@@ -210,13 +210,27 @@ def main() -> None:
                             "access_token": tok["page_token"]}, timeout=30).json()
                         m = {x["name"]: (x.get("values") or [{}])[0].get("value") for x in d.get("data", [])}
                     else:
+                        # One rejected metric fails the whole call ("(#100) The value must be a valid insights
+                        # metric" on every Facebook row since launch), so retry metric by metric and keep what
+                        # the Graph API accepts for this post type (reels and videos expose different sets).
+                        fb_metrics = ["total_video_views", "total_video_avg_time_watched", "post_impressions_unique",
+                                      "blue_reels_play_count", "post_video_avg_time_watched"]
                         d = _rq.get(f"{GRAPH}/{pid}/video_insights", params={
-                            "metric": "total_video_views,total_video_avg_time_watched,post_impressions_unique,"
-                                      "blue_reels_play_count,post_video_avg_time_watched",
-                            "access_token": tok["page_token"]}, timeout=30).json()
+                            "metric": ",".join(fb_metrics), "access_token": tok["page_token"]}, timeout=30).json()
                         m = {x["name"]: (x.get("values") or [{}])[0].get("value") for x in d.get("data", [])}
                         if "error" in d:
-                            m = {"error": d["error"].get("message", "")[:120]}
+                            m, rejected = {}, []
+                            for met in fb_metrics:
+                                d1 = _rq.get(f"{GRAPH}/{pid}/video_insights", params={
+                                    "metric": met, "access_token": tok["page_token"]}, timeout=30).json()
+                                if "error" in d1:
+                                    rejected.append(met)
+                                else:
+                                    m.update({x["name"]: (x.get("values") or [{}])[0].get("value") for x in d1.get("data", [])})
+                            if not m:
+                                m = {"error": d["error"].get("message", "")[:120]}
+                            elif rejected:
+                                m["rejected_metrics"] = ",".join(rejected)
                     platforms.setdefault(slug, {})[plat] = {"id": pid, **m}
                 except Exception as e:
                     platforms.setdefault(slug, {})[plat] = {"id": pid, "error": str(e)[:120]}
