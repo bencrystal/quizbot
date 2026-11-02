@@ -84,9 +84,12 @@ class Pack(ABC):
     spoken_replacements: dict = {}
 
     def spoken(self, text: str) -> str:
-        """Respell proper nouns for the narrator (longest names first so 'Mew' never clobbers 'Mewtwo')."""
+        """Respell proper nouns for the narrator (longest names first so 'Mew' never clobbers 'Mewtwo').
+
+        Lookarounds, not word boundaries: a name ending in punctuation ("Mime Jr.", "Nidoran (female)") has no
+        word boundary before the period that follows it, so a trailing word-boundary anchor never matched those."""
         for k in sorted(self.spoken_replacements, key=len, reverse=True):
-            text = re.sub(rf"\b{re.escape(k)}\b", self.spoken_replacements[k], text)
+            text = re.sub(rf"(?<!\w){re.escape(k)}(?!\w)", self.spoken_replacements[k], text)
         return text
     pronunciations: dict = {}          # name -> respelling, handed to the TTS as guidance (text stays as written)
     ipa: dict = {}                     # name -> IPA, for engines that accept phoneme tags (ElevenLabs)
@@ -94,13 +97,13 @@ class Pack(ABC):
     def with_phonemes(self, text: str) -> str:
         """Wrap known names in <phoneme alphabet="ipa"> tags (SSML subset ElevenLabs understands)."""
         for k, v in sorted(self.ipa.items(), key=lambda kv: -len(kv[0])):
-            text = re.sub(rf"\b{re.escape(k)}\b", f'<phoneme alphabet="ipa" ph="{v}">{k}</phoneme>', text)
+            text = re.sub(rf"(?<!\w){re.escape(k)}(?!\w)", f'<phoneme alphabet="ipa" ph="{v}">{k}</phoneme>', text)
         return text
 
     def pronunciation_notes(self, text: str) -> list[tuple[str, str]]:
         """(name, respelling) for every name that appears in `text`, longest first."""
         return [(k, v) for k, v in sorted(self.pronunciations.items(), key=lambda kv: -len(kv[0]))
-                if re.search(rf"\b{re.escape(k)}\b", text)]
+                if re.search(rf"(?<!\w){re.escape(k)}(?!\w)", text)]
     reactions: list[str] = []          # post-reveal host lines; empty = none
     choice_line: str = "Is it {choices}?"
 

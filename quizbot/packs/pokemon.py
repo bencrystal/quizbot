@@ -52,6 +52,11 @@ def load_guide() -> dict[int, str]:
     return {k: _respell(v["pron"]) for k, v in _raw_guide().items() if v.get("pron")}
 
 
+def load_names() -> dict[int, str]:
+    """dex number → proper English name ("Mr. Mime", "Ho-Oh"), a fallback when the species data has none."""
+    return {k: v["name"] for k, v in _raw_guide().items() if v.get("name")}
+
+
 def load_ipa() -> dict[int, str]:
     """dex number → IPA (General American), e.g. /ˈluːdʒiə/, for TTS engines that accept phonemes."""
     return {k: v["ipa"].strip("/") for k, v in _raw_guide().items() if v.get("ipa")}
@@ -82,6 +87,7 @@ class PokemonPack(Pack):
         super().__init__(settings)
         self.guide = load_guide()
         self.ipa_guide = load_ipa()
+        self.names = load_names()
         self.spoken_replacements = dict(PRONUNCIATIONS)
         self.pronunciations = {"Pokémon": "POH-kee-mon", "Pokédex": "POH-kee-dex"}   # for instruction-mode TTS
         self.ipa = {"Pokémon": "ˈpoʊkiˌmɑn", "Pokédex": "ˈpoʊkiˌdɛks"}               # for phoneme-capable TTS
@@ -182,7 +188,13 @@ class PokemonPack(Pack):
         cry = self._download(cry_url, self.cache / f"cry-{pid}.ogg")
         art = self._download(art_url, self.cache / f"art-{pid}.png")
 
-        name = poke["name"].replace("-", " ").title()
+        # The answer is the species' English name — "Mr. Mime", "Ho-Oh", "Farfetch'd", "Giratina" — never the API
+        # slug, which titled to "Mr Mime", "Ho Oh", "Farfetchd" and, for default forms, "Giratina Altered" /
+        # "Deoxys Normal" / "Wormadam Plant" / "Shaymin Land" (aired that way in rapid-fire, 2026-10-29 and 11-01).
+        # ♀/♂ (the two Nidoran) have no glyph in the display font, so they are spelled out.
+        official = (next((n["name"] for n in species.get("names", []) if n["language"]["name"] == "en"), None)
+                    or self.names.get(pid) or poke["name"].replace("-", " ").title())
+        name = official.replace("♀", " (female)").replace("♂", " (male)")
         # Prefer a longer, newer English flavor text; normalise the weird whitespace PokéAPI returns.
         entries = [e["flavor_text"] for e in species["flavor_text_entries"] if e["language"]["name"] == "en"]
         entries = [re.sub(r"\s+", " ", e.replace("\f", " ").replace("POKéMON", "Pokémon")).strip() for e in entries]
@@ -195,14 +207,17 @@ class PokemonPack(Pack):
         type_hint = (f"It's {art_} {type_names[0]} type." if len(type_names) == 1
                      else f"It's {art_} {type_names[0]} and {type_names[1]} type.")
         gen = next(g for g, (lo, hi) in GENERATIONS.items() if lo <= pid <= hi)
-        # Pokédex entry as hint 2, with the name swapped for "this Pokémon". The API slug drops the punctuation
-        # the entries keep ("mr-mime" vs "MR. MIME", "farfetchd" vs "Farfetch'd", "ho-oh" vs "HO-OH"), so match
-        # the letters with anything non-alphanumeric allowed between them.
-        n = r"[\W_]*".join(re.escape(c) for c in re.sub(r"[^a-z0-9]", "", poke["name"].lower()))
-        redacted = re.sub(rf"\b(a|an|the)\s+{n}'s\b", "its", fact, flags=re.I)
-        redacted = re.sub(rf"\b{n}'s\b", "its", redacted, flags=re.I)
-        redacted = re.sub(rf"\b(a|an|the|this|that)\s+{n}\b", "this Pokémon", redacted, flags=re.I)
-        redacted = re.sub(rf"\b{n}\b", "this Pokémon", redacted, flags=re.I)
+        # Pokédex entry as hint 2, with the name swapped for "this Pokémon". Entries vary the punctuation
+        # ("MR. MIME", "Farfetch'd", "HO-OH", "NIDORAN♀"), so match the letters of the official name with anything
+        # non-alphanumeric allowed between them. (Matching the slug missed form names entirely: "giratinaaltered"
+        # never matched "GIRATINA", so the hint read the answer out loud.)
+        n = r"[\W_]*".join(re.escape(c) for c in re.sub(r"[^a-z0-9]", "", official.lower()))
+        n += "[♀♂]?" + (r"\.?" if official.endswith(".") else "")      # NIDORAN♀'s → its;  "Mime Jr. mimics" → "This Pokémon mimics"
+        L, R = r"(?<!\w)", r"(?!\w)"                                   # word edges that also work next to ♀ and '
+        redacted = re.sub(rf"{L}(a|an|the)\s+{n}'s{R}", "its", fact, flags=re.I)
+        redacted = re.sub(rf"{L}{n}'s{R}", "its", redacted, flags=re.I)
+        redacted = re.sub(rf"{L}(a|an|the|this|that)\s+{n}{R}", "this Pokémon", redacted, flags=re.I)
+        redacted = re.sub(rf"{L}{n}{R}", "this Pokémon", redacted, flags=re.I)
         redacted = re.sub(r"(^|[.!?]\s+)(its|this Pokémon)", lambda m: m.group(1) + m.group(2)[0].upper() + m.group(2)[1:], redacted)
         region_hint = f"It was first seen in the {REGIONS[gen]} region."
         hints = [type_hint, region_hint, f"From the Pokédex: {redacted}"]
@@ -213,6 +228,8 @@ class PokemonPack(Pack):
         elif "type" in theme:       # a Type episode already tells you (at least one) type
             hints.remove(type_hint)
         pron = self.guide.get(pid)
+        if pron and name != official:                 # "NEE-doh-ran" + " (female)": the spelled-out sex stays spoken
+            pron += name[name.index(" ("):]
         if pron:
             self.spoken_replacements[name] = pron
             self.pronunciations[name] = pron

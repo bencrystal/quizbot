@@ -282,8 +282,9 @@ class Renderer:
         T.add(snd, snd_d, "sound")
         T.add(None, 0.2)
         T.mark("reveal")
-        T.mark("caption", text=self.pack.reveal_line.format(answer=it.answer))
-        say_part(self.pack.reveal_line.format(answer=it.answer),
+        reveal = self.pack.reveal_line.format(answer=it.answer).replace("..", ".")   # "It's Mime Jr." not "Jr.."
+        T.mark("caption", text=reveal)
+        say_part(reveal,
                  style="This is the reveal: a little brighter and more delighted, like sharing the answer with a friend.")
         T.mark("caption", text="")
         reaction = ep.banter.get(i) or (rng.choice(self.pack.reactions) if total > 1 and self.pack.reactions else "")
