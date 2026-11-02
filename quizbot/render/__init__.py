@@ -377,7 +377,7 @@ class Renderer:
                   # rapid-fire progress strip: art of the answers already revealed, "?" for the rest
                   strip=([x.reveal_image for x in self._ep.items] if rapid and it else None), strip_i=i,
                   # rapid-fire: silent type pills under the disc while thinking (no voice-over, no time cost)
-                  pills=(list(it.meta.get("types") or []) if rapid and it and str(self.s.rapid_pills).lower() in ("1", "true", "yes") else None),
+                  pills=(list(it.meta.get("type_names") or []) if rapid and it and str(self.s.rapid_pills).lower() in ("1", "true", "yes") else None),
                   title=(self.pack.display_name.upper() if total == 1 or (rapid and i == 1) else ""),
                   rule=(f"{total} sounds. Name them all." if rapid else "Name it from the sound. Every hint costs a point."))
         wave = np.zeros(28)

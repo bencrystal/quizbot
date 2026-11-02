@@ -534,7 +534,7 @@ class Scene:
                         self.text(d, (g["art"][0], y), status, 52, fill=(200, 202, 214), bold=False, anchor="mm")
                         if st.get("pills") and st["reveal_p"] == 0:
                             # rapid-fire: the type pills as a silent hint under "Your guess?"
-                            layer = hint_visuals.render({"kind": "types", "types": st["pills"]}, int(150 * self.u), accent, self.fonts_dir)
+                            layer = hint_visuals.render({"kind": "types", "types": st["pills"]}, int(190 * self.u), accent, self.fonts_dir)
                             if layer is not None:
                                 img.paste(layer, (g["art"][0] - layer.width // 2, int(y + 54 * self.u)), layer)
                 else:

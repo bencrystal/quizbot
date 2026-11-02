@@ -253,7 +253,7 @@ class PokemonPack(Pack):
             tint=TYPE_COLORS.get(type_names[0].lower()),
             difficulty=self._difficulty(pid, gen, species),
             pronunciation=pron,
-            meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact, "visuals": visuals, "cry": cry_version,
+            meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact, "visuals": visuals, "cry": cry_version, "type_names": type_names,
                   # dual types: the frame tints to the first type, the spoken-word highlight takes the second
                   "tint2": TYPE_COLORS.get(type_names[1].lower()) if len(type_names) > 1 else None,
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
