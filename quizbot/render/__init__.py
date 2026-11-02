@@ -334,6 +334,7 @@ class Renderer:
         T.mark("status", text="Your guess?")
         T.add(None, 0.15)
         T.add(None, S, "think")
+        T.mark("tint")                       # type colour arrives with the silhouette, so the lit disc is the type's, not white
         if it.shape_hint and it.reveal_image:
             T.mark("shape", dur=0.5)
         if str(self.s.rapid_replay).lower() in ("1", "true", "yes"):   # the sound once more, on the silhouette
@@ -343,7 +344,6 @@ class Renderer:
             T.add(None, 0.15)
         else:
             T.add(None, 0.5)
-        T.mark("tint")
         T.mark("reveal")
         say_part(it.answer, style="Just the name, bright and quick.")
         T.add(None, 0.5 if i < total else 0.3)
