@@ -34,12 +34,12 @@
  "results": {
   "open": {
    "cold": {
-    "n": 15,
-    "avp": 50.559999999999995,
-    "views": 375.4,
-    "subs": 0.4,
+    "n": 16,
+    "avp": 50.3875,
+    "views": 364.9375,
+    "subs": 0.375,
     "metric": "avp",
-    "score": 52.19166666666666,
+    "score": 48.89166666666667,
     "balanced_on": [
      "deep",
      "icon",
@@ -51,18 +51,19 @@
       "score": 26.580000000000002
      },
      "pokemon": {
-      "n": 10,
-      "score": 68.51666666666667
+      "n": 11,
+      "score": 63.68333333333334
      }
-    }
+    },
+    "rel": 1.022
    },
    "announce": {
-    "n": 19,
-    "avp": 39.205263157894734,
-    "views": 298.10526315789474,
-    "subs": 0.3157894736842105,
+    "n": 20,
+    "avp": 40.42,
+    "views": 300.05,
+    "subs": 0.3,
     "metric": "avp",
-    "score": 50.76666666666667,
+    "score": 52.093333333333334,
     "balanced_on": [
      "deep",
      "icon",
@@ -71,21 +72,22 @@
     "packs": {
      "birds": {
       "n": 10,
-      "score": 25.660000000000004
+      "score": 25.839999999999996
      },
      "pokemon": {
-      "n": 9,
-      "score": 57.150000000000006
+      "n": 10,
+      "score": 57.739999999999995
      }
-    }
+    },
+    "rel": 0.926
    },
    "punch": {
-    "n": 3,
-    "avp": 63.9,
-    "views": 392.0,
+    "n": 4,
+    "avp": 64.8,
+    "views": 348.75,
     "subs": 0.0,
     "metric": "avp",
-    "score": 63.9,
+    "score": 65.06666666666666,
     "balanced_on": [
      "deep",
      "icon",
@@ -97,20 +99,21 @@
       "score": null
      },
      "pokemon": {
-      "n": 3,
-      "score": 63.800000000000004
+      "n": 4,
+      "score": 65.6
      }
-    }
+    },
+    "rel": 1.052
    }
   },
   "voice": {
    "coral": {
-    "n": 7,
-    "avp": 49.34285714285714,
-    "views": 374.14285714285717,
-    "subs": 0.5714285714285714,
+    "n": 8,
+    "avp": 52.175,
+    "views": 354.25,
+    "subs": 0.5,
     "metric": "avp",
-    "score": 47.31666666666667,
+    "score": 49.462500000000006,
     "balanced_on": [
      "icon",
      "known"
@@ -121,18 +124,18 @@
       "score": 32.95
      },
      "pokemon": {
-      "n": 5,
-      "score": 54.833333333333336
+      "n": 6,
+      "score": 59.125
      }
     }
    },
    "ash": {
-    "n": 10,
-    "avp": 48.480000000000004,
-    "views": 265.3,
-    "subs": 0.1,
+    "n": 11,
+    "avp": 49.0,
+    "views": 258.54545454545456,
+    "subs": 0.09090909090909091,
     "metric": "avp",
-    "score": 48.25,
+    "score": 50.30416666666667,
     "balanced_on": [
      "icon",
      "known"
@@ -143,18 +146,18 @@
       "score": 31.7
      },
      "pokemon": {
-      "n": 6,
-      "score": 54.0
+      "n": 7,
+      "score": 54.833333333333336
      }
     }
    },
    "sage": {
-    "n": 6,
-    "avp": 51.166666666666664,
-    "views": 405.1666666666667,
-    "subs": 0.3333333333333333,
+    "n": 7,
+    "avp": 50.642857142857146,
+    "views": 374.42857142857144,
+    "subs": 0.2857142857142857,
     "metric": "avp",
-    "score": 49.70833333333333,
+    "score": 49.375,
     "balanced_on": [
      "icon",
      "known"
@@ -165,18 +168,18 @@
       "score": 34.5
      },
      "pokemon": {
-      "n": 4,
-      "score": 57.55
+      "n": 5,
+      "score": 56.849999999999994
      }
     }
    },
    "liam": {
     "n": 7,
-    "avp": 44.05714285714286,
-    "views": 369.2857142857143,
+    "avp": 44.785714285714285,
+    "views": 393.2857142857143,
     "subs": 0.14285714285714285,
     "metric": "avp",
-    "score": 29.275,
+    "score": 30.9,
     "balanced_on": [
      "icon",
      "known"
@@ -184,11 +187,11 @@
     "packs": {
      "birds": {
       "n": 3,
-      "score": 23.4
+      "score": 25.2
      },
      "pokemon": {
       "n": 4,
-      "score": 70.3
+      "score": 73.2
      }
     }
    }
@@ -213,20 +216,20 @@
     }
    },
    "art": {
-    "n": 1,
-    "avp": 16.0,
+    "n": 2,
+    "avp": 44.05,
     "views": 3.0,
     "subs": 0.0,
     "metric": "views7d",
-    "score": 1.0,
+    "score": 2.0,
     "packs": {
      "birds": {
       "n": 1,
       "score": 1.0
      },
      "pokemon": {
-      "n": 0,
-      "score": null
+      "n": 1,
+      "score": 3.0
      }
     }
    }
@@ -245,6 +248,26 @@
     "views": null,
     "metric": "avp",
     "score": null
+   }
+  },
+  "captions": {
+   "kinetic": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "avp",
+    "score": null,
+    "packs": {}
+   },
+   "static": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "avp",
+    "score": null,
+    "packs": {}
    }
   }
  }
