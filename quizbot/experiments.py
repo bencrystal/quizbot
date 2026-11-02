@@ -49,6 +49,15 @@ def parallel_experiments(cfg: dict, st: dict, fmt: str = "short") -> list[dict]:
             and ex.get("format", "short") == fmt]
 
 
+def _enabled_packs() -> set[str]:
+    """Packs in the current rotation (settings.packs_enabled); empty if settings cannot be read."""
+    try:
+        from .config import Settings
+        return set(Settings.load().packs_enabled or [])
+    except Exception:
+        return set()
+
+
 def _apply(settings, overrides: dict) -> None:
     for k, v in overrides.items():
         if hasattr(settings, k):
@@ -142,8 +151,13 @@ def _judge_one(cfg: dict, st: dict, ex: dict, videos: list[dict]) -> dict:
     st.setdefault("results", {})[ex["id"]] = rows
     if not by_pack:
         return st
-    ready = [pk for pk, r in by_pack.items() if min(x["n"] for x in r.values()) >= min_n]
-    if len(ready) < len(by_pack):                      # every pack that has started must reach min_n per arm
+    # A paused pack (out of settings.packs_enabled) can never grow its arms, so it is reported but never gates
+    # the verdict: with birds paused on 2026-10-26 the `punch` arm had 0 bird Shorts, `open` could never reach
+    # min_n "in every pack", and the whole sequential queue sat behind it.
+    enabled = _enabled_packs()
+    judged = {pk: r for pk, r in by_pack.items() if pk in enabled} or by_pack
+    ready = [pk for pk, r in judged.items() if min(x["n"] for x in r.values()) >= min_n]
+    if len(ready) < len(judged):                       # every live pack that has started must reach min_n per arm
         return st
     rel = {name: 0.0 for name in names}
     for pk in ready:
