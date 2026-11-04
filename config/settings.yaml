@@ -35,7 +35,8 @@ claude_model: claude-sonnet-4-5
 packs_enabled: [pokemon]        # birds paused 2026-10-26 (10× lower reach); re-add to resume
 longs_per_pack_per_week: 1
 shorts_famous_only: true        # Shorts use the well-known subset (Gen 1-4 + famous later ones)
-shorts_cold_open: auto          # auto = alternate per Short (A/B test) | true | false. Cold open = cry before the question line
+shorts_cold_open: false         # decided 2026-11-03: no sound-first opening (the `open` experiment, winner punch)
+opening_style: punch            # "Name this Pokémon!" straight into the sound (decided 2026-11-03)
 track_used: short               # formats that never repeat a Pokémon: short | long | all | none. Long-form draws freely.
 
 # Safety rails for unattended runs --------------------------------------------

@@ -1,6 +1,8 @@
 {
- "decided": {},
- "active": "open",
+ "decided": {
+  "open": "punch"
+ },
+ "active": "snappy",
  "log": [
   {
    "when": "2026-10-21",
@@ -29,6 +31,12 @@
    "experiment": "open",
    "winner": null,
    "reason": "reopened by Ben: the 2026-10-21 'cold' verdict compared Pok\u00e9mon (all cold) with birds (all announce); assignment and judging are now stratified by pack"
+  },
+  {
+   "when": "2026-11-03",
+   "experiment": "open",
+   "winner": "punch",
+   "reason": "decided by Ben: punch (\"Name this Pok\u00e9mon!\" straight into the sound) matches cold on retention (Pok\u00e9mon, fame-balanced: cold 64.2, punch 63.7, announce 58.2) without the jarring sound-first start; cold and announce retired"
   }
  ],
  "results": {

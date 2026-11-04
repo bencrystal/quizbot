@@ -6,7 +6,8 @@ run anything by hand.
 
 ## What it makes
 Audio quizzes: play a sound → hints → reveal. Two formats from the same code:
-- **Shorts** (9:16, one round, ~40 s): `How fast can you name this X?` → sound → hints → reveal. 3 per day.
+- **Shorts** (9:16, one round, ~35 s): `Name this X!` → sound → two hints (type or region, then the Pokédex) → reveal.
+  3 per day. Opening decided 2026-11-03 (punch; cold and announce retired). Hint count is fixed at two for Shorts.
 - **Rapid-fire Shorts** (mechanic `rapid`): five sounds, ~3 s each, name only, no hints, ~35 s. Two a day (14:00 and
   20:00 UTC slots; themes include a random Mix, Ash's Pokémon, Kanto gym leaders); its own no-repeat list (`fmt=rapid`, reusable after `rapid_reuse_days`), its own GitHub issue
   ("Rapid-fire log"), tag `rapid`, format `rapid` in analytics; excluded from the Shorts experiments.

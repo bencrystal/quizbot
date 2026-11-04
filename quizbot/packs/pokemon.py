@@ -229,7 +229,11 @@ class PokemonPack(Pack):
         hints = [type_hint, region_hint, f"From the Pokédex: {redacted}"]
         visuals = {type_hint: {"kind": "types", "types": type_names}, region_hint: {"kind": "chip", "text": REGIONS[gen]}}
         theme = theme or {}
-        if "gen" in theme:          # a Generation episode already tells you the region
+        if str(getattr(self.settings, "format", "")) == "short":
+            # Shorts (Ben, 2026-11-03): always two hints, 3 points — one identity hint, then the Pokédex. The identity
+            # hint is the type, except on a type theme where the title already gives it away: then the region.
+            hints = [region_hint if "type" in theme else type_hint, hints[-1]]
+        elif "gen" in theme:        # a Generation episode already tells you the region
             hints.remove(region_hint)
         elif "type" in theme:       # a Type episode already tells you (at least one) type
             hints.remove(type_hint)
