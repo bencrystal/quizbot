@@ -112,8 +112,8 @@ class PokemonPack(Pack):
         # Then & Now (Ben, 2026-11-04): each round plays the original Game Boy/DS cry, then today's cry on the
         # silhouette — two chances per Pokémon, both audiences served. Gen 1-5 only (no legacy cry after that).
         out.append({"id": "then-now", "label": "Then & Now cries", "ids": [i for i in MIX if i <= 649], "cry": "both",
-                    "rapid_only": True, "curated": True,
-                    "intro": "Five Pokémon. The original cry, then today's. Name them all!"})
+                    "rapid_only": True, "curated": True, "rounds": 5,
+                    "intro": "{N} Pokémon. The original cry, then today's. Name them all!"})
         return out
 
     # ---- data ---------------------------------------------------------------

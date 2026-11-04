@@ -36,7 +36,9 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
         used = state.used_ids(pack.name, "rapid", within_days=settings.rapid_reuse_days)
     else:
         used = state.used_ids(pack.name, settings.format) if str(settings.track_used).lower() in (settings.format, "all", "true") else set()
-    items = pack.select(pool, used, settings.rounds, rng,
+    # a theme may cap its own length (Then & Now plays two cries per round, so it stays at five)
+    n_rounds = min(settings.rounds, int(theme["rounds"])) if theme.get("rounds") else settings.rounds
+    items = pack.select(pool, used, n_rounds, rng,
                         famous_only=(settings.format == "short" and settings.shorts_famous_only and not theme.get("curated")), theme=theme)
     if not items:
         raise SystemExit(f"No candidates for theme {theme['label']}")
@@ -113,7 +115,7 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
             title = f"Name {n} {plural} from their sounds ({theme['label']}) #shorts"
             desc = (f"{pack.channel_blurb}\n\nRapid fire: {n} sounds, one point each, easy to hard, no hints. "
                     f"{theme['label']}.\n\nAnswers:\n{answers}\n\n{hashtags}")
-            intro = theme.get("intro") or f"{words.get(n, n).title()} {plural}. One sound each. Name them all!"
+            intro = (theme.get("intro") or f"{{N}} {plural}. One sound each. Name them all!").replace("{N}", words.get(n, str(n)).title())
             social = _social_opener(settings, n)
             if social:
                 intro = f"{social} {intro}"
