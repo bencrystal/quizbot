@@ -49,10 +49,11 @@ def cmd_run(args, settings: Settings) -> int:
         print(f"[plan] pack: {pack_name} (auto)")
     pack = get_pack(pack_name, settings)
     exp_tags: list[str] = []
-    if settings.tts_provider != "dev" and settings.mechanic != "rapid":   # no experiments offline; rapid-fire is its own thing
+    if settings.tts_provider != "dev":                             # no experiments offline
         forced = str(settings.shorts_cold_open).lower()          # workflow input overrides the experiment
         from .experiments import assign
-        exp_id, variant, exp_tags = assign(settings, state, settings.format, pack_name)
+        # rapid-fire has its own experiment queue (format: rapid in experiments.yaml), never the Shorts one
+        exp_id, variant, exp_tags = assign(settings, state, "rapid" if settings.mechanic == "rapid" else settings.format, pack_name)
         if forced in ("1", "true", "yes", "0", "false", "no"):
             settings.shorts_cold_open = forced
         if exp_id:
@@ -69,6 +70,11 @@ def cmd_run(args, settings: Settings) -> int:
     ep.tags.append(f"thumb:{settings.thumb_style}")        # which thumbnail generator/style this upload carries
     if ep.format == "short":
         ep.tags.append(f"tier:{pack.tier(ep.items[0])}")   # item fame bucket, so experiments can balance it out
+    cries = {i.meta.get("cry") for i in ep.items if i.meta.get("cry")}
+    if cries:
+        ep.tags.append("cry:" + ("legacy" if cries == {"legacy"} else "latest" if cries == {"latest"} else "mixed"))
+        if str(settings.cry_version) == "legacy" and cries != {"legacy"}:   # Gen 6+ has no original cry: not a clean sample
+            ep.tags = [t if not t.startswith("exp:cry=") else "exp:cry=fallback" for t in ep.tags]
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned", meta={"manual": bool(args.force)})
     if ep.mechanic == "rapid":

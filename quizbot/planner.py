@@ -85,7 +85,7 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
             title = f"Name {n} {plural} from their sounds ({theme['label']}) #shorts"
             desc = (f"{pack.channel_blurb}\n\nRapid fire: {n} sounds, one point each, easy to hard, no hints. "
                     f"{theme['label']}.\n\nAnswers:\n{answers}\n\n{hashtags}")
-            intro = f"{words.get(n, n).title()} {plural}. One sound each. Name them all!"
+            intro = theme.get("intro") or f"{words.get(n, n).title()} {plural}. One sound each. Name them all!"
             outro = ("New quiz every day. Subscribe!" if str(settings.short_cta) == "subscribe"
                      else f"How many did you get out of {n}?")
     else:

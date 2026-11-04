@@ -87,13 +87,16 @@ def assign(settings, state, fmt: str = "short", pack: str | None = None) -> tupl
         _apply(settings, ex["variants"][variant])
         tags.append(f"exp:{ex['id']}={variant}")
         exp_id, stride = ex["id"], len(names)
-    # parallel experiments cycle at a slower rate so every variant meets every sequential variant equally
+    # parallel experiments: balanced blocks (every variant once per len(variants) consecutive episodes) in an
+    # order seeded per experiment and block, so each test is independent of the others and of the sequential
+    # cycle. (The earlier nested strides made the third parallel test flip only every 24 Shorts — i.e. by week.)
+    import random as _random
     for pex in parallel_experiments(cfg, st, fmt):
         pnames = list(pex["variants"])
-        pv = pnames[(n // stride) % len(pnames)]
+        block = _random.Random(f"{pex['id']}:{pack}:{n // len(pnames)}").sample(pnames, len(pnames))
+        pv = block[n % len(pnames)]
         _apply(settings, pex["variants"][pv])
         tags.append(f"exp:{pex['id']}={pv}")
-        stride *= len(pnames)
     return exp_id, variant, tags
 
 
@@ -101,8 +104,7 @@ def judge(videos: list[dict]) -> dict:
     """videos: exported analytics rows with 'tags' (list), 'format', 'avp', 'views'. Decides at most one
     experiment per call (the active one) and advances. Returns the new state (also written to disk)."""
     cfg, st = load_config(), load_state()
-    todo = [e for e in [active_experiment(cfg, st, "short"), *parallel_experiments(cfg, st, "short"),
-                        active_experiment(cfg, st, "long"), *parallel_experiments(cfg, st, "long")] if e]
+    todo = [e for f in ("short", "rapid", "long") for e in [active_experiment(cfg, st, f), *parallel_experiments(cfg, st, f)] if e]
     for ex in todo:
         st = _judge_one(cfg, st, ex, videos)
     save_state(st)

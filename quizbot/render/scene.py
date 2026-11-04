@@ -84,9 +84,10 @@ class Scene:
             return out
         if shown.strip().lower()[:40] != spoken.strip().lower()[:40]:
             # a chunk of the spoken text: match it by position instead
-            sw = spoken.lower().split()
-            cw = " ".join(lines).lower().split()
-            if not cw or " ".join(cw) not in spoken.lower():
+            norm = lambda t: t.lower().strip(".,!?;:")        # "Pokémon." matches "Pokémon"
+            sw = [norm(w) for w in spoken.split()]
+            cw = [norm(w) for w in " ".join(lines).split()]
+            if not cw or " ".join(cw) not in " ".join(sw):
                 return out
             start = next((k for k in range(len(sw) - len(cw) + 1) if sw[k:k + len(cw)] == cw), None)
             if start is None:
@@ -453,6 +454,7 @@ class Scene:
             if shown_fact.lower().startswith(st["answer"].lower() + ","):      # "Exeggutor, the Coconut Pokémon." → "The Coconut Pokémon."
                 shown_fact = shown_fact[len(st["answer"]) + 1:].strip()
                 shown_fact = shown_fact[:1].upper() + shown_fact[1:]
+                shown_fact = shown_fact.rstrip(".")          # a label under the name, not a sentence: "The Wool Pokémon"
             fact_lines = self.wrap(shown_fact, fact_sz, g["text_w"])[:4]
             if st.get("aka"):
                 fact_lines += self.wrap("Also known as " + ", ".join(st["aka"]) + ".", fact_sz, g["text_w"])[:2]
@@ -532,6 +534,11 @@ class Scene:
                             x0 += w
                     else:
                         self.text(d, (g["art"][0], y), status, 52, fill=(200, 202, 214), bold=False, anchor="mm")
+                        if st.get("pills") and st["reveal_p"] == 0:
+                            # rapid-fire: the type pills as a silent hint under "Your guess?"
+                            layer = hint_visuals.render({"kind": "types", "types": st["pills"]}, int(190 * self.u), accent, self.fonts_dir)
+                            if layer is not None:
+                                img.paste(layer, (g["art"][0] - layer.width // 2, int(y + 54 * self.u)), layer)
                 else:
                     self.text(d, (x, g["art"][1]), st["status"], 44, fill=(200, 202, 214), bold=False, anchor="lm")
             hints = st["hints"]

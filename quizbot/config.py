@@ -77,10 +77,14 @@ class Settings:
     title_style: str = "question"        # Shorts title: question | challenge (A/B)
     tts_pace: str = "brisk"              # brisk | quick   (how fast the host talks; A/B)
     tts_energy: str = "host"             # host | showman  (game-show energy level; A/B)
+    cry_version: str = "latest"         # latest | legacy — which PokéAPI cry a Pokémon Short plays (legacy = the original
+                                         # Game Boy/DS cry, exists for Gen 1-5; falls back to latest and tags exp:cry=fallback)
+    rapid_replay: bool = False           # rapid-fire: play the sound a second time on the silhouette before the reveal
+    rapid_pills: bool = False            # rapid-fire: silent type pills under the disc during the think
     captions: str = "kinetic"            # kinetic (rounded display font, current word lit as it is spoken) | static
     thumb_style: str = "sil"             # sil (silhouettes + ?) | art (full colour); A/B on long-form (exp `thumb`)
-    tts_speed: float = 1.05              # post-synthesis tempo on every line, pitch preserved (1.0 = as spoken)
-    tts_speed_long: float = 1.08         # tempo for long read-outs (Pokédex / field-guide hint, the fact)
+    tts_speed: float = 1.07              # post-synthesis tempo on every line, pitch preserved (1.0 = as spoken)
+    tts_speed_long: float = 1.07         # tempo for long read-outs (Pokédex / field-guide hint, the fact)
     short_hints: int = 0                 # Shorts: keep only the last N hints (0 = all)
     short_replay: bool = False           # Shorts: play the sound again after hint 1 (off: cry ×2 → hints → cry on the silhouette → reveal)
     short_outro: str = "spoken"          # Shorts: "drop your score" spoken | caption (on screen during the fact)

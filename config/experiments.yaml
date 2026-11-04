@@ -47,6 +47,26 @@ experiments:
       kinetic: { captions: kinetic }
       static:  { captions: static }
 
+  - id: cry
+    # parallel since 2026-11-02 ("that's not their sounds", 2026-10-29): the original Game Boy/DS cry or the
+    # current one. Gen 6+ has no original, so those Shorts fall out of the sample (exp:cry=fallback).
+    parallel: true
+    min_n: 8
+    max_n: 16
+    question: "Original Game Boy/DS cry or the modern one (Gen 1-5)?"
+    variants:
+      modern: { cry_version: latest }
+      og:     { cry_version: legacy }
+
+  - id: rapidbeat
+    format: rapid
+    min_n: 6
+    max_n: 12
+    question: "Rapid-fire: one play, or the sound again on the silhouette plus silent type pills while thinking?"
+    variants:
+      once:  { rapid_replay: "false", rapid_pills: "false" }
+      twice: { rapid_replay: "true",  rapid_pills: "true" }
+
   - id: hints
     question: "Two hints or just the Pokédex/field-guide hint?"
     variants:
@@ -80,10 +100,10 @@ experiments:
   # Post-synthesis tempo (pitch kept). gpt-4o-mini-tts ignores the API's speed parameter, so this is the
   # precise speed knob; `pace` above tests delivery via instructions instead.
   - id: tempo
-    question: "Current tempo (+5 %, long read-outs +8 %) or a touch faster (+10 % / +14 %)?"
+    question: "Current tempo (+7 % on every line) or a touch faster (+12 %)?"
     variants:
-      t105: { tts_speed: 1.05, tts_speed_long: 1.08 }
-      t110: { tts_speed: 1.10, tts_speed_long: 1.14 }
+      t107: { tts_speed: 1.07, tts_speed_long: 1.07 }
+      t112: { tts_speed: 1.12, tts_speed_long: 1.12 }
 
   # Runs alongside the sequential queue; 4 arms = exactly one ElevenLabs Short per day at 4 Shorts/day.
   # Judged on the same rule but with a higher bar: it costs money, so it must win clearly.

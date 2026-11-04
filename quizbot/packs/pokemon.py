@@ -109,6 +109,9 @@ class PokemonPack(Pack):
         out.append({"id": "mix", "label": "Pokémon Mix", "ids": MIX, "rapid_only": True, "weight": 3, "curated": True})
         out.append({"id": "ash", "label": "Ash's Pokémon", "ids": ASH, "rapid_only": True, "curated": True})
         out.append({"id": "kanto-gyms", "label": "Kanto Gym Leaders' Pokémon", "ids": KANTO_GYMS, "rapid_only": True, "curated": True})
+        # the original 8-bit cries (PokéAPI "legacy"), Gen 1 only, named honestly in the title
+        out.append({"id": "gb-cries", "label": "Original Game Boy cries", "gen": 1, "cry": "legacy", "rapid_only": True,
+                    "intro": "Five original Game Boy cries. Name them all!"})
         return out
 
     # ---- data ---------------------------------------------------------------
@@ -180,12 +183,15 @@ class PokemonPack(Pack):
         poke = self._get(f"{API}/pokemon/{pid}", f"pokemon-{pid}.json")
         species = self._get(poke["species"]["url"], f"species-{pid}.json")
 
-        cry_url = (poke.get("cries") or {}).get("latest") or (poke.get("cries") or {}).get("legacy")
+        cries = poke.get("cries") or {}
+        want = (theme or {}).get("cry") or str(getattr(self.settings, "cry_version", "latest"))
+        cry_version = "legacy" if want == "legacy" and cries.get("legacy") else "latest"
+        cry_url = cries.get(cry_version) or cries.get("latest") or cries.get("legacy")
         art_url = (poke["sprites"].get("other") or {}).get("official-artwork", {}).get("front_default")
         if not cry_url or not art_url:
             return None
 
-        cry = self._download(cry_url, self.cache / f"cry-{pid}.ogg")
+        cry = self._download(cry_url, self.cache / (f"cry-{pid}.ogg" if cry_version == "latest" else f"cry-{pid}-legacy.ogg"))
         art = self._download(art_url, self.cache / f"art-{pid}.png")
 
         # The answer is the species' English name — "Mr. Mime", "Ho-Oh", "Farfetch'd", "Giratina" — never the API
@@ -247,7 +253,7 @@ class PokemonPack(Pack):
             tint=TYPE_COLORS.get(type_names[0].lower()),
             difficulty=self._difficulty(pid, gen, species),
             pronunciation=pron,
-            meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact, "visuals": visuals,
+            meta={"dex": pid, "types": types, "genus": genus, "gen": gen, "entry": fact, "visuals": visuals, "cry": cry_version, "type_names": type_names,
                   # dual types: the frame tints to the first type, the spoken-word highlight takes the second
                   "tint2": TYPE_COLORS.get(type_names[1].lower()) if len(type_names) > 1 else None,
                   "height_m": poke["height"] / 10, "weight_kg": poke["weight"] / 10},
