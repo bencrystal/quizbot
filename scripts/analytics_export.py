@@ -270,7 +270,7 @@ def main() -> None:
         if v["privacy"] != "public":
             continue
         try:
-            r = ytc.commentThreads().list(part="snippet", videoId=v["id"], maxResults=5, order="relevance",
+            r = ytc.commentThreads().list(part="snippet", videoId=v["id"], maxResults=50 if v["format"] == "rapid" else 5, order="relevance",
                                          textFormat="plainText").execute()
         except Exception as e:                      # comments disabled etc.
             print(f"comments skipped for {v['id']}: {str(e)[:80]}")
@@ -281,6 +281,27 @@ def main() -> None:
                              "text": c.get("textDisplay", "")[:300], "likes": c.get("likeCount", 0),
                              "at": c.get("publishedAt", "")})
     comments.sort(key=lambda c: c["at"], reverse=True)
+
+    # ---- social proof for the next rapid-fire intro: "n/5" score comments on the newest rapid-fire videos
+    import re as _re
+    import time as _time
+    social = {}
+    for v in sorted((x for x in videos.values() if x["format"] == "rapid"), key=lambda x: x["published"], reverse=True)[:3]:
+        rounds = 7 if "7 Pok" in v["title"] or "Name 7" in v["title"] else 5
+        scores = []
+        for c in comments:
+            if c["video"] != v["id"]:
+                continue
+            m = _re.search(rf"\b([0-{rounds}])\s*(?:/|out of|outta)\s*{rounds}\b", c["text"], _re.I)
+            if m:
+                scores.append(int(m.group(1)))
+        if len(scores) >= 10:
+            social["rapid_last"] = {"video": v["id"], "rounds": rounds, "n": len(scores),
+                                    "pct_full": round(100 * sum(1 for s in scores if s == rounds) / len(scores)),
+                                    "ts": int(_time.time())}
+            break
+    Path("state").mkdir(exist_ok=True)
+    Path("state/social.json").write_text(json.dumps(social, indent=1) + "\n")
 
     # ---- experiments: judge the active one from retention data, persist the decision
     from quizbot.experiments import judge, load_config
