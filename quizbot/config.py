@@ -83,8 +83,8 @@ class Settings:
     rapid_pills: bool = False            # rapid-fire: silent type pills under the disc during the think
     captions: str = "kinetic"            # kinetic (rounded display font, current word lit as it is spoken) | static
     thumb_style: str = "sil"             # sil (silhouettes + ?) | art (full colour); A/B on long-form (exp `thumb`)
-    tts_speed: float = 1.05              # post-synthesis tempo on every line, pitch preserved (1.0 = as spoken)
-    tts_speed_long: float = 1.08         # tempo for long read-outs (Pokédex / field-guide hint, the fact)
+    tts_speed: float = 1.07              # post-synthesis tempo on every line, pitch preserved (1.0 = as spoken)
+    tts_speed_long: float = 1.07         # tempo for long read-outs (Pokédex / field-guide hint, the fact)
     short_hints: int = 0                 # Shorts: keep only the last N hints (0 = all)
     short_replay: bool = False           # Shorts: play the sound again after hint 1 (off: cry ×2 → hints → cry on the silhouette → reveal)
     short_outro: str = "spoken"          # Shorts: "drop your score" spoken | caption (on screen during the fact)
