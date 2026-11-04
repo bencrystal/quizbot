@@ -36,7 +36,9 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
         used = state.used_ids(pack.name, "rapid", within_days=settings.rapid_reuse_days)
     else:
         used = state.used_ids(pack.name, settings.format) if str(settings.track_used).lower() in (settings.format, "all", "true") else set()
-    items = pack.select(pool, used, settings.rounds, rng,
+    # a theme may cap its own length (Then & Now plays two cries per round, so it stays at five)
+    n_rounds = min(settings.rounds, int(theme["rounds"])) if theme.get("rounds") else settings.rounds
+    items = pack.select(pool, used, n_rounds, rng,
                         famous_only=(settings.format == "short" and settings.shorts_famous_only and not theme.get("curated")), theme=theme)
     if not items:
         raise SystemExit(f"No candidates for theme {theme['label']}")
@@ -54,6 +56,17 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     if settings.mechanic != "ladder":
         slug += f"-{settings.mechanic}"
     ep = _template_episode(pack, theme, items, slug, settings)
+    # Series numbering (corpus study 2026-11-04: numbered episodes outperform one-offs). Separate counters for
+    # single Shorts, rapid-fire and long-form, per pack.
+    if settings.format == "short":
+        if settings.mechanic == "rapid":
+            no = state.count_episodes("rapid", pack=pack.name) + 1
+            ep.title = ep.title.replace(" #shorts", f" · Rapid-fire #{no} #shorts")
+        else:
+            no = state.count_episodes("short", pack=pack.name) - state.count_episodes("rapid", pack=pack.name) + 1
+            ep.title = ep.title.replace(" #shorts", f" · Ep. {no} #shorts")
+        ep.meta["episode_no"] = no
+        ep.title = ep.title[:100]
 
     if settings.planner == "claude":
         try:
@@ -61,6 +74,21 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
         except Exception as e:
             print(f"[plan] Claude planner failed ({e}); using template copy")
     return ep
+
+
+def _social_opener(settings: Settings, n: int) -> str:
+    """Social proof from the last rapid-fire's score comments (state/social.json, written by the analytics job):
+    "Only 18 percent got five out of five yesterday." Needs at least ten score comments and a video under 4 days old."""
+    import json as _json
+    import time as _time
+    try:
+        soc = _json.loads((settings.root / "state" / "social.json").read_text())["rapid_last"]
+    except Exception:
+        return ""
+    if soc.get("rounds") != n or soc.get("n", 0) < 10 or _time.time() - soc.get("ts", 0) > 4 * 86400:
+        return ""
+    words = {5: "five", 7: "seven"}
+    return f"Only {soc['pct_full']} percent got {words.get(n, n)} out of {words.get(n, n)} last time."
 
 
 def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str, settings: Settings) -> Episode:
@@ -72,6 +100,8 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
     if short:
         if settings.title_style == "challenge":
             title = f"Only real fans know this {pack.noun} by its sound ({theme['label']}) #shorts"
+        elif settings.title_style == "only1":
+            title = f"Only 1% of fans can name this {pack.noun} by its sound ({theme['label']}) #shorts"
         else:
             title = f"Can you name this {pack.noun} from its sound? ({theme['label']}) #shorts"
         desc = (f"{pack.channel_blurb}\n\nOne round. Three hints. How fast did you get it?\n"
@@ -80,12 +110,15 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
         outro = ("New quiz every day. Subscribe!" if str(settings.short_cta) == "subscribe"
                  else "How many points did you get?")
         if settings.mechanic == "rapid":
-            words = {3: "three", 4: "four", 5: "five", 6: "six"}
+            words = {3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight"}
             plural = pack.plural or f"{pack.noun}s"
             title = f"Name {n} {plural} from their sounds ({theme['label']}) #shorts"
             desc = (f"{pack.channel_blurb}\n\nRapid fire: {n} sounds, one point each, easy to hard, no hints. "
                     f"{theme['label']}.\n\nAnswers:\n{answers}\n\n{hashtags}")
-            intro = theme.get("intro") or f"{words.get(n, n).title()} {plural}. One sound each. Name them all!"
+            intro = (theme.get("intro") or f"{{N}} {plural}. One sound each. Name them all!").replace("{N}", words.get(n, str(n)).title())
+            social = _social_opener(settings, n)
+            if social:
+                intro = f"{social} {intro}"
             outro = ("New quiz every day. Subscribe!" if str(settings.short_cta) == "subscribe"
                      else f"How many did you get out of {n}?")
     else:

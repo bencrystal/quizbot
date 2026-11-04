@@ -80,6 +80,7 @@ class Settings:
     cry_version: str = "latest"         # latest | legacy — which PokéAPI cry a Pokémon Short plays (legacy = the original
                                          # Game Boy/DS cry, exists for Gen 1-5; falls back to latest and tags exp:cry=fallback)
     rapid_replay: bool = False           # rapid-fire: play the sound a second time on the silhouette before the reveal
+    rapid_tail: str = "spoken"           # rapid-fire ending: spoken score ask + pause | loop (caption only, ends on the reveal)
     rapid_pills: bool = False            # rapid-fire: silent type pills under the disc during the think
     captions: str = "kinetic"            # kinetic (rounded display font, current word lit as it is spoken) | static
     thumb_style: str = "sil"             # sil (silhouettes + ?) | art (full colour); A/B on long-form (exp `thumb`)
