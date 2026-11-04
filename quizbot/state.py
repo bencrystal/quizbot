@@ -127,7 +127,9 @@ class State:
         return self.conn.execute("SELECT * FROM episodes ORDER BY created_at").fetchall()
 
     def episodes_today(self) -> int:
-        start = time.time() - (time.time() % 86400)   # UTC midnight is fine for a cap
+        # the broadcast day starts 10:00 UTC (scripts/due.py): counting from UTC midnight let the 23:00 slot's
+        # Short land in the next day's count and defer the following day's last slot (2026-11-02)
+        start = time.time() - ((time.time() - 10 * 3600) % 86400)
         return self.conn.execute("SELECT COUNT(*) FROM episodes WHERE created_at>=? AND status!='failed' "
                                  "AND COALESCE(meta,'') NOT LIKE '%\"manual\": true%'", (start,)).fetchone()[0]
 
