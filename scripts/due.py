@@ -16,8 +16,10 @@ from quizbot.config import Settings  # noqa: E402
 from quizbot.state import State  # noqa: E402
 
 DAY_START = 10                       # the broadcast day runs 10:00 UTC → 10:00 UTC, so the 23:00 slot can still
-SHORT_SLOTS = (11, 14, 17, 20, 23)   # catch up after midnight instead of being forgotten at the UTC date change
-RAPID_SLOTS = (14, 20)               # which of those are rapid-fire (rapid_per_day caps it)
+# Slots sit in US waking hours (Ben, 2026-11-04: the old 11-23 UTC set left the US evening, the heaviest Shorts
+# window, empty). Hours ≥ 24 are after UTC midnight but still inside the broadcast day.
+SHORT_SLOTS = (13, 16, 18, 20, 22, 25)   # 8a 11a 1p 3p 5p 8p ET; the 01:00 UTC slot catches up after the date change
+RAPID_SLOTS = (18, 22, 25)               # which of those are rapid-fire (rapid_per_day caps it): lunch, after work, evening
 LONG_FROM = 12.5
 
 

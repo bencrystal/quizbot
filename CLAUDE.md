@@ -8,8 +8,8 @@ run anything by hand.
 Audio quizzes: play a sound → hints → reveal. Two formats from the same code:
 - **Shorts** (9:16, one round, ~35 s): `Name this X!` → sound → two hints (type or region, then the Pokédex) → reveal.
   3 per day. Opening decided 2026-11-03 (punch; cold and announce retired). Hint count is fixed at two for Shorts.
-- **Rapid-fire Shorts** (mechanic `rapid`): five sounds, ~3 s each, name only, no hints, ~35 s. Two a day (14:00 and
-  20:00 UTC slots; themes include a random Mix, Ash's Pokémon, Kanto gym leaders); its own no-repeat list (`fmt=rapid`, reusable after `rapid_reuse_days`), its own GitHub issue
+- **Rapid-fire Shorts** (mechanic `rapid`): five sounds, ~3 s each, name only, no hints, ~35 s. Three a day (18, 22 and
+  01 UTC slots; themes include a random Mix, Ash's Pokémon, Kanto gym leaders); its own no-repeat list (`fmt=rapid`, reusable after `rapid_reuse_days`), its own GitHub issue
   ("Rapid-fire log"), tag `rapid`, format `rapid` in analytics; excluded from the Shorts experiments.
 - **Long form** (16:9, 10 rounds, easy → hard, ~7 min): one per pack per week.
 Series ("packs") share everything except the data. Live: `pokemon` (cries). Paused 2026-10-26: `birds` (xeno-canto calls; a tenth of the reach and a different audience). Plan: a second
@@ -49,11 +49,12 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
   The silhouette is that final beat only (morphs in under the sting, ~2 s before the art), never a hint.
 - Experiments have a `format` (short | rapid | long); rapid-fire has its own queue (`rapidbeat`). Pokémon cries:
   `cry_version` latest|legacy (legacy = original Game Boy/DS cry, Gen 1-5 only); the `cry` A/B tags Gen 6+ as fallback.
-- Rules Ben owns (never change unasked): `youtube_privacy`, `upload`, `max_episodes_per_day`, `made_for_kids`.
+- Rules Ben owns (never change unasked): `youtube_privacy`, `upload`, `max_episodes_per_day` (7 since 2026-11-04), `made_for_kids`.
+- Every Short gets a first comment ("Drop your score 👇") after upload; needs the `youtube.force-ssl` scope on the token.
 
 ## Operations
 - `.github/workflows/daily.yml`: runs hourly; `scripts/due.py` decides from the ledger whether a Short (slots
-  11/14/17/20/23 UTC; 14 and 20 are rapid-fire), the long-form (from 12:30 UTC; skips packs that already had one this week) or nothing is due.
+  13/16/18/20/22/01 UTC — US waking hours; 18, 22, 01 are rapid-fire), the long-form (from 12:30 UTC; skips packs that already had one this week) or nothing is due.
   GitHub cron drops/delays firings, so missed slots catch up on the next hour. 'none' runs post nothing. `workflow_dispatch` inputs: format, theme, force, cold_open, pack.
   Runs are serialized (`concurrency`); the state cache (`state/`, `out/`) is restored from the latest run.
 - Results → GitHub issue "Episode log" (#2); failures with log tail → "Run failures" (#1). Actions logs are

@@ -113,8 +113,23 @@ def upload(settings: Settings, ep: Episode, result: RenderResult) -> str:
         add_to_playlist(yt, vid, playlist_title(ep, settings), former_playlist_titles(ep, settings))
     except Exception as e:  # organisation only; never fail a run over it
         print(f"[upload] playlist skipped: {e}")
+    first_comment(yt, vid, ep)
     print(f"[upload] https://youtu.be/{vid}")
     return vid
+
+
+def first_comment(yt, video_id: str, ep: Episode) -> None:
+    """Seed the thread with the one ask the video already makes (Ben: one "drop your score" is enough). Needs the
+    youtube.force-ssl scope; until the token is re-authorised with it, this logs one line and moves on."""
+    if ep.format != "short":
+        return
+    text = "How many did you get? Drop your score 👇" if ep.mechanic == "rapid" else "How many points did you get? Drop your score 👇"
+    try:
+        yt.commentThreads().insert(part="snippet", body={"snippet": {"videoId": video_id, "topLevelComment": {
+            "snippet": {"textOriginal": text}}}}).execute()
+        print("[upload] first comment posted")
+    except Exception as e:
+        print(f"[upload] first comment skipped ({str(e)[:120]}) — re-run `python -m quizbot auth` with the youtube.force-ssl scope to enable")
 
 
 def playlist_title(ep: Episode, settings: Settings) -> str:
