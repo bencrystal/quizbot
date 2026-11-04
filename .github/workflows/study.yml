@@ -1,0 +1,42 @@
+# On demand: corpus study of viral trivia / quiz Shorts (study only — nothing from them is reused). Finds the
+# most-viewed Shorts for a few queries with the YouTube Data API, pulls their auto frames (~25/50/75 %) and
+# transcripts where available, and commits corpus.json + sheet.png to the `reference` branch under
+# docs/study/<run_id>/ so a Claude session can read them (the sandbox cannot reach YouTube).
+name: corpus study
+on:
+  workflow_dispatch:
+    inputs:
+      queries:
+        description: "search queries, separated by |"
+        default: "guess the pokemon cry|name that pokemon sound|pokemon quiz shorts|trivia quiz shorts|guess the sound quiz|only real fans can name"
+      per_query:
+        description: "videos per query"
+        default: "12"
+permissions:
+  contents: write
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -q -r requirements.txt youtube-transcript-api
+      - name: secrets → files
+        run: |
+          mkdir -p state config
+          echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
+          echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
+      - name: study
+        run: |
+          IFS='|' read -ra Q <<< "${{ inputs.queries }}"
+          python scripts/study_corpus.py --out ref/study --per-query "${{ inputs.per_query }}" --queries "${Q[@]}"
+      - name: commit to the reference branch
+        run: |
+          rm -rf /tmp/refrepo && mkdir /tmp/refrepo && cd /tmp/refrepo && git init -q
+          git config user.name "quizbot" && git config user.email "benjamincrystal8@gmail.com"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}"
+          git fetch -q origin reference && git checkout -q -b reference FETCH_HEAD || git checkout -q --orphan reference
+          mkdir -p "docs/study/${{ github.run_id }}"
+          cp "$GITHUB_WORKSPACE"/ref/study/* "docs/study/${{ github.run_id }}/"
+          git add -A && git commit -q -m "corpus study: run ${{ github.run_id }}" && git push -q origin reference
