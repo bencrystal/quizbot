@@ -312,8 +312,8 @@
   "thumb": {
    "sil": {
     "n": 1,
-    "avp": 22.5,
-    "views": 261.0,
+    "avp": 22.3,
+    "views": 262.0,
     "subs": 0.0,
     "metric": "views7d",
     "score": 253.0,
@@ -330,8 +330,8 @@
    },
    "art": {
     "n": 3,
-    "avp": 30.96666666666667,
-    "views": 3.0,
+    "avp": 29.8,
+    "views": 3.3333333333333335,
     "subs": 0.0,
     "metric": "views7d",
     "score": 2.3333333333333335,
@@ -365,36 +365,36 @@
   },
   "captions": {
    "kinetic": {
-    "n": 1,
-    "avp": 57.2,
-    "views": 211.0,
-    "subs": 1.0,
+    "n": 3,
+    "avp": 60.56666666666666,
+    "views": 139.0,
+    "subs": 0.3333333333333333,
     "metric": "avp",
-    "score": 57.2,
+    "score": 60.56666666666666,
     "balanced_on": [
      "known"
     ],
     "packs": {
      "pokemon": {
-      "n": 1,
-      "score": 57.2
+      "n": 3,
+      "score": 60.56666666666666
      }
     }
    },
    "static": {
-    "n": 1,
-    "avp": 46.4,
-    "views": 240.0,
+    "n": 2,
+    "avp": 55.5,
+    "views": 211.5,
     "subs": 0.0,
     "metric": "avp",
-    "score": 46.4,
+    "score": 51.1,
     "balanced_on": [
      "known"
     ],
     "packs": {
      "pokemon": {
-      "n": 1,
-      "score": 46.4
+      "n": 2,
+      "score": 51.1
      }
     }
    }
