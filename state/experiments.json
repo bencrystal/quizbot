@@ -365,36 +365,38 @@
   },
   "captions": {
    "kinetic": {
-    "n": 3,
-    "avp": 60.56666666666666,
-    "views": 139.0,
-    "subs": 0.3333333333333333,
+    "n": 5,
+    "avp": 56.260000000000005,
+    "views": 144.0,
+    "subs": 0.2,
     "metric": "avp",
-    "score": 60.56666666666666,
+    "score": 56.483333333333334,
     "balanced_on": [
+     "icon",
+     "known"
+    ],
+    "packs": {
+     "pokemon": {
+      "n": 5,
+      "score": 56.483333333333334
+     }
+    }
+   },
+   "static": {
+    "n": 3,
+    "avp": 57.56666666666666,
+    "views": 205.0,
+    "subs": 0.0,
+    "metric": "avp",
+    "score": 55.925,
+    "balanced_on": [
+     "icon",
      "known"
     ],
     "packs": {
      "pokemon": {
       "n": 3,
-      "score": 60.56666666666666
-     }
-    }
-   },
-   "static": {
-    "n": 2,
-    "avp": 55.5,
-    "views": 211.5,
-    "subs": 0.0,
-    "metric": "avp",
-    "score": 51.1,
-    "balanced_on": [
-     "known"
-    ],
-    "packs": {
-     "pokemon": {
-      "n": 2,
-      "score": 51.1
+      "score": 55.925
      }
     }
    }
