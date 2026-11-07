@@ -365,12 +365,30 @@
   },
   "captions": {
    "kinetic": {
+    "n": 6,
+    "avp": 55.400000000000006,
+    "views": 156.5,
+    "subs": 0.16666666666666666,
+    "metric": "avp",
+    "score": 55.6625,
+    "balanced_on": [
+     "icon",
+     "known"
+    ],
+    "packs": {
+     "pokemon": {
+      "n": 6,
+      "score": 55.6625
+     }
+    }
+   },
+   "static": {
     "n": 5,
-    "avp": 56.260000000000005,
-    "views": 144.0,
+    "avp": 59.879999999999995,
+    "views": 153.2,
     "subs": 0.2,
     "metric": "avp",
-    "score": 56.483333333333334,
+    "score": 60.02499999999999,
     "balanced_on": [
      "icon",
      "known"
@@ -378,87 +396,111 @@
     "packs": {
      "pokemon": {
       "n": 5,
-      "score": 56.483333333333334
-     }
-    }
-   },
-   "static": {
-    "n": 3,
-    "avp": 57.56666666666666,
-    "views": 205.0,
-    "subs": 0.0,
-    "metric": "avp",
-    "score": 55.925,
-    "balanced_on": [
-     "icon",
-     "known"
-    ],
-    "packs": {
-     "pokemon": {
-      "n": 3,
-      "score": 55.925
+      "score": 60.02499999999999
      }
     }
    }
   },
   "snappy": {
    "standard": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 1,
+    "avp": 53.7,
+    "views": 170.0,
+    "subs": 0.0,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 53.7,
+    "balanced_on": [
+     "known"
+    ],
+    "packs": {
+     "pokemon": {
+      "n": 1,
+      "score": 53.7
+     }
+    }
    },
    "snappy": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 2,
+    "avp": 63.449999999999996,
+    "views": 74.0,
+    "subs": 0.5,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 63.449999999999996,
+    "balanced_on": [
+     "known"
+    ],
+    "packs": {
+     "pokemon": {
+      "n": 2,
+      "score": 63.449999999999996
+     }
+    }
    }
   },
   "cry": {
    "modern": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 2,
+    "avp": 61.15,
+    "views": 146.5,
+    "subs": 0.5,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 61.15,
+    "balanced_on": [
+     "known"
+    ],
+    "packs": {
+     "pokemon": {
+      "n": 2,
+      "score": 61.15
+     }
+    }
    },
    "og": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 1,
+    "avp": 58.3,
+    "views": 25.0,
+    "subs": 0.0,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 58.3,
+    "balanced_on": [
+     "known"
+    ],
+    "packs": {
+     "pokemon": {
+      "n": 1,
+      "score": 58.3
+     }
+    }
    }
   },
   "rapidbeat": {
    "once": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 1,
+    "avp": 67.5,
+    "views": 53.0,
+    "subs": 0.0,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 67.5,
+    "packs": {
+     "pokemon": {
+      "n": 1,
+      "score": 67.5
+     }
+    }
    },
    "twice": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 2,
+    "avp": 59.55,
+    "views": 62.0,
+    "subs": 0.0,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 59.55,
+    "packs": {
+     "pokemon": {
+      "n": 2,
+      "score": 59.55
+     }
+    }
    }
   }
  }
