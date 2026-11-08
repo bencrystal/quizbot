@@ -10,6 +10,8 @@ import json
 from pathlib import Path
 
 from ..config import Settings
+from googleapiclient.http import MediaFileUpload
+
 from ..models import Episode, RenderResult
 
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
