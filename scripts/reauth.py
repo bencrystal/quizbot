@@ -4,7 +4,8 @@
   python scripts/reauth.py exchange <code-or-redirect-url>
                                           → trades the code for a token; writes state/youtube_token.json
 
-Scopes: upload + channel management (playlists) + Analytics read (dashboard).
+Scopes: upload + channel management (playlists) + force-ssl (the first comment on every Short) + Analytics read
+(dashboard).
 """
 from __future__ import annotations
 
@@ -19,6 +20,7 @@ TOKEN = ROOT / "state" / "youtube_token.json"
 REDIRECT = "https://github.com/bencrystal/quizbot/oauth-callback"
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
           "https://www.googleapis.com/auth/youtube",
+          "https://www.googleapis.com/auth/youtube.force-ssl",
           "https://www.googleapis.com/auth/yt-analytics.readonly"]
 
 

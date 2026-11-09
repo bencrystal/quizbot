@@ -14,8 +14,12 @@ from googleapiclient.http import MediaFileUpload
 
 from ..models import Episode, RenderResult
 
+# force-ssl is what commentThreads.insert (the first comment) needs. A token granted without it still refreshes
+# fine (google-auth only logs a warning for scopes that were not granted); the comment just stays skipped until
+# the token is re-authorised via reauth.yml.
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
-          "https://www.googleapis.com/auth/youtube"]
+          "https://www.googleapis.com/auth/youtube",
+          "https://www.googleapis.com/auth/youtube.force-ssl"]
 
 
 def _creds(settings: Settings, interactive: bool):
@@ -131,7 +135,7 @@ def first_comment(yt, video_id: str, ep: Episode) -> None:
             "snippet": {"textOriginal": text}}}}).execute()
         print("[upload] first comment posted")
     except Exception as e:
-        print(f"[upload] first comment skipped ({str(e)[:120]}) — re-run `python -m quizbot auth` with the youtube.force-ssl scope to enable")
+        print(f"[upload] first comment skipped ({str(e)[:120]}) — re-authorise the token (reauth.yml) so it carries the youtube.force-ssl scope")
 
 
 def playlist_title(ep: Episode, settings: Settings) -> str:
