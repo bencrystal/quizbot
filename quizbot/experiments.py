@@ -128,17 +128,26 @@ def _judge_one(cfg: dict, st: dict, ex: dict, videos: list[dict]) -> dict:
                          "views": (sum(v["views"] for v in sel) / len(sel)) if sel else None,
                          "subs": (sum(v.get("subs") or 0 for v in sel) / len(sel)) if sel else None,
                          "metric": metric, "score": (sum(v[metric] for v in sel) / len(sel)) if sel else None}
-        # Item fame is the biggest peripheral factor (Charmander vs Beldum), so when every arm has videos in the
-        # same fame tiers, score each arm as the equal-weight mean over those tiers instead of the raw mean.
-        tiers = None
-        for name in names:
-            have = {v.get("tier") for v in sel_by[name] if v.get("tier")}
-            tiers = have if tiers is None else tiers & have
-        if tiers:
+        # Peripheral factors are balanced out, not averaged over: item fame (Charmander vs Beldum) and, since the
+        # voice test ran in parallel and Liam retained ~15 % better than the others, the voice. When every arm has
+        # videos in the same (fame tier, voice) cells, an arm's score is the equal-weight mean over those cells;
+        # if the cells don't line up, fall back to tier-only, then voice-only, then the raw mean.
+        def cov(v, keys):
+            voice = next((t.split("=", 1)[1] for t in (v.get("tags") or []) if t.startswith("exp:voice=")), None)
+            parts = {"tier": v.get("tier"), "voice": voice}
+            return tuple(parts[k] for k in keys) if all(parts[k] for k in keys) else None
+        for keys in (("tier", "voice"), ("tier",), ("voice",)):
+            cells = None
             for name in names:
-                means = [sum(v[metric] for v in sel_by[name] if v.get("tier") == t) / sum(1 for v in sel_by[name] if v.get("tier") == t) for t in sorted(tiers)]
-                out[name]["score"] = sum(means) / len(means)
-                out[name]["balanced_on"] = sorted(tiers)
+                have = {cov(v, keys) for v in sel_by[name] if cov(v, keys)}
+                cells = have if cells is None else cells & have
+            if cells:
+                for name in names:
+                    means = [sum(v[metric] for v in sel_by[name] if cov(v, keys) == c) / sum(1 for v in sel_by[name] if cov(v, keys) == c)
+                             for c in sorted(cells)]
+                    out[name]["score"] = sum(means) / len(means)
+                    out[name]["balanced_on"] = ["|".join(map(str, c)) for c in sorted(cells)]
+                break
         return out
 
     pool = [v for v in videos if v.get("format") == fmt]
