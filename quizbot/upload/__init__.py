@@ -14,9 +14,10 @@ from googleapiclient.http import MediaFileUpload
 
 from ..models import Episode, RenderResult
 
-# force-ssl is what commentThreads.insert (the first comment) needs. A token granted without it still refreshes
-# fine (google-auth only logs a warning for scopes that were not granted); the comment just stays skipped until
-# the token is re-authorised via reauth.yml.
+# force-ssl is what commentThreads.insert (the first comment) needs. SCOPES is what a *fresh* authorisation asks
+# for; an existing token is always refreshed with the scopes it was actually granted (from token.json) — asking
+# Google to refresh with a scope the token never had fails with invalid_scope and took every upload down for
+# half a day on 2026-11-09. The comment stays skipped until the token is re-authorised via reauth.yml.
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
           "https://www.googleapis.com/auth/youtube",
           "https://www.googleapis.com/auth/youtube.force-ssl"]
@@ -31,7 +32,7 @@ def _creds(settings: Settings, interactive: bool):
     secret_path = settings.root / "config" / "client_secret.json"
     creds = None
     if token_path.exists():
-        creds = Credentials.from_authorized_user_file(str(token_path), SCOPES)
+        creds = Credentials.from_authorized_user_file(str(token_path))      # the token's own granted scopes
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
         token_path.write_text(creds.to_json())
