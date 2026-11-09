@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import traceback
 
@@ -82,6 +83,13 @@ def cmd_run(args, settings: Settings) -> int:
         ep.tags.append("rapid")
     elif str(settings.track_used).lower() in (ep.format, "all", "true"):
         state.mark_used(ep.pack, ep.format, [i.id for i in ep.items], ep.slug)
+    if settings.tts_provider != "dev" and os.environ.get("ELEVENLABS_API_KEY"):
+        from .tts.budget import govern
+        tag = govern(settings, ep)
+        if tag:
+            ep.tags.append(tag)
+            if tag == "voice:fallback-budget":
+                ep.tags = [t if not t.startswith("exp:voice=") else "exp:voice=fallback" for t in ep.tags]
     try:
         tts = TTS(settings)
         result = Renderer(settings, pack, tts).render(ep)

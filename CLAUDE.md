@@ -50,6 +50,8 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
 - Experiments have a `format` (short | rapid | long); rapid-fire has its own queue (`rapidbeat`). Pokémon cries:
   `cry_version` latest|legacy (legacy = original Game Boy/DS cry, Gen 1-5 only); the `cry` A/B tags Gen 6+ as fallback.
 - Rules Ben owns (never change unasked): `youtube_privacy`, `upload`, `max_episodes_per_day` (7 since 2026-11-04), `made_for_kids`.
+- ElevenLabs budget governor (`tts/budget.py`): Shorts switch to coral *before* rendering when credits can't cover
+  them; the long-form gets Liam when the month's surplus covers it (Ben pays Starter 30k/mo since 2026-11-09, wants it used).
 - Every Short gets a first comment ("Drop your score 👇") after upload; needs the `youtube.force-ssl` scope on the token.
 
 ## Operations
