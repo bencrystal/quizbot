@@ -32,7 +32,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: ffmpeg (retried — Ubuntu mirrors drop runs a few times a month)
+        run: for i in 1 2 3; do sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && break || sleep 20; done; ffmpeg -version | head -1
       - run: pip install -r requirements.txt
       # Kokoro (free local TTS) pulls in torch — ~3 minutes per run. Only install it when it is the provider.
       - if: ${{ vars.QUIZBOT_TTS_PROVIDER == 'kokoro' }}
