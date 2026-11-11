@@ -29,6 +29,13 @@ def iso_dur(s: str) -> int:
     return h * 3600 + mi * 60 + se
 
 
+def _group(items, key):
+    out: dict = {}
+    for it in items:
+        out.setdefault(key(it), []).append(it)
+    return out
+
+
 def main() -> None:
     s = Settings.load()
     creds = _creds(s, interactive=False)
@@ -302,6 +309,24 @@ def main() -> None:
             break
     Path("state").mkdir(exist_ok=True)
     Path("state/social.json").write_text(json.dumps(social, indent=1) + "\n")
+
+    # ---- theme fitness (last 30 days, per pack and format): median views of the theme over the pack's median,
+    # clamped 0.4–2.5; the planner multiplies theme weights by it (Pack.pick_theme)
+    import statistics as _stat
+    import datetime as _dt
+    cutoff = (_dt.datetime.utcnow() - _dt.timedelta(days=30)).strftime("%Y-%m-%d")
+    themes: dict = {}
+    for (pk, fmt), rows in _group(videos.values(), lambda v: (v["pack"], v["format"])).items():
+        rows = [v for v in rows if v["published"] >= cutoff and v.get("theme") and v["views"]]
+        if len(rows) < 4:
+            continue
+        base = _stat.median(v["views"] for v in rows)
+        out = {}
+        for th, tv in _group(rows, lambda v: v["theme"]).items():
+            med = _stat.median(v["views"] for v in tv)
+            out[th] = {"n": len(tv), "median_views": med, "fitness": round(max(0.4, min(2.5, med / base)) if base else 1.0, 2)}
+        themes.setdefault(pk, {})[fmt] = out
+    Path("state/themes.json").write_text(json.dumps(themes, indent=1, ensure_ascii=False) + "\n")
 
     # ---- experiments: judge the active one from retention data, persist the decision
     from quizbot.experiments import judge, load_config

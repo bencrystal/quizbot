@@ -45,11 +45,25 @@ class Pack(ABC):
         """All items that fit a theme (may be large). Fetching/caching happens here."""
 
     def pick_theme(self, recent: list[str], rng: random.Random, mechanic: str = "ladder") -> dict:
-        """Random theme not used recently (weighted; rapid_only themes only for rapid-fire). Planner may override."""
+        """Random theme not used recently (weighted; rapid_only themes only for rapid-fire). Planner may override.
+        Weights are the theme's base weight times its fitness: median views of its recent videos relative to the
+        pack's median for that format (state/themes.json, written nightly by the analytics job), clamped to
+        0.4–2.5 so a cold theme is still drawn and a hot one can't take over. Themes with no data run at 1.0,
+        so a new theme — or a new pack — starts at average and earns its place (Ben, 2026-11-11)."""
         pool = [t for t in self.themes() if (mechanic == "rapid") or not t.get("rapid_only")]
         options = [t for t in pool if t["label"] not in recent] or pool
-        weights = [int(t.get("weight", 1)) for t in options]
+        fit = self.theme_fitness("rapid" if mechanic == "rapid" else "short")
+        weights = [int(t.get("weight", 1)) * fit.get(t["label"], 1.0) for t in options]
         return rng.choices(options, weights=weights, k=1)[0]
+
+    def theme_fitness(self, fmt: str) -> dict[str, float]:
+        import json
+        try:
+            data = json.loads((self.settings.root / "state" / "themes.json").read_text())
+            rows = data.get(self.name, {}).get(fmt, {})
+        except Exception:
+            return {}
+        return {label: float(r["fitness"]) for label, r in rows.items() if r.get("n", 0) >= 2}
 
     def famous(self, item: QuizItem) -> bool:   # packs override to define their "well-known" subset
         return True

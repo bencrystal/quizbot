@@ -80,24 +80,48 @@ def assign(settings, state, fmt: str = "short", pack: str | None = None) -> tupl
     n = state.count_episodes(fmt, pack=pack)
     ex = active_experiment(cfg, st, fmt)
     exp_id = variant = None
-    stride = 1
     if ex:
-        names = list(ex["variants"])
-        variant = names[n % len(names)]
+        variant = _allocate(ex, st, n, pack)
         _apply(settings, ex["variants"][variant])
         tags.append(f"exp:{ex['id']}={variant}")
-        exp_id, stride = ex["id"], len(names)
-    # parallel experiments: balanced blocks (every variant once per len(variants) consecutive episodes) in an
-    # order seeded per experiment and block, so each test is independent of the others and of the sequential
-    # cycle. (The earlier nested strides made the third parallel test flip only every 24 Shorts — i.e. by week.)
-    import random as _random
+        exp_id = ex["id"]
     for pex in parallel_experiments(cfg, st, fmt):
-        pnames = list(pex["variants"])
-        block = _random.Random(f"{pex['id']}:{pack}:{n // len(pnames)}").sample(pnames, len(pnames))
-        pv = block[n % len(pnames)]
+        pv = _allocate(pex, st, n, pack)
         _apply(settings, pex["variants"][pv])
         tags.append(f"exp:{pex['id']}={pv}")
     return exp_id, variant, tags
+
+
+EXPLORE = 0.30          # share of episodes dealt out evenly regardless of the standings (keeps every arm reaching min_n)
+PRIOR_SD = 12.0         # spread of avg-% -viewed between arms, as a prior; views7d arms are scored on log views
+
+
+def _allocate(ex: dict, st: dict, n: int, pack: str | None) -> str:
+    """Thompson sampling over the arms (Ben, 2026-11-11: selection pressure while a test runs). Until every arm
+    has three judged videos the arms alternate in balanced seeded blocks; after that, 70 % of episodes go to
+    the arm most likely to be best (a draw from each arm's posterior, highest wins) and 30 % are dealt out
+    evenly so a trailing arm still reaches min_n and the judge can rule. Seeded per experiment/pack/episode,
+    so a re-run of the same episode makes the same choice."""
+    import math
+    import random as _random
+    names = list(ex["variants"])
+    rng = _random.Random(f"{ex['id']}:{pack}:{n}")
+    res = (st.get("results") or {}).get(ex["id"]) or {}
+    stats = {a: res.get(a) or {} for a in names}
+    warm = all((stats[a].get("n") or 0) >= 3 and stats[a].get("score") is not None for a in names)
+    if not warm or rng.random() < EXPLORE:
+        block = _random.Random(f"{ex['id']}:{pack}:{n // len(names)}").sample(names, len(names))
+        return block[n % len(names)]
+    logscale = ex.get("metric") == "views7d"
+    draws = {}
+    for a in names:
+        mu, k = float(stats[a]["score"]), int(stats[a]["n"])
+        if logscale:
+            mu, sd = math.log(max(mu, 1.0)), 0.9 / math.sqrt(k)
+        else:
+            sd = PRIOR_SD / math.sqrt(k)
+        draws[a] = rng.gauss(mu, sd)
+    return max(names, key=lambda a: draws[a])
 
 
 def judge(videos: list[dict]) -> dict:

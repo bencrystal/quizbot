@@ -51,6 +51,9 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
   Points chip is a ladder of dots. Rapid-fire tests: `rapidbeat`, `rapidlen` (5 vs 7, judged on views7d), `rapidtail`
   (spoken vs loop-ready ending). Theme `then-now` plays the original cry, then today's (`meta.alt_audio`).
   `state/social.json` (analytics job) feeds a "only N % got 5/5 last time" opener once a rapid-fire has ≥10 score comments.
+- Allocation is Thompson sampling (`experiments._allocate`): balanced until 3 per arm, then 70 % to the likely best
+  arm, 30 % dealt evenly. Theme weights × fitness from `state/themes.json` (nightly; median views vs pack median,
+  0.4–2.5; unknown = 1.0) — both are pack-agnostic, so new packs inherit them.
 - Experiments have a `format` (short | rapid | long); rapid-fire has its own queue (`rapidbeat`). Pokémon cries:
   `cry_version` latest|legacy (legacy = original Game Boy/DS cry, Gen 1-5 only); the `cry` A/B tags Gen 6+ as fallback.
 - Rules Ben owns (never change unasked): `youtube_privacy`, `upload`, `max_episodes_per_day` (7 since 2026-11-04), `made_for_kids`.
