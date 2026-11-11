@@ -178,6 +178,12 @@ def _judge_one(cfg: dict, st: dict, ex: dict, videos: list[dict]) -> dict:
     ranked = sorted(names, key=lambda n: (rel[n], rows[n]["views"] or 0), reverse=True)
     best, second = ranked[0], ranked[1]
     gap = (rel[best] - rel[second]) / max(rel[second], 1e-9)
+    # a retention winner must not be bleeding reach: if it trails the runner-up by >20 % on views, keep testing
+    # (Shorts distribution is driven by swipe-away/completion, but a shorter video can win % viewed while
+    # reaching fewer people — Ben, 2026-11-11)
+    if metric == "avp" and (rows[best]["views"] or 0) < 0.8 * (rows[second]["views"] or 0) and not all(
+            min(x["n"] for x in by_pack[pk].values()) >= max_n for pk in ready):
+        return st
     # a winner must also lead inside every pack (no pack-specific reversal), unless max_n has been reached
     agree = all(by_pack[pk][best]["score"] >= max(by_pack[pk][n]["score"] for n in names if n != best) for pk in ready)
     maxed = all(min(x["n"] for x in by_pack[pk].values()) >= max_n for pk in ready)

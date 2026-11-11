@@ -47,6 +47,10 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
   Shorts cannot have custom thumbnails outside the Partner Program — YouTube picks a frame at ~25/50/75 %, so the
   reveal must stay in the last ~22 % of a Short (sting → sound on the silhouette → art + name). Keep it that way.
   The silhouette is that final beat only (morphs in under the sting, ~2 s before the art), never a hint.
+- Series numbering: titles carry `· Ep. N` (single Shorts) / `· Rapid-fire #N`, the eyebrow too (`meta.episode_no`).
+  Points chip is a ladder of dots. Rapid-fire tests: `rapidbeat`, `rapidlen` (5 vs 7, judged on views7d), `rapidtail`
+  (spoken vs loop-ready ending). Theme `then-now` plays the original cry, then today's (`meta.alt_audio`).
+  `state/social.json` (analytics job) feeds a "only N % got 5/5 last time" opener once a rapid-fire has ≥10 score comments.
 - Experiments have a `format` (short | rapid | long); rapid-fire has its own queue (`rapidbeat`). Pokémon cries:
   `cry_version` latest|legacy (legacy = original Game Boy/DS cry, Gen 1-5 only); the `cry` A/B tags Gen 6+ as fallback.
 - Rules Ben owns (never change unasked): `youtube_privacy`, `upload`, `max_episodes_per_day` (7 since 2026-11-04), `made_for_kids`.

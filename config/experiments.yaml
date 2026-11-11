@@ -6,7 +6,7 @@
 # Decision rule (metric = average % viewed, the swipe-away signal; views are a tie-breaker):
 #   at n >= min_n per side: winner if the best variant leads by >= min_lead (relative) on % viewed;
 #   otherwise keep running until n >= max_n per side, then take the leader on % viewed, views on a tie.
-min_n: 4
+min_n: 8                     # per arm, per live pack (was 4: snappy decided on four videos a side)
 max_n: 8
 min_lead: 0.10
 
@@ -47,6 +47,21 @@ experiments:
       kinetic: { captions: kinetic }
       static:  { captions: static }
 
+  # From the 2026-11-04 corpus study, A/B'd rather than shipped (Ben, 2026-11-11)
+  - id: series
+    parallel: true
+    question: "Episode numbers in the title and on the eyebrow, or plain?"
+    variants:
+      numbered: { series_numbers: "true" }
+      plain:    { series_numbers: "false" }
+
+  - id: ladder
+    parallel: true
+    question: "Points chip as a ladder of dots, or the plain number?"
+    variants:
+      dots: { points_ladder: "true" }
+      chip: { points_ladder: "false" }
+
   - id: cry
     # parallel since 2026-11-02 ("that's not their sounds", 2026-10-29): the original Game Boy/DS cry or the
     # current one. Gen 6+ has no original, so those Shorts fall out of the sample (exp:cry=fallback).
@@ -67,6 +82,30 @@ experiments:
       once:  { rapid_replay: "false", rapid_pills: "false" }
       twice: { rapid_replay: "true",  rapid_pills: "true" }
 
+  # Rapid-fire: five or seven sounds (~35 s vs ~45 s). Judged on REACH (7-day views), not % viewed, because
+  # % viewed mechanically punishes the longer video; the dashboard still shows avp so a retention collapse is visible.
+  - id: rapidlen
+    format: rapid
+    parallel: true
+    metric: views7d
+    min_n: 8
+    max_n: 14
+    question: "Rapid-fire: five sounds (~35 s) or seven (~45 s)? Judged on 7-day views."
+    variants:
+      five:  { rapid_rounds: 5 }
+      seven: { rapid_rounds: 7 }
+
+  # Rapid-fire ending: spoken score ask + pause, or caption-only ending on the reveal so a replay loops cleanly
+  - id: rapidtail
+    format: rapid
+    parallel: true
+    min_n: 8
+    max_n: 14
+    question: "Rapid-fire: spoken 'how many did you get' or a loop-ready caption-only ending?"
+    variants:
+      spoken: { rapid_tail: spoken }
+      loop:   { rapid_tail: loop }
+
   - id: hints
     question: "Two hints or just the Pokédex/field-guide hint?"
     variants:
@@ -78,6 +117,7 @@ experiments:
     variants:
       question:  { title_style: question }
       challenge: { title_style: challenge }
+      only1:     { title_style: only1 }      # "Only 1% of fans can name…" (corpus study 2026-11-04: claim-of-difficulty titles dominate)
 
   - id: think
     question: "2.5 s or 2.0 s of thinking time per stage?"

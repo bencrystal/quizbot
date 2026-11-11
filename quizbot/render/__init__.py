@@ -337,10 +337,12 @@ class Renderer:
         T.mark("tint")                       # type colour arrives with the silhouette, so the lit disc is the type's, not white
         if it.shape_hint and it.reveal_image:
             T.mark("shape", dur=0.5)
-        if str(self.s.rapid_replay).lower() in ("1", "true", "yes"):   # the sound once more, on the silhouette
+        alt = it.meta.get("alt_audio")                                   # Then & Now: today's cry after the original
+        if alt or str(self.s.rapid_replay).lower() in ("1", "true", "yes"):   # the sound once more, on the silhouette
+            snd2 = self.norm(Path(alt), work) if alt else snd
             T.add(None, 0.3)
             T.mark("status", text="Listen")
-            T.add(snd, snd_d, "sound")
+            T.add(snd2, self.dur(snd2), "sound", alt=bool(alt))
             T.add(None, 0.15)
         else:
             T.add(None, 0.5)
@@ -349,8 +351,13 @@ class Renderer:
         T.add(None, 0.5 if i < total else 0.3)
         if i == total:
             T.mark("caption", text=ep.outro)
-            say_part(ep.outro)
-            T.add(None, 0.8)
+            if str(self.s.rapid_tail) == "loop":
+                # loop-ready: the score ask is on screen only and the video ends on the reveal, so a replay runs
+                # straight back into "Name them all!" with no dead air (rapidtail A/B)
+                T.add(None, 1.1)
+            else:
+                say_part(ep.outro)
+                T.add(None, 0.8)
         return T
 
     def build_card(self, text: str, title: str, sub: str, foot: str, lead: float, tail: float) -> Timeline:
@@ -378,7 +385,9 @@ class Renderer:
                   strip=([x.reveal_image for x in self._ep.items] if rapid and it else None), strip_i=i,
                   # rapid-fire: silent type pills under the disc while thinking (no voice-over, no time cost)
                   pills=(list(it.meta.get("type_names") or []) if rapid and it and str(self.s.rapid_pills).lower() in ("1", "true", "yes") else None),
-                  title=(self.pack.display_name.upper() if total == 1 or (rapid and i == 1) else ""),
+                  title=((f"RAPID-FIRE #{self._ep.meta['episode_no']}" if rapid and self._ep.meta.get("episode_no")
+                          else self.pack.display_name.upper() + (f" · EP. {self._ep.meta['episode_no']}" if self._ep.meta.get("episode_no") else ""))
+                         if total == 1 or (rapid and i == 1) else ""),
                   rule=(f"{total} sounds. Name them all." if rapid else "Name it from the sound. Every hint costs a point."))
         wave = np.zeros(28)
         for ev in T.events:
@@ -418,7 +427,7 @@ class Renderer:
         # waveform: scrolling envelope of whichever sound is playing (or decaying silence)
         for ev in T.events:
             if ev.kind == "sound" and ev.at - 0.6 <= t <= ev.at + ev.dur + 0.6:
-                env = self.envelope(it.prompt_audio, work)
+                env = self.envelope(Path(it.meta["alt_audio"]) if ev.data.get("alt") else it.prompt_audio, work)
                 for k in range(28):
                     tt = t - ev.at - abs(k - 13.5) * 0.03     # radiates outward from the centre
                     idx = int(tt * 50)
@@ -486,10 +495,10 @@ class Renderer:
         total = len(ep.items)
         short = ep.format == "short"
 
+        self._ep = ep
         if not short:
             T = self.build_card(ep.intro, self.pack.display_name, ep.theme, self.s.channel_name, 0.4, 0.5)
             segs.append(self.encode(T, None, 0, total, work, work / "00-intro.mp4"))
-        self._ep = ep
         for i, it in enumerate(ep.items, 1):
             print(f"[render] round {i}/{total}: {it.answer}")
             if ep.mechanic == "rapid":
