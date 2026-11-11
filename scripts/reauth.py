@@ -26,7 +26,11 @@ SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
 
 def flow():
     from google_auth_oauthlib.flow import Flow
-    f = Flow.from_client_secrets_file(str(SECRET), scopes=SCOPES, redirect_uri=REDIRECT)
+    # The link and the exchange run in different jobs, so PKCE's per-run code verifier (on by default in newer
+    # google-auth-oauthlib) can't be carried across — the exchange failed with "Missing code verifier" on
+    # 2026-11-11. Google does not require PKCE for installed-app clients, so it is off here.
+    f = Flow.from_client_secrets_file(str(SECRET), scopes=SCOPES, redirect_uri=REDIRECT, autogenerate_code_verifier=False)
+    f.code_verifier = None
     return f
 
 

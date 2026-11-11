@@ -38,7 +38,9 @@ jobs:
       - name: exchange code
         if: github.event.inputs.code != ''
         run: |
+          set -o pipefail
           python scripts/reauth.py exchange '${{ github.event.inputs.code }}' | tee state/reauth.log
+          test -s state/youtube_token.json
           echo "## $(cat state/reauth.log)" >> $GITHUB_STEP_SUMMARY
           echo "The token is stored in the Actions cache; episode runs pick it up automatically." >> $GITHUB_STEP_SUMMARY
       - uses: actions/cache/save@v4
