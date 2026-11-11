@@ -404,8 +404,8 @@
   "thumb": {
    "sil": {
     "n": 2,
-    "avp": 26.7,
-    "views": 134.5,
+    "avp": 26.9,
+    "views": 135.5,
     "subs": 0.0,
     "metric": "views7d",
     "score": 128.5,
@@ -422,8 +422,8 @@
    },
    "art": {
     "n": 4,
-    "avp": 24.725,
-    "views": 7.75,
+    "avp": 26.55,
+    "views": 8.5,
     "subs": 0.0,
     "metric": "views7d",
     "score": 6.5,
@@ -457,12 +457,12 @@
   },
   "captions": {
    "kinetic": {
-    "n": 13,
-    "avp": 63.96153846153846,
-    "views": 402.46153846153845,
-    "subs": 0.38461538461538464,
+    "n": 16,
+    "avp": 65.9375,
+    "views": 384.1875,
+    "subs": 0.375,
     "metric": "avp",
-    "score": 65.00666666666667,
+    "score": 67.0404761904762,
     "balanced_on": [
      "deep|liam*",
      "known|liam*",
@@ -470,19 +470,18 @@
     ],
     "packs": {
      "pokemon": {
-      "n": 13,
-      "score": 65.00666666666667
+      "n": 16,
+      "score": 67.0404761904762
      }
-    },
-    "rel": 0.972
+    }
    },
    "static": {
     "n": 10,
-    "avp": 67.91,
-    "views": 266.0,
-    "subs": 0.2,
+    "avp": 68.34,
+    "views": 281.4,
+    "subs": 0.3,
     "metric": "avp",
-    "score": 68.76,
+    "score": 69.30333333333333,
     "balanced_on": [
      "deep|liam*",
      "known|liam*",
@@ -491,10 +490,9 @@
     "packs": {
      "pokemon": {
       "n": 10,
-      "score": 68.76
+      "score": 69.30333333333333
      }
-    },
-    "rel": 1.028
+    }
    }
   },
   "snappy": {
@@ -537,36 +535,38 @@
   },
   "cry": {
    "modern": {
-    "n": 11,
-    "avp": 70.19090909090909,
-    "views": 443.6363636363636,
-    "subs": 0.45454545454545453,
+    "n": 12,
+    "avp": 70.25833333333334,
+    "views": 439.4166666666667,
+    "subs": 0.5,
     "metric": "avp",
-    "score": 68.71666666666667,
+    "score": 70.02142857142857,
     "balanced_on": [
+     "deep|liam*",
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 11,
-      "score": 68.71666666666667
+      "n": 12,
+      "score": 70.02142857142857
      }
     }
    },
    "og": {
-    "n": 4,
-    "avp": 71.425,
-    "views": 405.25,
-    "subs": 0.25,
+    "n": 6,
+    "avp": 73.66666666666667,
+    "views": 380.1666666666667,
+    "subs": 0.3333333333333333,
     "metric": "avp",
-    "score": 71.425,
+    "score": 74.16,
     "balanced_on": [
+     "deep|liam*",
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 4,
-      "score": 71.425
+      "n": 6,
+      "score": 74.16
      }
     }
    }
@@ -619,9 +619,99 @@
     "subs": null,
     "metric": "avp",
     "score": null,
-    "packs": {}
+    "packs": {
+     "pokemon": {
+      "n": 0,
+      "score": null
+     }
+    }
    },
    "subscribe": {
+    "n": 1,
+    "avp": 74.9,
+    "views": 360.0,
+    "subs": 1.0,
+    "metric": "avp",
+    "score": 74.9,
+    "packs": {
+     "pokemon": {
+      "n": 1,
+      "score": 74.9
+     }
+    }
+   }
+  },
+  "series": {
+   "numbered": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "avp",
+    "score": null,
+    "packs": {}
+   },
+   "plain": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "avp",
+    "score": null,
+    "packs": {}
+   }
+  },
+  "ladder": {
+   "dots": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "avp",
+    "score": null,
+    "packs": {}
+   },
+   "chip": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "avp",
+    "score": null,
+    "packs": {}
+   }
+  },
+  "rapidlen": {
+   "five": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "views7d",
+    "score": null,
+    "packs": {}
+   },
+   "seven": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "views7d",
+    "score": null,
+    "packs": {}
+   }
+  },
+  "rapidtail": {
+   "spoken": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "avp",
+    "score": null,
+    "packs": {}
+   },
+   "loop": {
     "n": 0,
     "avp": null,
     "views": null,
