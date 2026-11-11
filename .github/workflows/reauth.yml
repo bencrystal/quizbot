@@ -25,6 +25,11 @@ jobs:
         if: github.event.inputs.code == ''
         run: |
           URL=$(python scripts/reauth.py url)
+          echo "::notice title=Google consent link (open, approve, copy the URL you land on)::$URL"
+          echo ""
+          echo "=================== CONSENT LINK ==================="
+          echo "$URL"
+          echo "===================================================="
           echo "## Open this link, approve, then copy the URL of the page you land on" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "$URL" >> $GITHUB_STEP_SUMMARY
