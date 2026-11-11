@@ -6,7 +6,7 @@
 # Decision rule (metric = average % viewed, the swipe-away signal; views are a tie-breaker):
 #   at n >= min_n per side: winner if the best variant leads by >= min_lead (relative) on % viewed;
 #   otherwise keep running until n >= max_n per side, then take the leader on % viewed, views on a tie.
-min_n: 4
+min_n: 8                     # per arm, per live pack (was 4: snappy decided on four videos a side)
 max_n: 8
 min_lead: 0.10
 
@@ -46,6 +46,21 @@ experiments:
     variants:
       kinetic: { captions: kinetic }
       static:  { captions: static }
+
+  # From the 2026-11-04 corpus study, A/B'd rather than shipped (Ben, 2026-11-11)
+  - id: series
+    parallel: true
+    question: "Episode numbers in the title and on the eyebrow, or plain?"
+    variants:
+      numbered: { series_numbers: "true" }
+      plain:    { series_numbers: "false" }
+
+  - id: ladder
+    parallel: true
+    question: "Points chip as a ladder of dots, or the plain number?"
+    variants:
+      dots: { points_ladder: "true" }
+      chip: { points_ladder: "false" }
 
   - id: cry
     # parallel since 2026-11-02 ("that's not their sounds", 2026-10-29): the original Game Boy/DS cry or the

@@ -58,7 +58,7 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     ep = _template_episode(pack, theme, items, slug, settings)
     # Series numbering (corpus study 2026-11-04: numbered episodes outperform one-offs). Separate counters for
     # single Shorts, rapid-fire and long-form, per pack.
-    if settings.format == "short":
+    if settings.format == "short" and str(settings.series_numbers).lower() in ("1", "true", "yes"):
         if settings.mechanic == "rapid":
             no = state.count_episodes("rapid", pack=pack.name) + 1
             ep.title = ep.title.replace(" #shorts", f" · Rapid-fire #{no} #shorts")

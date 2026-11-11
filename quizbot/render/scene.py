@@ -346,11 +346,11 @@ class Scene:
             label = f"{st['points']} PT{'S' if st['points'] != 1 else ''}"
             pop = 1 + 0.25 * math.sin(math.pi * ease(st["points_age"] / 0.35)) if st["points_age"] < 0.35 else 1
             f = self.font(int(36 * pop))
-            total_pts = max(int(st.get("stages") or 1), st["points"])
+            total_pts = max(int(st.get("stages") or 1), st["points"]) if str(self.s.points_ladder).lower() in ("1", "true", "yes") else 0
             r = int(9 * self.u * pop)
             gap = int(10 * self.u)
-            dots_w = total_pts * 2 * r + (total_pts - 1) * gap
-            w = f.getlength(label) + int(44 * self.u * pop) + dots_w + int(14 * self.u)
+            dots_w = (total_pts * 2 * r + (total_pts - 1) * gap) if total_pts else 0
+            w = f.getlength(label) + int(44 * self.u * pop) + dots_w + (int(14 * self.u) if total_pts else 0)
             h = int(62 * self.u * pop)
             d.rounded_rectangle((right - w, hy - h // 2, right, hy + h // 2), radius=h // 2, fill=accent)
             x0 = right - w + int(22 * self.u * pop) + r
@@ -360,7 +360,7 @@ class Scene:
                     d.ellipse((cx - r, hy - r, cx + r, hy + r), fill=bg)
                 else:
                     d.ellipse((cx - r, hy - r, cx + r, hy + r), outline=bg, width=2)
-            self.text(d, (right - (w - dots_w - int(14 * self.u)) / 2, hy), label, int(36 * pop), fill=bg)
+            self.text(d, (right - (w - dots_w - (int(14 * self.u) if total_pts else 0)) / 2, hy), label, int(36 * pop), fill=bg)
 
         # rapid-fire strip: one small disc per sound, under the header — answered ones show the art, the current
         # one is ringed in the accent, the rest are "?". Any frame then reads as "five-question quiz, n done".
