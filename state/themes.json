@@ -1,0 +1,264 @@
+{
+ "pokemon": {
+  "rapid": {
+   "Ghost-type Pokémon": {
+    "n": 3,
+    "median_views": 276,
+    "fitness": 0.93
+   },
+   "Water-type Pokémon": {
+    "n": 4,
+    "median_views": 177.5,
+    "fitness": 0.6
+   },
+   "Starter Pokémon": {
+    "n": 3,
+    "median_views": 136,
+    "fitness": 0.46
+   },
+   "Then & Now cries": {
+    "n": 1,
+    "median_views": 190,
+    "fitness": 0.64
+   },
+   "Generation 1": {
+    "n": 4,
+    "median_views": 202.0,
+    "fitness": 0.68
+   },
+   "Electric-type Pokémon": {
+    "n": 2,
+    "median_views": 346.5,
+    "fitness": 1.17
+   },
+   "Pokémon Mix": {
+    "n": 5,
+    "median_views": 293,
+    "fitness": 0.99
+   },
+   "Bug-type Pokémon": {
+    "n": 3,
+    "median_views": 297,
+    "fitness": 1.0
+   },
+   "Kanto Gym Leaders' Pokémon": {
+    "n": 3,
+    "median_views": 364,
+    "fitness": 1.23
+   },
+   "Original Game Boy cries": {
+    "n": 2,
+    "median_views": 197.0,
+    "fitness": 0.66
+   },
+   "Legendary Pokémon": {
+    "n": 2,
+    "median_views": 472.0,
+    "fitness": 1.59
+   },
+   "Generation 2": {
+    "n": 2,
+    "median_views": 572.0,
+    "fitness": 1.93
+   },
+   "Generation 3": {
+    "n": 2,
+    "median_views": 439.5,
+    "fitness": 1.48
+   },
+   "Ash's Pokémon": {
+    "n": 1,
+    "median_views": 403,
+    "fitness": 1.36
+   },
+   "Psychic-type Pokémon": {
+    "n": 1,
+    "median_views": 375,
+    "fitness": 1.26
+   },
+   "Fire-type Pokémon": {
+    "n": 1,
+    "median_views": 402,
+    "fitness": 1.35
+   },
+   "Dragon-type Pokémon": {
+    "n": 1,
+    "median_views": 858,
+    "fitness": 2.5
+   },
+   "Generation 4": {
+    "n": 1,
+    "median_views": 154,
+    "fitness": 0.52
+   }
+  },
+  "short": {
+   "Psychic-type Pokémon": {
+    "n": 4,
+    "median_views": 420.5,
+    "fitness": 1.51
+   },
+   "Grass-type Pokémon": {
+    "n": 8,
+    "median_views": 417.5,
+    "fitness": 1.5
+   },
+   "Generation 3": {
+    "n": 5,
+    "median_views": 124,
+    "fitness": 0.44
+   },
+   "Bug-type Pokémon": {
+    "n": 5,
+    "median_views": 316,
+    "fitness": 1.13
+   },
+   "Dragon-type Pokémon": {
+    "n": 5,
+    "median_views": 580,
+    "fitness": 2.08
+   },
+   "Generation 4": {
+    "n": 6,
+    "median_views": 392.5,
+    "fitness": 1.41
+   },
+   "Legendary Pokémon": {
+    "n": 3,
+    "median_views": 226,
+    "fitness": 0.81
+   },
+   "Generation 2": {
+    "n": 5,
+    "median_views": 97,
+    "fitness": 0.4
+   },
+   "Ghost-type Pokémon": {
+    "n": 7,
+    "median_views": 371,
+    "fitness": 1.33
+   },
+   "Electric-type Pokémon": {
+    "n": 5,
+    "median_views": 303,
+    "fitness": 1.09
+   },
+   "Fire-type Pokémon": {
+    "n": 6,
+    "median_views": 501.0,
+    "fitness": 1.8
+   },
+   "Starter Pokémon": {
+    "n": 3,
+    "median_views": 133,
+    "fitness": 0.48
+   },
+   "Generation 1": {
+    "n": 2,
+    "median_views": 195.5,
+    "fitness": 0.7
+   },
+   "Water-type Pokémon": {
+    "n": 1,
+    "median_views": 159,
+    "fitness": 0.57
+   }
+  },
+  "long": {
+   "Fire-type Pokémon": {
+    "n": 1,
+    "median_views": 34,
+    "fitness": 2.5
+   },
+   "Psychic-type Pokémon": {
+    "n": 1,
+    "median_views": 20,
+    "fitness": 1.48
+   },
+   "Generation 4": {
+    "n": 1,
+    "median_views": 6,
+    "fitness": 0.44
+   },
+   "Generation 1": {
+    "n": 2,
+    "median_views": 136.0,
+    "fitness": 2.5
+   },
+   "Electric-type Pokémon": {
+    "n": 1,
+    "median_views": 2,
+    "fitness": 0.4
+   }
+  }
+ },
+ "birds": {
+  "short": {
+   "Birds of Prey": {
+    "n": 2,
+    "median_views": 51.5,
+    "fitness": 0.6
+   },
+   "Warblers and Vireos": {
+    "n": 1,
+    "median_views": 55,
+    "fitness": 0.64
+   },
+   "Birds of the United States": {
+    "n": 1,
+    "median_views": 204,
+    "fitness": 2.37
+   },
+   "Crows and Jays": {
+    "n": 2,
+    "median_views": 79.5,
+    "fitness": 0.92
+   },
+   "Backyard Birds": {
+    "n": 2,
+    "median_views": 341.0,
+    "fitness": 2.5
+   },
+   "Birds of the Night": {
+    "n": 1,
+    "median_views": 122,
+    "fitness": 1.42
+   },
+   "Thrushes and Mimics": {
+    "n": 1,
+    "median_views": 85,
+    "fitness": 0.99
+   },
+   "Woodpeckers": {
+    "n": 1,
+    "median_views": 115,
+    "fitness": 1.34
+   },
+   "Eastern US Birds": {
+    "n": 1,
+    "median_views": 138,
+    "fitness": 1.6
+   },
+   "Birds of the Plains": {
+    "n": 1,
+    "median_views": 65,
+    "fitness": 0.76
+   },
+   "Geese and Swans announce exp:open=announce exp:voice=coral thumb:sil": {
+    "n": 1,
+    "median_views": 166,
+    "fitness": 1.93
+   },
+   "Shorebirds and Waders": {
+    "n": 1,
+    "median_views": 56,
+    "fitness": 0.65
+   },
+   "Owls": {
+    "n": 1,
+    "median_views": 23,
+    "fitness": 0.4
+   }
+  }
+ }
+}
