@@ -211,14 +211,22 @@ def _judge_one(cfg: dict, st: dict, ex: dict, videos: list[dict]) -> dict:
     # a winner must also lead inside every pack (no pack-specific reversal), unless max_n has been reached
     agree = all(by_pack[pk][best]["score"] >= max(by_pack[pk][n]["score"] for n in names if n != best) for pk in ready)
     maxed = all(min(x["n"] for x in by_pack[pk].values()) >= max_n for pk in ready)
-    decided = (gap >= lead and agree) or maxed
+    clear = gap >= lead and agree
+    bleeding = metric == "avp" and (rows[best]["views"] or 0) < 0.8 * (rows[second]["views"] or 0)
+    decided = clear or maxed
     for name in names:
         rows[name]["rel"] = round(rel[name], 3)
     if decided:
-        st["decided"][ex["id"]] = best
-        st["log"].append({"when": dt.date.today().isoformat(), "experiment": ex["id"], "winner": best, "rows": rows,
+        # At max_n without a clear lead (or with the leader trailing on reach) the honest result is a tie, and a
+        # tie keeps the incumbent — the first-listed variant, which is the baseline the test started from — rather
+        # than crowning a 3 % leader (captions, 2026-11-13: static "won" 68.6 vs 66.9 while reaching 34 % fewer).
+        winner = best if (clear and not bleeding) or (maxed and not bleeding and gap >= lead / 2) else names[0]
+        st["decided"][ex["id"]] = winner
+        st["log"].append({"when": dt.date.today().isoformat(), "experiment": ex["id"], "winner": winner, "rows": rows,
                           "reason": (f"lead {gap:.0%} on {metric}, pack-adjusted, leading in every pack ({', '.join(ready)})"
-                                     if gap >= lead and agree else f"max_n reached in every pack; leader by pack-adjusted {metric}")})
+                                     if winner == best and clear else
+                                     f"max_n reached; {best} leads by {gap:.0%} on {metric}" + (", trailing on views" if bleeding else "")
+                                     + (f" — kept the incumbent {winner}" if winner != best else " — close enough to call"))})
         nxt = active_experiment(cfg, st, "short")
         st["active"] = nxt["id"] if nxt else None
     return st
