@@ -1,15 +1,20 @@
 {
  "pokemon": {
   "rapid": {
+   "Fire-type Pokémon": {
+    "n": 2,
+    "median_views": 340.0,
+    "fitness": 1.14
+   },
    "Ghost-type Pokémon": {
     "n": 3,
-    "median_views": 276,
-    "fitness": 0.93
+    "median_views": 283,
+    "fitness": 0.95
    },
    "Water-type Pokémon": {
     "n": 4,
-    "median_views": 177.5,
-    "fitness": 0.6
+    "median_views": 221.5,
+    "fitness": 0.75
    },
    "Starter Pokémon": {
     "n": 3,
@@ -18,13 +23,13 @@
    },
    "Then & Now cries": {
     "n": 1,
-    "median_views": 190,
-    "fitness": 0.64
+    "median_views": 195,
+    "fitness": 0.66
    },
    "Generation 1": {
     "n": 4,
-    "median_views": 202.0,
-    "fitness": 0.68
+    "median_views": 218.5,
+    "fitness": 0.74
    },
    "Electric-type Pokémon": {
     "n": 2,
@@ -76,11 +81,6 @@
     "median_views": 375,
     "fitness": 1.26
    },
-   "Fire-type Pokémon": {
-    "n": 1,
-    "median_views": 402,
-    "fitness": 1.35
-   },
    "Dragon-type Pokémon": {
     "n": 1,
     "median_views": 858,
@@ -95,8 +95,8 @@
   "short": {
    "Psychic-type Pokémon": {
     "n": 4,
-    "median_views": 420.5,
-    "fitness": 1.51
+    "median_views": 612.0,
+    "fitness": 2.19
    },
    "Grass-type Pokémon": {
     "n": 8,
@@ -105,8 +105,8 @@
    },
    "Generation 3": {
     "n": 5,
-    "median_views": 124,
-    "fitness": 0.44
+    "median_views": 136,
+    "fitness": 0.49
    },
    "Bug-type Pokémon": {
     "n": 5,
