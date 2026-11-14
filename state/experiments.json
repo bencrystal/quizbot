@@ -471,8 +471,8 @@
    },
    "art": {
     "n": 4,
-    "avp": 26.55,
-    "views": 8.5,
+    "avp": 27.650000000000002,
+    "views": 8.75,
     "subs": 0.0,
     "metric": "views7d",
     "score": 6.5,
@@ -586,42 +586,42 @@
   },
   "cry": {
    "modern": {
-    "n": 13,
-    "avp": 70.66923076923078,
-    "views": 430.53846153846155,
-    "subs": 0.6153846153846154,
+    "n": 14,
+    "avp": 71.32857142857144,
+    "views": 429.2142857142857,
+    "subs": 0.6428571428571429,
     "metric": "avp",
-    "score": 70.475,
+    "score": 71.47708333333334,
     "balanced_on": [
      "deep|liam*",
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 13,
-      "score": 70.475
+      "n": 14,
+      "score": 71.47708333333334
      }
     },
-    "rel": 0.985
+    "rel": 0.994
    },
    "og": {
-    "n": 8,
-    "avp": 72.8625,
-    "views": 416.375,
-    "subs": 1.0,
+    "n": 10,
+    "avp": 72.77000000000001,
+    "views": 443.0,
+    "subs": 0.9,
     "metric": "avp",
-    "score": 72.67666666666668,
+    "score": 72.38809523809525,
     "balanced_on": [
      "deep|liam*",
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 8,
-      "score": 72.67666666666668
+      "n": 10,
+      "score": 72.38809523809525
      }
     },
-    "rel": 1.015
+    "rel": 1.006
    }
   },
   "rapidbeat": {
@@ -666,69 +666,90 @@
   },
   "cta": {
    "score": {
-    "n": 1,
-    "avp": 76.6,
-    "views": 252.0,
-    "subs": 2.0,
+    "n": 4,
+    "avp": 75.6,
+    "views": 386.5,
+    "subs": 0.75,
     "metric": "avp",
-    "score": 76.6,
+    "score": 75.2,
     "balanced_on": [
-     "liam*"
+     "deep|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 1,
-      "score": 76.6
+      "n": 4,
+      "score": 75.2
      }
     }
    },
    "subscribe": {
     "n": 3,
-    "avp": 71.93333333333334,
-    "views": 466.0,
-    "subs": 2.3333333333333335,
+    "avp": 71.43333333333334,
+    "views": 533.0,
+    "subs": 2.6666666666666665,
     "metric": "avp",
-    "score": 71.93333333333334,
+    "score": 71.43333333333334,
     "balanced_on": [
-     "liam*"
+     "deep|liam*"
     ],
     "packs": {
      "pokemon": {
       "n": 3,
-      "score": 71.93333333333334
+      "score": 71.43333333333334
      }
     }
    }
   },
   "series": {
    "numbered": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 1,
+    "avp": 73.0,
+    "views": 543.0,
+    "subs": 0.0,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 73.0,
+    "balanced_on": [
+     "known|liam*"
+    ],
+    "packs": {
+     "pokemon": {
+      "n": 1,
+      "score": 73.0
+     }
+    }
    },
    "plain": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 1,
+    "avp": 73.1,
+    "views": 347.0,
+    "subs": 0.0,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 73.1,
+    "balanced_on": [
+     "known|liam*"
+    ],
+    "packs": {
+     "pokemon": {
+      "n": 1,
+      "score": 73.1
+     }
+    }
    }
   },
   "ladder": {
    "dots": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 2,
+    "avp": 73.05,
+    "views": 445.0,
+    "subs": 0.0,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 73.05,
+    "packs": {
+     "pokemon": {
+      "n": 2,
+      "score": 73.05
+     }
+    }
    },
    "chip": {
     "n": 0,
@@ -737,7 +758,12 @@
     "subs": null,
     "metric": "avp",
     "score": null,
-    "packs": {}
+    "packs": {
+     "pokemon": {
+      "n": 0,
+      "score": null
+     }
+    }
    }
   },
   "rapidlen": {
@@ -762,13 +788,18 @@
   },
   "rapidtail": {
    "spoken": {
-    "n": 0,
-    "avp": null,
-    "views": null,
-    "subs": null,
+    "n": 2,
+    "avp": 60.4,
+    "views": 284.0,
+    "subs": 0.0,
     "metric": "avp",
-    "score": null,
-    "packs": {}
+    "score": 60.4,
+    "packs": {
+     "pokemon": {
+      "n": 2,
+      "score": 60.4
+     }
+    }
    },
    "loop": {
     "n": 0,
@@ -777,7 +808,12 @@
     "subs": null,
     "metric": "avp",
     "score": null,
-    "packs": {}
+    "packs": {
+     "pokemon": {
+      "n": 0,
+      "score": null
+     }
+    }
    }
   }
  }
