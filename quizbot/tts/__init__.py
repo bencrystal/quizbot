@@ -25,6 +25,16 @@ class TTSBudgetExceeded(RuntimeError):
     pass
 
 
+def clip_seconds(path: Path) -> float:
+    """Duration of an audio file in seconds (0.0 if ffprobe can't read it, which also counts as too short)."""
+    try:
+        out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
+                             capture_output=True, text=True, check=True).stdout.strip()
+        return float(out)
+    except Exception:
+        return 0.0
+
+
 def tighten(wav: Path, gap_keep: float = 0.12, gap_min: float = 0.25, rel_db: float = -30.0, floor_db: float = -45.0) -> None:
     """Cut breaths and dead air inside a spoken line: any stretch quieter than (line level + rel_db, and below
     floor_db) lasting ≥ gap_min s is shortened to gap_keep s with 10 ms crossfades; leading/trailing quiet is
@@ -114,10 +124,19 @@ class TTS:
         if self.chars_this_run > self.settings.max_tts_chars_per_run:
             raise TTSBudgetExceeded(f"TTS budget exceeded ({self.chars_this_run} chars > max_tts_chars_per_run)")
         raw = self.cache / f"{key}.raw"
+        # A clip shorter than the text could possibly be spoken (60 chars/s; real speech is ~15) is a cut-off
+        # response, not a line. Without this check it passed the empty-file test below, was cached for good and
+        # shipped (Ep. 70, 2026-11-15: a 15 s Short where the Pokédex hint should have been ~6 s).
+        spoken_chars = len(re.sub(r"<[^>]+>", "", text))
+        min_secs = max(0.25, spoken_chars / 60)
         try:
             for attempt in range(3):                     # streaming TTS calls drop occasionally; retry before any fallback
                 try:
                     getattr(self, f"_{self.provider}")(text, raw)
+                    got = clip_seconds(raw)
+                    if got < min_secs:
+                        raw.unlink(missing_ok=True)
+                        raise RuntimeError(f"TTS clip too short ({got:.2f}s for {spoken_chars} chars)")
                     break
                 except Exception as e:
                     if attempt == 2 or self.provider == "dev":
