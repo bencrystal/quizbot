@@ -471,8 +471,8 @@
    },
    "art": {
     "n": 4,
-    "avp": 27.650000000000002,
-    "views": 8.75,
+    "avp": 29.35,
+    "views": 9.25,
     "subs": 0.0,
     "metric": "views7d",
     "score": 6.5,
@@ -587,11 +587,11 @@
   "cry": {
    "modern": {
     "n": 16,
-    "avp": 72.14375,
-    "views": 423.25,
+    "avp": 71.79375,
+    "views": 442.9375,
     "subs": 0.625,
     "metric": "avp",
-    "score": 72.12166666666667,
+    "score": 71.75999999999999,
     "balanced_on": [
      "deep|liam*",
      "known|liam*"
@@ -599,29 +599,29 @@
     "packs": {
      "pokemon": {
       "n": 16,
-      "score": 72.12166666666667
+      "score": 71.75999999999999
      }
     },
-    "rel": 0.992
+    "rel": 0.986
    },
    "og": {
-    "n": 11,
-    "avp": 74.0,
-    "views": 435.27272727272725,
-    "subs": 0.8181818181818182,
+    "n": 14,
+    "avp": 74.15714285714286,
+    "views": 444.2857142857143,
+    "subs": 0.7142857142857143,
     "metric": "avp",
-    "score": 73.21875,
+    "score": 73.77555555555556,
     "balanced_on": [
      "deep|liam*",
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 11,
-      "score": 73.21875
+      "n": 14,
+      "score": 73.77555555555556
      }
     },
-    "rel": 1.008
+    "rel": 1.014
    }
   },
   "rapidbeat": {
@@ -666,110 +666,110 @@
   },
   "cta": {
    "score": {
-    "n": 5,
-    "avp": 76.47999999999999,
-    "views": 474.6,
-    "subs": 0.8,
+    "n": 6,
+    "avp": 76.2,
+    "views": 498.8333333333333,
+    "subs": 0.6666666666666666,
     "metric": "avp",
-    "score": 75.7375,
+    "score": 75.28,
     "balanced_on": [
      "deep|liam*",
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 5,
-      "score": 75.7375
+      "n": 6,
+      "score": 75.28
      }
     }
    },
    "subscribe": {
-    "n": 5,
-    "avp": 75.26,
-    "views": 378.6,
-    "subs": 1.6,
+    "n": 7,
+    "avp": 74.3,
+    "views": 430.57142857142856,
+    "subs": 1.2857142857142858,
     "metric": "avp",
-    "score": 76.2,
+    "score": 75.695,
     "balanced_on": [
      "deep|liam*",
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 5,
-      "score": 76.2
+      "n": 7,
+      "score": 75.695
      }
     }
    }
   },
   "series": {
    "numbered": {
-    "n": 3,
-    "avp": 78.33333333333333,
-    "views": 298.6666666666667,
-    "subs": 0.0,
+    "n": 6,
+    "avp": 75.96666666666667,
+    "views": 393.5,
+    "subs": 0.16666666666666666,
     "metric": "avp",
-    "score": 78.33333333333333,
+    "score": 76.85,
     "balanced_on": [
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 3,
-      "score": 78.33333333333333
+      "n": 6,
+      "score": 76.85
      }
     }
    },
    "plain": {
     "n": 2,
-    "avp": 76.80000000000001,
-    "views": 540.5,
+    "avp": 76.5,
+    "views": 672.5,
     "subs": 0.5,
     "metric": "avp",
-    "score": 76.80000000000001,
+    "score": 76.5,
     "balanced_on": [
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
       "n": 2,
-      "score": 76.80000000000001
+      "score": 76.5
      }
     }
    }
   },
   "ladder": {
    "dots": {
-    "n": 3,
-    "avp": 77.39999999999999,
-    "views": 413.3333333333333,
-    "subs": 0.0,
+    "n": 6,
+    "avp": 76.18333333333334,
+    "views": 443.5,
+    "subs": 0.16666666666666666,
     "metric": "avp",
-    "score": 77.39999999999999,
+    "score": 77.175,
     "balanced_on": [
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
-      "n": 3,
-      "score": 77.39999999999999
+      "n": 6,
+      "score": 77.175
      }
     }
    },
    "chip": {
     "n": 2,
-    "avp": 78.2,
-    "views": 368.5,
+    "avp": 75.85,
+    "views": 522.5,
     "subs": 0.5,
     "metric": "avp",
-    "score": 78.2,
+    "score": 75.85,
     "balanced_on": [
      "known|liam*"
     ],
     "packs": {
      "pokemon": {
       "n": 2,
-      "score": 78.2
+      "score": 75.85
      }
     }
    }
@@ -796,38 +796,58 @@
   },
   "rapidtail": {
    "spoken": {
-    "n": 3,
-    "avp": 57.699999999999996,
-    "views": 296.6666666666667,
-    "subs": 0.0,
+    "n": 5,
+    "avp": 70.44,
+    "views": 341.6,
+    "subs": 0.2,
     "metric": "avp",
-    "score": 47.9,
+    "score": 57.2,
+    "balanced_on": [
+     "known"
+    ],
+    "packs": {
+     "pokemon": {
+      "n": 5,
+      "score": 57.2
+     }
+    }
+   },
+   "loop": {
+    "n": 3,
+    "avp": 60.79999999999999,
+    "views": 331.6666666666667,
+    "subs": 0.3333333333333333,
+    "metric": "avp",
+    "score": 60.79999999999999,
     "balanced_on": [
      "known"
     ],
     "packs": {
      "pokemon": {
       "n": 3,
-      "score": 47.9
+      "score": 60.79999999999999
      }
     }
-   },
-   "loop": {
-    "n": 2,
-    "avp": 61.0,
-    "views": 260.0,
-    "subs": 0.0,
+   }
+  },
+  "rapidvoice": {
+   "coral": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
     "metric": "avp",
-    "score": 61.0,
-    "balanced_on": [
-     "known"
-    ],
-    "packs": {
-     "pokemon": {
-      "n": 2,
-      "score": 61.0
-     }
-    }
+    "score": null,
+    "packs": {}
+   },
+   "liam": {
+    "n": 0,
+    "avp": null,
+    "views": null,
+    "subs": null,
+    "metric": "avp",
+    "score": null,
+    "packs": {}
    }
   }
  }
