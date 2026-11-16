@@ -1,0 +1,14 @@
+# Decisions waiting on Ben. The morning brief lists every `open` item; Claude (in chat) or the supervisor
+# closes an item the moment Ben answers, with his answer, so it drops off the next brief. Keep it short.
+# status: open | decided | dropped
+- id: captions-tie
+  opened: 2026-11-13
+  status: open
+  title: "Reopen the captions decision? It was a tie on retention and static reaches 34 % fewer viewers."
+  why: "The judge crowned static at the sample cap on a 3 % lead (bar is 10 %) and bypassed the views guard. The rule is fixed for future tests; this one needs a human call."
+  options:
+    - "Reopen and keep kinetic as baseline (incumbent on a tie)"
+    - "Leave static; carry kinetic's gold highlight and chunked Pokédex into static as a new test"
+    - "Rerun the test from scratch"
+  recommendation: "Reopen and keep kinetic as baseline (incumbent on a tie)"
+  how: "Reply in chat; it's a one-line edit to state/experiments.json."

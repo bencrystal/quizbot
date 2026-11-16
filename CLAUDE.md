@@ -66,6 +66,9 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
   13/16/18/20/22/01 UTC — US waking hours; 18, 22, 01 are rapid-fire), the long-form (from 12:30 UTC; skips packs that already had one this week) or nothing is due.
   GitHub cron drops/delays firings, so missed slots catch up on the next hour. 'none' runs post nothing. `workflow_dispatch` inputs: format, theme, force, cold_open, pack.
   Runs are serialized (`concurrency`); the state cache (`state/`, `out/`) is restored from the latest run.
+- Morning brief: a daily Claude task writes `brief.json` to the portfolio `quizbot-data` branch (shown at the top of
+  the dashboard); procedure and schema in `docs/brief/BRIEF.md`; open asks for Ben live in `docs/brief/open_decisions.yaml`
+  — close an item (status decided + his answer) the moment he answers in chat.
 - Results → GitHub issue "Episode log" (#2); failures with log tail → "Run failures" (#1). Actions logs are
   not readable from Claude sessions; the issues are the source of truth.
 - Other workflows: `samples.yml` (voice sampler), `pronunciations.yml` (monthly guide sync),
