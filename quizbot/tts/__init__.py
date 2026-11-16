@@ -118,17 +118,21 @@ class TTS:
         speed = min(max(speed, 0.9), 1.3)
         key = hashlib.sha1(f"{self.provider}|{self.voice}|{direction}|{style}|{speed:.3f}|tight1|{text}".encode()).hexdigest()[:20]
         out = self.cache / f"{key}.wav"
+        # A clip shorter than the text could possibly be spoken (60 chars/s; real speech is ~15) is a cut-off
+        # response, not a line. Without this check it passed the empty-file test below, was cached for good and
+        # shipped (Ep. 70, 2026-11-15: a 15 s Short where the Pokédex hint should have been ~6 s). Cached clips
+        # are checked too, so one already on disk from before this guard is re-synthesised rather than replayed.
+        spoken_chars = len(re.sub(r"<[^>]+>", "", text))
+        min_secs = max(0.25, spoken_chars / 60)
         if out.exists():
-            return out
+            if clip_seconds(out) >= min_secs:
+                return out
+            print(f"[tts] cached clip too short for its text ({spoken_chars} chars); re-synthesising")
+            out.unlink()
         self.chars_this_run += len(text)
         if self.chars_this_run > self.settings.max_tts_chars_per_run:
             raise TTSBudgetExceeded(f"TTS budget exceeded ({self.chars_this_run} chars > max_tts_chars_per_run)")
         raw = self.cache / f"{key}.raw"
-        # A clip shorter than the text could possibly be spoken (60 chars/s; real speech is ~15) is a cut-off
-        # response, not a line. Without this check it passed the empty-file test below, was cached for good and
-        # shipped (Ep. 70, 2026-11-15: a 15 s Short where the Pokédex hint should have been ~6 s).
-        spoken_chars = len(re.sub(r"<[^>]+>", "", text))
-        min_secs = max(0.25, spoken_chars / 60)
         try:
             for attempt in range(3):                     # streaming TTS calls drop occasionally; retry before any fallback
                 try:
