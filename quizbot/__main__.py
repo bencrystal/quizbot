@@ -95,6 +95,7 @@ def cmd_run(args, settings: Settings) -> int:
         if str(settings.cry_version) == "legacy" and cries != {"legacy"}:   # Gen 6+ has no original cry: not a clean sample
             ep.tags = [t if not t.startswith("exp:cry=") else "exp:cry=fallback" for t in ep.tags]
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
+    print(f"[plan] intro: {ep.intro!r} · outro: {ep.outro!r} · alt audio on {sum(1 for i in ep.items if i.meta.get('alt_audio'))}/{len(ep.items)} items")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned", meta={"manual": bool(args.force)})
     if ep.mechanic == "rapid":
         state.mark_used(ep.pack, "rapid", [i.id for i in ep.items], ep.slug)
