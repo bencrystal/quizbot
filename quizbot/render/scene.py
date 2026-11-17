@@ -641,7 +641,7 @@ class Scene:
                     # lines up in every chunk, not just the first
                     lit = self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), " ".join(lines))
                     centred = self.portrait and self.kinetic          # Shorts: the live hint reads as a caption
-                    if centred and live_label[0]:
+                    if centred and live_label[0] and st["wave"] is None:      # the waveform owns that strip while a sound plays
                         self.text(d, (g["art"][0] + dx, yy - int(50 * self.u)), " ".join(live_label[0].upper()), 24,
                                   fill=(200, 202, 214), anchor="mm", alpha=a * 0.9)
                     for ln, lw in zip(lines, lit):
