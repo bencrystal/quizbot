@@ -35,7 +35,7 @@ class PokemonOrPack(Pack):
             out.append({"id": f.stem, "label": f"Pokémon or {other}?", "list": f.stem, "rapid_only": True, "curated": True,
                         "binary": ["Pokémon", other],
                         "title": f"Pokémon or {other.lower()}? Only real fans get {{n}}/{{n}} #shorts",
-                        "intro": f"Pokémon, or {other.lower()}? {{N}} names. Call every one!",
+                        "intro": f"Pokémon or {other.lower()}?",          # the title is the whole premise; straight into the first name
                         "outro": "How many did you get out of {n}?"})
         return out
 

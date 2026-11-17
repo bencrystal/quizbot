@@ -32,7 +32,7 @@ class FixturePack(Pack):
                 # offline stand-in for the binary word quiz ("Pokémon or …?"): same meta, fixture art
                 {"id": "binary", "label": "Critter or Medicine?", "rapid_only": True, "weight": 0, "binary": ["Critter", "Medicine"],
                  "title": "Critter or medicine? Only real fans get {n}/{n} #shorts",
-                 "intro": "Critter, or medicine? {N} names. Call every one!", "outro": "How many did you get out of {n}?"}]
+                 "intro": "Critter or medicine?", "outro": "How many did you get out of {n}?"}]
 
     def candidates(self, theme: dict) -> list[QuizItem]:
         items = []

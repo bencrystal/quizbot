@@ -63,6 +63,10 @@ def cmd_run(args, settings: Settings) -> int:
     if fmt_id is None:
         fmt_id, fmt_spec = _formats.identify(slot, pack_name, args.theme)
     exp_tags: list[str] = []
+    if settings.tts_provider != "dev":
+        for k, v in (fmt_spec.get("settings") or {}).items():     # the format's own fixed knobs (e.g. its voice)
+            if hasattr(settings, k):
+                setattr(settings, k, v)
     if settings.tts_provider != "dev" and fmt_spec.get("experiments"):   # no experiments offline; only base formats are tested
         forced = str(settings.shorts_cold_open).lower()          # workflow input overrides the experiment
         from .experiments import assign
