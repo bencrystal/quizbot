@@ -48,7 +48,9 @@ class PokemonOrPack(Pack):
         rng = random.Random()
         items: list[QuizItem] = []
         poke = PokemonPack(self.settings)
-        ids = [i for i in rng.sample(range(1, MAX_DEX + 1), 40) if i not in FAMOUS]
+        # mostly later generations (their names are the ones that pass for a prescription), a few early ones as gimmes
+        ids = [i for i in rng.sample(range(494, MAX_DEX + 1), 30) + rng.sample(range(1, 494), 8) if i not in FAMOUS]
+        rng.shuffle(ids)
         for pid in ids:
             if sum(1 for i in items if i.meta["binary"]["is"] == 0) >= 10:
                 break
