@@ -114,6 +114,11 @@ class PokemonPack(Pack):
         out.append({"id": "then-now", "label": "Then & Now cries", "ids": [i for i in MIX if i <= 649], "cry": "both",
                     "rapid_only": True, "curated": True, "rounds": 5,
                     "intro": "{N} Pokémon. The original cry, then today's. Name them all!"})
+        # Slowed (2026-11-16): the cry at half speed (pitch drops with it, like a tape), then at real speed on the
+        # silhouette. Same sounds, different game — and a familiar meme format.
+        out.append({"id": "slow", "label": "Slowed-down cries", "ids": list(MIX), "slow": 0.5,
+                    "rapid_only": True, "curated": True, "rounds": 5,
+                    "intro": "{N} Pokémon cries at half speed. Name them all!"})
         return out
 
     # ---- data ---------------------------------------------------------------
@@ -196,6 +201,14 @@ class PokemonPack(Pack):
 
         cry = self._download(cry_url, self.cache / (f"cry-{pid}.ogg" if cry_version == "latest" else f"cry-{pid}-legacy.ogg"))
         alt_audio = str(self._download(cries["latest"], self.cache / f"cry-{pid}.ogg")) if both else None
+        if (theme or {}).get("slow"):
+            import subprocess
+            rate = float(theme["slow"])
+            slow = self.cache / f"cry-{pid}-slow{int(rate * 100)}.wav"
+            if not slow.exists() or slow.stat().st_size == 0:
+                subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(cry), "-af",
+                                f"aresample=44100,asetrate={int(44100 * rate)},aresample=44100", str(slow)], check=True)
+            alt_audio, cry = str(cry), slow          # slowed first; the real cry plays on the silhouette
         art = self._download(art_url, self.cache / f"art-{pid}.png")
 
         # The answer is the species' English name — "Mr. Mime", "Ho-Oh", "Farfetch'd", "Giratina" — never the API

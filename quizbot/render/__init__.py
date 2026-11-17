@@ -233,22 +233,48 @@ class Renderer:
             say_part(self.pack.question_line.format(n=i))
         if short:                # Shorts: the music bed only comes in after the hook, never a note before it
             self.bed_delay = T.t
-        T.add(None, 0.1 if short else 0.3)   # the question runs straight into the sound
-        T.add(snd, snd_d, "sound")
-        if not (short and cold):   # cold-open shorts already had it once; keep it to two plays
-            T.add(None, 0.4)
-            T.add(snd, snd_d, "sound")
-        T.mark("points", value=pts)
-        T.mark("stage", index=0, count=n_hints + 1)
-
-        if ep.mechanic == "ladder":
-            T.add(None, 0.3)
-            T.mark("status", text="Your guess?")
+        # Pokédex-first (A/B `order`, Ben 2026-11-16): many fans don't know the cries, and a quiz that opens on a
+        # sound you can't place reads as "not for me". Here the Pokédex line is the question, full points if you
+        # get it from that; the cry arrives as the next clue instead of the entry ticket.
+        dex_first = short and ep.mechanic == "ladder" and str(self.s.short_order) == "dex" and bool(it.hints) and not cold
+        hints = list(it.hints)
+        h_base = 0
+        if dex_first:
+            dex = hints.pop()                # the Pokédex / field-guide line is always the last hint
+            T.add(None, 0.1)
+            T.mark("points", value=pts)
+            T.mark("stage", index=0, count=n_hints + 1)
+            T.mark("hint", text=dex, index=0)
+            say_part(dex)
+            T.add(None, 0.25)
+            T.add(None, S, "think")
+            T.add(None, 0.2)
+            pts -= 1
+            T.mark("tint")
+            T.add(snd, snd_d, "sound")       # the cry, once, as the second clue (it plays again on the silhouette)
+            T.mark("points", value=pts)
+            T.mark("stage", index=1, count=n_hints + 1)
+            T.add(None, 0.25)
             T.add(None, S, "think")
             T.add(None, 0.25)
-            for h_i, hint in enumerate(it.hints):
+            h_base = 1
+        else:
+            T.add(None, 0.1 if short else 0.3)   # the question runs straight into the sound
+            T.add(snd, snd_d, "sound")
+            if not (short and cold):   # cold-open shorts already had it once; keep it to two plays
+                T.add(None, 0.4)
+                T.add(snd, snd_d, "sound")
+            T.mark("points", value=pts)
+            T.mark("stage", index=0, count=n_hints + 1)
+
+        if ep.mechanic == "ladder":
+            if not dex_first:
+                T.add(None, 0.3)
+                T.mark("status", text="Your guess?")
+                T.add(None, S, "think")
+                T.add(None, 0.25)
+            for h_i, hint in enumerate(hints, h_base):
                 pts -= 1
-                last = h_i == len(it.hints) - 1
                 T.mark("hint", text=hint, index=h_i)
                 if h_i == 0:
                     T.mark("tint")
@@ -360,6 +386,40 @@ class Renderer:
                 T.add(None, 0.8)
         return T
 
+    def build_binary_round(self, i: int, total: int, it: QuizItem, ep: Episode, work: Path) -> Timeline:
+        """'Pokémon or …?': the host reads a name, two chips wait, a short think, then the verdict lights up with
+        the artwork (or the drawn icon) and one line of what it is. No sound to recognise — anyone can play."""
+        T = Timeline()
+        b = it.meta["binary"]
+
+        def say_part(text, kind=None, style="", **data):
+            p = self.say(text, style)
+            start = T.t
+            T.mark("words", text=text, words=word_times(text, start, self.dur(p)))
+            return T.add(p, self.dur(p), kind, **data)
+
+        if i == 1:
+            T.mark("caption", text=ep.intro)
+            say_part(ep.intro, style="Quick and punchy, like a game-show buzzer line.")
+            T.mark("caption", text="")
+            self.bed_delay = T.t
+        T.mark("status", text="")
+        T.mark("word")
+        T.add(None, 0.15)
+        say_part(b["say"] + "?", style="One word, read clearly and a little curious, like a spelling-bee caller.")
+        T.add(None, 0.2)
+        T.add(None, max(1.6, float(ep.stage_seconds) - 0.4), "think")
+        T.mark("tint")
+        T.add(self.sting(work), 0.45)
+        T.mark("reveal")
+        say_part(f"{it.answer}!", style="The verdict: bright and quick.")
+        T.add(None, 0.9 if i < total else 0.5)
+        if i == total:
+            T.mark("caption", text=ep.outro)
+            say_part(ep.outro)
+            T.add(None, 0.7)
+        return T
+
     def build_card(self, text: str, title: str, sub: str, foot: str, lead: float, tail: float) -> Timeline:
         T = Timeline()
         T.mark("card", title=title, sub=sub, foot=foot)
@@ -388,7 +448,9 @@ class Renderer:
                   title=((f"RAPID-FIRE #{self._ep.meta['episode_no']}" if rapid and self._ep.meta.get("episode_no")
                           else self.pack.display_name.upper() + (f" · EP. {self._ep.meta['episode_no']}" if self._ep.meta.get("episode_no") else ""))
                          if total == 1 or (rapid and i == 1) else ""),
-                  rule=(f"{total} sounds. Name them all." if rapid else "Name it from the sound. Every hint costs a point."))
+                  rule=(f"{total} sounds. Name them all." if rapid else "Name it from the sound. Every hint costs a point."),
+                  # binary word quiz: the word and its two chips (shown from the "word" mark until the reveal)
+                  binary=(it.meta.get("binary") if it else None), word_p=0.0)
         wave = np.zeros(28)
         for ev in T.events:
             if ev.at > t:
@@ -420,6 +482,8 @@ class Renderer:
                 st["think"] = min(1.0, age / ev.dur) if age < ev.dur else None
             elif ev.kind == "shape":
                 st["shape_p"] = min(1.0, age / ev.dur)
+            elif ev.kind == "word":
+                st["word_p"] = min(1.0, age / 0.25)
             elif ev.kind == "reveal":
                 st["reveal_p"] = min(1.0, age)
                 st["status"] = ""
@@ -502,7 +566,8 @@ class Renderer:
         for i, it in enumerate(ep.items, 1):
             print(f"[render] round {i}/{total}: {it.answer}")
             if ep.mechanic == "rapid":
-                T = self.build_rapid_round(i, total, it, ep, work)
+                T = (self.build_binary_round(i, total, it, ep, work) if it.meta.get("binary")
+                     else self.build_rapid_round(i, total, it, ep, work))
             else:
                 T = self.build_round(i, total, it, ep, rng, work)
             segs.append(self.encode(T, it, i, total, work, work / f"{i:02d}.mp4"))

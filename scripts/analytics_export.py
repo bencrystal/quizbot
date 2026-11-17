@@ -72,6 +72,8 @@ def main() -> None:
                 "duration": iso_dur(v["contentDetails"].get("duration")), "privacy": v.get("status", {}).get("privacyStatus"),
                 "views": int(st.get("viewCount", 0)), "likes": int(st.get("likeCount", 0)), "comments": int(st.get("commentCount", 0)),
                 "tier": next((t.split(":", 1)[1] for t in tags if t.startswith("tier:")), None),
+                # format axes (config/formats.yaml); uploads from before 2026-11-16 are filled in from format/theme below
+                **{k: next((t.split(":", 1)[1] for t in tags if t.startswith(k + ":")), None) for k in ("fmt", "mech", "cue", "twist")},
                 "avd": None, "avp": None, "minutes": None, "subs": None, "tags": [t for t in tags if t.startswith("exp:")]
                         # the first day's Shorts predate exp: tags; they belong to the 'open' experiment
                         + ([f"exp:open={'cold' if variant == 'coldopen' else 'announce'}"] if variant and not any(t.startswith("exp:open=") for t in tags) else []),
@@ -328,6 +330,32 @@ def main() -> None:
         themes.setdefault(pk, {})[fmt] = out
     Path("state/themes.json").write_text(json.dumps(themes, indent=1, ensure_ascii=False) + "\n")
 
+    # ---- format fitness: each format's median views (last 21 days) over the median of its slot, clamped
+    # 0.4–2.5. Videos uploaded before formats were tagged are classified from their format and theme.
+    import yaml as _yaml
+    reg = _yaml.safe_load(Path("config/formats.yaml").read_text())["formats"]
+    by_theme = {(s["pack"], s["theme"]): k for k, s in reg.items() if s.get("theme")}
+    labels = {"Then & Now cries": "then-now", "Slowed-down cries": "slow", "Pokémon or Medicine?": "or-medicine"}
+    for v in videos.values():
+        if not v.get("fmt"):
+            v["fmt"] = (labels.get(v.get("theme") or "") if v["format"] == "rapid" else None) or \
+                       {"short": "ladder", "rapid": "cries", "long": "long"}.get(v["format"])
+        spec = reg.get(v["fmt"]) or {}
+        for k in ("mech", "cue", "twist"):
+            v[k] = v.get(k) or spec.get(k)
+    cut21 = (_dt.datetime.utcnow() - _dt.timedelta(days=21)).strftime("%Y-%m-%d")
+    formats: dict = {}
+    recent = [v for v in videos.values() if v["published"] >= cut21 and v["views"] and v.get("fmt") in reg]
+    for slot, rows in _group(recent, lambda v: reg[v["fmt"]]["slot"]).items():
+        base = _stat.median(v["views"] for v in rows)
+        for fid, fv in _group(rows, lambda v: v["fmt"]).items():
+            med = _stat.median(v["views"] for v in fv)
+            avps = [v["avp"] for v in fv if v.get("avp")]
+            formats[fid] = {"n": len(fv), "median_views": med, "avp": round(sum(avps) / len(avps), 1) if avps else None,
+                            "fitness": round(max(0.4, min(2.5, med / base)) if base else 1.0, 2),
+                            **{k: reg[fid].get(k) for k in ("slot", "mech", "cue", "twist", "label")}}
+    Path("state/formats.json").write_text(json.dumps(formats, indent=1, ensure_ascii=False) + "\n")
+
     # ---- experiments: judge the active one from retention data, persist the decision
     from quizbot.experiments import judge, load_config
     exp_state = judge(list(videos.values()))
@@ -349,6 +377,7 @@ def main() -> None:
         "budget": budget,
         "comments": comments[:60],
         "experiments": {"config": exp_cfg, "state": exp_state},
+        "formats": formats,
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=0) + "\n")

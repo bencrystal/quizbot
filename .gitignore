@@ -7,4 +7,5 @@ config/client_secret.json
 !state/experiments.json
 !state/social.json
 !state/themes.json
+!state/formats.json
 out/_frames/

@@ -80,6 +80,7 @@ class Settings:
     cry_version: str = "latest"         # latest | legacy — which PokéAPI cry a Pokémon Short plays (legacy = the original
                                          # Game Boy/DS cry, exists for Gen 1-5; falls back to latest and tags exp:cry=fallback)
     rapid_replay: bool = False           # rapid-fire: play the sound a second time on the silhouette before the reveal
+    short_order: str = "cry"             # cry (sound first, hints after) | dex (Pokédex line first, the cry as the next clue)
     series_numbers: bool = False         # "· Ep. N" in titles and on the eyebrow (A/B `series`)
     points_ladder: bool = False          # points chip as a ladder of dots (A/B `ladder`)
     rapid_tail: str = "spoken"           # rapid-fire ending: spoken score ask + pause | loop (caption only, ends on the reveal)

@@ -94,7 +94,8 @@ def _social_opener(settings: Settings, n: int) -> str:
 def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str, settings: Settings) -> Episode:
     n = len(items)
     short = settings.format == "short"
-    answers = "\n".join(f"{i+1}. {it.answer}" for i, it in enumerate(items))
+    answers = "\n".join(f"{i+1}. " + (f"{it.meta['binary']['word']} — {it.answer}" if it.meta.get("binary") else it.answer)
+                        for i, it in enumerate(items))
     hashtags = f"#quiz #audioquiz #{slugify(pack.name)}" + (" #shorts" if short else "")
 
     if short:
@@ -115,12 +116,15 @@ def _template_episode(pack: Pack, theme: dict, items: list[QuizItem], slug: str,
             title = f"Name {n} {plural} from their sounds ({theme['label']}) #shorts"
             desc = (f"{pack.channel_blurb}\n\nRapid fire: {n} sounds, one point each, easy to hard, no hints. "
                     f"{theme['label']}.\n\nAnswers:\n{answers}\n\n{hashtags}")
+            if theme.get("title"):           # formats with their own premise (binary word quizzes) title themselves
+                title = theme["title"].format(n=n)
+                desc = f"{pack.channel_blurb}\n\n{theme['label']} {n} names, one point each.\n\nAnswers:\n{answers}\n\n{hashtags}"
             intro = (theme.get("intro") or f"{{N}} {plural}. One sound each. Name them all!").replace("{N}", words.get(n, str(n)).title())
             social = _social_opener(settings, n)
             if social:
                 intro = f"{social} {intro}"
             outro = ("New quiz every day. Subscribe!" if str(settings.short_cta) == "subscribe"
-                     else f"How many did you get out of {n}?")
+                     else (theme.get("outro") or "How many did you get out of {n}?").format(n=n))
     else:
         title = f"{pack.display_name}: {theme['label']} ({n} Rounds)"
         desc = (f"{pack.channel_blurb}\n\n{n} rounds of {theme['label']}. Name it after the sound alone for the most "
