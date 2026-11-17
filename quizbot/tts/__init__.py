@@ -103,7 +103,7 @@ class TTS:
     # respellings go into the per-line instructions, which keeps the delivery flowing.
     PRON_MODE = os.environ.get("QUIZBOT_PRON_MODE", "instruct")
 
-    def say(self, text: str, style: str = "", notes: list[tuple[str, str]] | None = None) -> Path:
+    def say(self, text: str, style: str = "", notes: list[tuple[str, str]] | None = None, _retry: bool = True) -> Path:
         text = " ".join(text.split())
         if notes:
             style = (style + " " if style else "") + "Pronunciations (capitals = stressed syllable, each is one word " \
@@ -182,6 +182,16 @@ class TTS:
             raise RuntimeError("TTS produced an empty file")
         if self.provider != "dev":
             tighten(out)
+            # The length check above is on the raw response; a reply that is mostly silence passes it and only
+            # shows up as (near) nothing once the silence is trimmed — the slowed-cries preview of 2026-11-16 went
+            # out with no spoken intro that way. Check the finished clip too, and synthesise once more if it fails.
+            if clip_seconds(out) < min_secs:
+                out.unlink(missing_ok=True)
+                raw.unlink(missing_ok=True)
+                if _retry:
+                    print(f"[tts] clip too short after trimming ({spoken_chars} chars); synthesising again")
+                    return self.say(text, style, notes, _retry=False)
+                raise RuntimeError(f"TTS clip too short after trimming ({spoken_chars} chars)")
         raw.unlink(missing_ok=True)
         return out
 
