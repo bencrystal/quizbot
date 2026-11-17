@@ -68,6 +68,8 @@ jobs:
           mkdir -p state config
           echo '${{ secrets.YT_CLIENT_SECRET_JSON }}' > config/client_secret.json
           [ -s state/youtube_token.json ] || echo '${{ secrets.YT_TOKEN_JSON }}' > state/youtube_token.json
+      - name: mark the start (the artifact carries only what this run made)
+        run: touch /tmp/run-start
       - name: decide format
         id: fmt
         run: |
@@ -147,13 +149,25 @@ jobs:
           BODY="### Run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) failed ($(date -u +%FT%TZ))\n\n\`\`\`\n$(tail -c 6000 state/run.log 2>/dev/null | sed 's/`/'"'"'/g')\n\`\`\`"
           N=$(gh issue list -R ${{ github.repository }} --search "Run failures in:title" --state open --json number --jq '.[0].number')
           if [ -z "$N" ]; then gh issue create -R ${{ github.repository }} --title "Run failures" --body "$(printf '%b' "$BODY")"; else gh issue comment -R ${{ github.repository }} "$N" --body "$(printf '%b' "$BODY")"; fi
+      # The out/ cache keeps a folder per past episode (thumbnail + episode.json; the video is deleted after
+      # upload), so uploading out/** buried the one video among dozens of old folders. Only this run's files go
+      # in, flat: the video(s), thumbnail, episode.json and the log.
+      - name: collect this run's files
+        if: always() && steps.fmt.outputs.format != 'none'
+        run: |
+          mkdir -p artifact
+          find out -type f \( -name '*.mp4' -o -name 'thumbnail.jpg' -o -name 'episode.json' \) -newer /tmp/run-start | while read -r f; do
+            slug=$(basename "$(dirname "$f")")
+            case "$f" in
+              *.mp4) cp "$f" "artifact/$(basename "$f")" ;;
+              *)     cp "$f" "artifact/${slug}.$(basename "$f")" ;;
+            esac
+          done
+          cp state/quizbot.log artifact/ 2>/dev/null || true
+          ls -la artifact
       - uses: actions/upload-artifact@v4
         if: always() && steps.fmt.outputs.format != 'none'
         with:
           name: episode-${{ github.run_id }}
-          path: |
-            out/**/*.mp4
-            out/**/thumbnail.jpg
-            out/**/episode.json
-            state/quizbot.log
+          path: artifact/
           retention-days: 7
