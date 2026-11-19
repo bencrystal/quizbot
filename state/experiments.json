@@ -4,7 +4,7 @@
   "voice": "liam",
   "snappy": "snappy",
   "rapidbeat": "twice",
-  "captions": "static",
+  "captions": "kinetic",
   "cta": "score",
   "cry": "modern"
  },
@@ -373,6 +373,12 @@
     }
    },
    "reason": "max_n reached; og leads by 2% on avp \u2014 kept the incumbent modern"
+  },
+  {
+   "when": "2026-11-19",
+   "experiment": "captions",
+   "winner": "kinetic",
+   "reason": "decided by Ben: the 2026-11-13 call for static was a tie on retention (68.6 vs 66.9, bar is 10 %) with static reaching 34 % fewer viewers; a tie keeps the incumbent, kinetic"
   }
  ],
  "results": {

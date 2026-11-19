@@ -3,7 +3,9 @@
 # status: open | decided | dropped
 - id: captions-tie
   opened: 2026-11-13
-  status: open
+  status: decided
+  decided: 2026-11-19
+  answer: "Keep kinetic as baseline (Ben, in chat)."
   title: "Reopen the captions decision? It was a tie on retention and static reaches 34 % fewer viewers."
   why: "The judge crowned static at the sample cap on a 3 % lead (bar is 10 %) and bypassed the views guard. The rule is fixed for future tests; this one needs a human call."
   options:

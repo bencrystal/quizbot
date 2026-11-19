@@ -7,17 +7,22 @@ job. It replaces Ben asking "any new updates?": one panel at the top of bencryst
 1. `add_repo` bencrystal/quizbot (push) and bencrystal/portfolio_website (push); clone quizbot to /home/claude/quizbot.
 2. `pip install -q pyyaml` if needed; `python scripts/brief_facts.py > /tmp/facts.json` — everything you need is in
    that file. Do not browse further unless a fact is missing; never run the pipeline, never edit code or settings.
-3. Read it all, then write `/tmp/brief.json` in the schema below. Honesty rules:
-   - Say what happened, not what you did. No praise, no filler, no restating yesterday unless it changed.
-   - Numbers come from facts.json; never estimate. Analytics lags 2–3 days — say so when it matters.
+3. Read it all, then write `/tmp/brief.json` in the schema below. The panel is read in under a minute, so:
+   - **Brevity is the format.** Headline ≤ 14 words. Every bullet is one line, ≤ 16 words, one fact each, no
+     parentheses, no semicolons, no chains of numbers. If a bullet needs a second clause, it is two bullets or
+     it is not worth saying. Section caps: happened ≤ 4, ideas ≤ 2, watch ≤ 3, changes ≤ 3.
+   - **Numbers go in `metrics` and `tests`, never in prose.** `metrics` is 4–6 figures (subs, views on the
+     latest Analytics day, uploads, failures, IG views, credits). `tests` has one row per running or
+     just-decided test: the two leading arms with their score and n, and a status
+     (`early` under min_n · `leading` · `tie` · `decided`). Do not repeat a figure that is in either.
+   - Say what happened, not what you did. No praise, no filler, nothing unchanged from yesterday.
+   - Numbers come from facts.json; never estimate. A missing figure is omitted, not explained.
    - A test that is leading is "leading", never "winning", until `experiments.decided` has it.
-   - Decisions: copy every `status: open` item from `open_decisions` verbatim (same id). Add a new decision only
-     when something genuinely needs Ben (a format change, money, a trade-off between his taste rules and data).
-     New decisions also get appended to docs/brief/open_decisions.yaml in a commit on main (that is the only
-     commit the task makes). Never invent decisions to fill the panel; an empty list is a fine outcome.
-   - Ideas: at most 3, concrete, each one sentence with the evidence that prompted it. Skip the section if none.
-   - Watch: tests close to a decision, budget, anything that failed once.
-   - `changes`: what is different from `previous_brief` (new decision, test decided, run failures started/stopped).
+   - Decisions: copy every `status: open` item from `open_decisions` (same id), with `why` cut to one sentence.
+     Add a new decision only when something genuinely needs Ben (a format change, money, his taste rules vs
+     data); append it to docs/brief/open_decisions.yaml in a commit on main (the only commit the task makes).
+     Never invent decisions; an empty list is a fine outcome. An open PR awaiting his merge is a decision.
+   - Ideas: each one sentence — the idea, then "because" and the evidence. Skip the section if none.
 4. Publish: in a fresh clone of portfolio_website, `git checkout quizbot-data`, copy /tmp/brief.json to brief.json,
    commit as "brief: <date>" (user.email benjamincrystal8@gmail.com) and push. Nothing else on that branch changes.
 5. Finish with the headline as your one-line summary. Do not message Ben separately.
@@ -25,12 +30,15 @@ job. It replaces Ben asking "any new updates?": one panel at the top of bencryst
 ## Schema (brief.json)
 ```json
 {
-  "date": "2026-11-17", "written_at": "2026-11-17T12:35:00Z",
-  "headline": "one sentence: the single most important thing today",
-  "happened": ["3–6 bullets: uploads, failures, decisions the judge made, notable numbers (with the day they refer to)"],
-  "decisions": [{"id": "…", "title": "…", "why": "…", "options": ["…"], "recommendation": "…", "how": "Reply in chat / Decisions panel"}],
-  "ideas": ["≤3 bullets"],
-  "watch": ["2–5 bullets"],
-  "changes": ["what differs from yesterday's brief"]
+  "date": "2026-11-20", "written_at": "2026-11-20T12:35:00Z",
+  "headline": "≤ 14 words: the single most important thing today",
+  "metrics": [{"label": "Subscribers", "value": "55", "delta": "+0"}, {"label": "Views · Nov 15", "value": "3,966"}],
+  "happened": ["≤ 4 one-line bullets"],
+  "decisions": [{"id": "…", "title": "…", "why": "one sentence", "options": ["…"], "recommendation": "…", "how": "Reply in chat"}],
+  "tests": [{"name": "Cry", "a": "original 73.4 (16)", "b": "modern 71.8 (20)", "status": "decided", "note": "modern kept on a tie"}],
+  "ideas": ["≤ 2 one-line bullets"],
+  "watch": ["≤ 3 one-line bullets"],
+  "changes": ["≤ 3 one-line bullets"]
 }
 ```
+`metrics[].delta` and `tests[].note` are optional; keep `note` under 8 words.
