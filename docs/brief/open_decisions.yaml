@@ -14,3 +14,14 @@
     - "Rerun the test from scratch"
   recommendation: "Reopen and keep kinetic as baseline (incumbent on a tie)"
   how: "Reply in chat; it's a one-line edit to state/experiments.json."
+- id: pr-8-new-formats
+  opened: 2026-11-17
+  status: open
+  title: "Merge PR #8: Pokémon-or-medicine, slowed cries, Pokédex-first test?"
+  why: "Previews are rendered and the intro and voice fixes are in; nothing goes live until Ben says so."
+  options:
+    - "Merge all of it"
+    - "Merge without slowed cries (51 s is long)"
+    - "Hold for changes"
+  recommendation: "Merge all of it"
+  how: "Reply in chat."
