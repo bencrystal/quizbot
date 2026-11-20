@@ -226,7 +226,7 @@ def _judge_one(cfg: dict, st: dict, ex: dict, videos: list[dict]) -> dict:
                           "reason": (f"lead {gap:.0%} on {metric}, pack-adjusted, leading in every pack ({', '.join(ready)})"
                                      if winner == best and clear else
                                      f"max_n reached; {best} leads by {gap:.0%} on {metric}" + (", trailing on views" if bleeding else "")
-                                     + (f" — kept the incumbent {winner}" if winner != best else " — close enough to call"))})
+                                     + (f" — a tie, kept the incumbent {winner}" if winner != best or gap < lead / 2 else " — close enough to call"))})
         nxt = active_experiment(cfg, st, "short")
         st["active"] = nxt["id"] if nxt else None
     return st
