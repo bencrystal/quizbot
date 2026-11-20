@@ -71,6 +71,57 @@ def _raw_guide() -> dict[int, dict]:
         return {}
 
 
+# ---- number agreement for redacted Pokédex entries -------------------------------------------------------
+# A Pokémon's name is its own plural ("Krabby live on beaches"), so swapping the name for "this Pokémon" can
+# leave "This Pokémon live". Where the verb that follows is plural, the subject becomes "these Pokémon".
+_PLURAL_AUX = {"are", "were", "have", "do", "aren't", "weren't", "haven't", "don't"}
+_PLURAL_VERBS = set("""live gather form use travel feed eat hunt fly swim appear build make dig communicate love
+    like prefer tend seem become grow lay roam compete fight squabble emit release gain cooperate work move come
+    go take give play sleep hide attack protect share raise carry burrow nest migrate inhabit dwell flock swarm
+    cluster band stick keep begin start get see know need want try run jump cling attach absorb store spit shoot
+    send call cry sing dance stay rest wander search look gaze feel sense hear smell possess show leave return
+    line huddle nestle drift float dive climb crawl walk stand sit wait chase catch steal collect guard defend
+    follow lead obey help heal battle train evolve hatch breed mate thrive survive exist vanish scatter spread
+    create produce generate shed drop throw toss spin roll dash charge strike bite sting peck scratch howl roar
+    """.split())
+_ADVERBS = {"often", "always", "never", "sometimes", "usually", "also", "still", "just", "even", "all", "both",
+            "generally", "commonly", "rarely", "typically", "normally", "mostly", "only"}
+_NOT_VERBS = set("""can will would may might must could should cannot shall is was has does had did that which who
+    whose and or but with in on at of to from by for as when while if because so than then it its a an the""".split())
+
+
+def agree_number(text: str) -> str:
+    """Turn "this Pokémon <plural verb>" into "these Pokémon <plural verb>" (keeping the capital), so the
+    redacted entry reads as one consistent sentence. Singular uses ("This Pokémon lives", "can", "is") are left."""
+    plural_context = bool(re.search(r"\b(these pok[eé]mon|they|their|them)\b", text, flags=re.I))
+
+    def fix(m: re.Match) -> str:
+        subject, rest = m.group(1), m.group(2)
+        words = re.findall(r"[A-Za-z']+", rest)[:3]
+        strong = False
+        verb = None
+        for w in words:
+            lw = w.lower()
+            if lw in ("all", "both"):
+                strong = True
+                continue
+            if lw in _ADVERBS or lw.endswith("ly"):
+                continue
+            verb = lw
+            break
+        plural = False
+        if verb:
+            if verb in _PLURAL_AUX or verb in _PLURAL_VERBS:
+                plural = True
+            elif (strong or plural_context) and verb not in _NOT_VERBS and not verb.endswith(("s", "ed", "ing")):
+                plural = True              # an unlisted base-form verb, in an entry that is plural elsewhere
+        if not plural:
+            return m.group(0)
+        return ("These" if subject[0] == "T" else "these") + subject[4:] + rest
+
+    return re.sub(r"\b([Tt]his Pok[eé]mon)((?:[ ,]+[A-Za-z']+){1,3})", fix, text)
+
+
 class PokemonPack(Pack):
     name = "pokemon"
     display_name = "Name That Pokémon"
@@ -242,6 +293,7 @@ class PokemonPack(Pack):
         redacted = re.sub(rf"{L}(a|an|the|this|that)\s+{n}{R}", "this Pokémon", redacted, flags=re.I)
         redacted = re.sub(rf"{L}{n}{R}", "this Pokémon", redacted, flags=re.I)
         redacted = re.sub(r"(^|[.!?]\s+)(its|this Pokémon)", lambda m: m.group(1) + m.group(2)[0].upper() + m.group(2)[1:], redacted)
+        redacted = agree_number(redacted)
         region_hint = f"It was first seen in the {REGIONS[gen]} region."
         hints = [type_hint, region_hint, f"From the Pokédex: {redacted}"]
         visuals = {type_hint: {"kind": "types", "types": type_names}, region_hint: {"kind": "chip", "text": REGIONS[gen]}}
