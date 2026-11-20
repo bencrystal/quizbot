@@ -52,7 +52,8 @@ def plan_episode(pack: Pack, settings: Settings, state: State, seed: int | None 
     today = dt.date.today().isoformat()
     slug = f"{pack.name}-{settings.format}-{slugify(theme['label'])}-{today}"
     if settings.format == "short":
-        slug += f"-{slugify(items[0].answer)}"
+        first = items[0]            # binary word quizzes: the word, not the verdict ("zolpidem", not "pok-mon")
+        slug += f"-{slugify((first.meta.get('binary') or {}).get('word') or first.answer)}"
     if settings.mechanic != "ladder":
         slug += f"-{settings.mechanic}"
     ep = _template_episode(pack, theme, items, slug, settings)
