@@ -54,6 +54,11 @@ Planned: video-game sounds, music (0.1 s → 0.5 s → 3 s excerpt ladder).
 - Allocation is Thompson sampling (`experiments._allocate`): balanced until 3 per arm, then 70 % to the likely best
   arm, 30 % dealt evenly. Theme weights × fitness from `state/themes.json` (nightly; median views vs pack median,
   0.4–2.5; unknown = 1.0) — both are pack-agnostic, so new packs inherit them.
+- Formats (`config/formats.yaml`, `quizbot/formats.py`): every upload is tagged `fmt:`/`mech:`/`cue:`/`twist:`. Rapid-fire
+  slots pick a format by weight × fitness (`state/formats.json`, nightly) — rapid-fire cries, Then & Now, slowed cries,
+  "Pokémon or medicine?" (pack `pokemon_or`, binary word quiz, lists in `assets/wordlists/`). Only formats with
+  `experiments: true` take part in A/B tests. New format = a registry line (+ a pack/theme); it starts at average weight.
+- `order` test: Shorts open on the cry or on the Pokédex line with the cry as the next clue (`short_order`).
 - Experiments have a `format` (short | rapid | long); rapid-fire has its own queue (`rapidbeat`). Pokémon cries:
   `cry_version` latest|legacy (legacy = original Game Boy/DS cry, Gen 1-5 only); the `cry` A/B tags Gen 6+ as fallback.
 - Rules Ben owns (never change unasked): `youtube_privacy`, `upload`, `max_episodes_per_day` (7 since 2026-11-04), `made_for_kids`.

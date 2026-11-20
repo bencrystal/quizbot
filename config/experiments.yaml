@@ -55,6 +55,16 @@ experiments:
       numbered: { series_numbers: "true" }
       plain:    { series_numbers: "false" }
 
+  # Does opening on the Pokédex line (playable by any fan) hold people better than opening on the cry?
+  - id: order
+    parallel: true
+    min_n: 8
+    max_n: 16
+    question: "Open on the cry, or on the Pokédex line with the cry as the next clue?"
+    variants:
+      cry: { short_order: cry }
+      dex: { short_order: dex }
+
   - id: ladder
     parallel: true
     question: "Points chip as a ladder of dots, or the plain number?"

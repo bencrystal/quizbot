@@ -1,0 +1,73 @@
+# "Pokémon or medicine?" — generic (non-proprietary) drug names and a plain one-phrase description of what
+# each is, at the level printed on any pharmacy leaflet. Names only; no advice, doses or claims.
+# Keep descriptions short and uncontroversial; when in doubt, leave the entry out.
+label: Medicine
+tint: [64, 200, 190]
+items:
+  - {name: Zolpidem, what: a sleep aid}
+  - {name: Tramadol, what: a pain reliever}
+  - {name: Lisinopril, what: a blood-pressure medicine}
+  - {name: Metformin, what: a diabetes medicine}
+  - {name: Atorvastatin, what: a cholesterol medicine}
+  - {name: Omeprazole, what: an acid-reflux medicine}
+  - {name: Sertraline, what: an antidepressant}
+  - {name: Gabapentin, what: a nerve-pain medicine}
+  - {name: Losartan, what: a blood-pressure medicine}
+  - {name: Amlodipine, what: a blood-pressure medicine}
+  - {name: Montelukast, what: an asthma medicine}
+  - {name: Escitalopram, what: an antidepressant}
+  - {name: Rosuvastatin, what: a cholesterol medicine}
+  - {name: Bupropion, what: an antidepressant}
+  - {name: Tamsulosin, what: a prostate medicine}
+  - {name: Meloxicam, what: an anti-inflammatory}
+  - {name: Cyclobenzaprine, what: a muscle relaxant}
+  - {name: Venlafaxine, what: an antidepressant}
+  - {name: Carvedilol, what: a heart medicine}
+  - {name: Allopurinol, what: a gout medicine}
+  - {name: Famotidine, what: a heartburn medicine}
+  - {name: Ondansetron, what: an anti-nausea medicine}
+  - {name: Lamotrigine, what: an anti-seizure medicine}
+  - {name: Topiramate, what: an anti-seizure medicine}
+  - {name: Duloxetine, what: an antidepressant}
+  - {name: Pantoprazole, what: an acid-reflux medicine}
+  - {name: Celecoxib, what: an anti-inflammatory}
+  - {name: Valsartan, what: a blood-pressure medicine}
+  - {name: Glipizide, what: a diabetes medicine}
+  - {name: Warfarin, what: a blood thinner}
+  - {name: Apixaban, what: a blood thinner}
+  - {name: Rivaroxaban, what: a blood thinner}
+  - {name: Sumatriptan, what: a migraine medicine}
+  - {name: Azithromycin, what: an antibiotic}
+  - {name: Cephalexin, what: an antibiotic}
+  - {name: Doxycycline, what: an antibiotic}
+  - {name: Ciprofloxacin, what: an antibiotic}
+  - {name: Fluconazole, what: an antifungal}
+  - {name: Acyclovir, what: an antiviral}
+  - {name: Oseltamivir, what: a flu antiviral}
+  - {name: Loratadine, what: an allergy medicine}
+  - {name: Cetirizine, what: an allergy medicine}
+  - {name: Fexofenadine, what: an allergy medicine}
+  - {name: Guaifenesin, what: a cough medicine}
+  - {name: Dextromethorphan, what: a cough suppressant}
+  - {name: Naproxen, what: a pain reliever}
+  - {name: Baclofen, what: a muscle relaxant}
+  - {name: Tizanidine, what: a muscle relaxant}
+  - {name: Buspirone, what: an anxiety medicine}
+  - {name: Mirtazapine, what: an antidepressant}
+  - {name: Donepezil, what: an Alzheimer's medicine}
+  - {name: Memantine, what: an Alzheimer's medicine}
+  - {name: Levothyroxine, what: a thyroid medicine}
+  - {name: Spironolactone, what: a water pill}
+  - {name: Furosemide, what: a water pill}
+  - {name: Metoprolol, what: a heart medicine}
+  - {name: Propranolol, what: a beta blocker}
+  - {name: Clopidogrel, what: a blood thinner}
+  - {name: Levetiracetam, what: an anti-seizure medicine}
+  - {name: Adalimumab, what: an arthritis medicine}
+  - {name: Semaglutide, what: a diabetes medicine}
+  - {name: Tirzepatide, what: a diabetes medicine}
+  - {name: Dupilumab, what: an eczema medicine}
+  - {name: Ustekinumab, what: a psoriasis medicine}
+  - {name: Infliximab, what: an autoimmune medicine}
+  - {name: Pembrolizumab, what: a cancer immunotherapy}
+  - {name: Nivolumab, what: a cancer immunotherapy}

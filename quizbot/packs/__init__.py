@@ -50,7 +50,9 @@ class Pack(ABC):
         pack's median for that format (state/themes.json, written nightly by the analytics job), clamped to
         0.4–2.5 so a cold theme is still drawn and a hot one can't take over. Themes with no data run at 1.0,
         so a new theme — or a new pack — starts at average and earns its place (Ben, 2026-11-11)."""
-        pool = [t for t in self.themes() if (mechanic == "rapid") or not t.get("rapid_only")]
+        from ..formats import pinned_themes
+        pinned = pinned_themes(self.name)         # themes that are formats of their own are only made on purpose
+        pool = [t for t in self.themes() if ((mechanic == "rapid") or not t.get("rapid_only")) and t["id"] not in pinned]
         options = [t for t in pool if t["label"] not in recent] or pool
         fit = self.theme_fitness("rapid" if mechanic == "rapid" else "short")
         weights = [int(t.get("weight", 1)) * fit.get(t["label"], 1.0) for t in options]
@@ -122,14 +124,15 @@ class Pack(ABC):
     choice_line: str = "Is it {choices}?"
 
 
-PACK_NAMES = ["pokemon", "birds"]   # real packs (fixture is test-only); rotation order comes from settings.packs_enabled
+PACK_NAMES = ["pokemon", "birds", "pokemon_or"]   # real packs (fixture is test-only); rotation order comes from settings.packs_enabled
 
 
 def _registry() -> dict:
     from .pokemon import PokemonPack
     from .birds import BirdsPack
     from .fixture import FixturePack
-    return {p.name: p for p in (PokemonPack, BirdsPack, FixturePack)}
+    from .pokemon_or import PokemonOrPack
+    return {p.name: p for p in (PokemonPack, BirdsPack, FixturePack, PokemonOrPack)}
 
 
 def get_pack(name: str, settings: Settings) -> Pack:

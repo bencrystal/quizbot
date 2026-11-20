@@ -31,6 +31,17 @@ def cmd_run(args, settings: Settings) -> int:
         notify(settings, f"⏸ daily cap reached ({settings.max_episodes_per_day}); not rendering. Use --force to override.")
         return 0
     pack_name = args.pack
+    # Which *format* is this? Rapid-fire slots pick one with the format bandit (config/formats.yaml: weight ×
+    # recent fitness); an explicit pack/theme is matched to its format. Single Shorts and long-form have one each.
+    from . import formats as _formats
+    import random as _random
+    slot = "rapid" if settings.mechanic == "rapid" else settings.format
+    fmt_id = fmt_spec = None
+    if slot == "rapid" and pack_name == "auto" and not args.theme and settings.tts_provider != "dev":
+        fmt_id, fmt_spec = _formats.pick("rapid", _random.Random())
+        pack_name = fmt_spec["pack"]
+        args.theme = fmt_spec.get("theme")
+        print(f"[plan] format: {fmt_id} (bandit)")
     if pack_name == "auto":
         rotation = list(settings.packs_enabled) or ["pokemon"]
         if settings.format == "long":
@@ -49,8 +60,14 @@ def cmd_run(args, settings: Settings) -> int:
             pack_name = rotation[state.count_episodes("short") % len(rotation)]
         print(f"[plan] pack: {pack_name} (auto)")
     pack = get_pack(pack_name, settings)
+    if fmt_id is None:
+        fmt_id, fmt_spec = _formats.identify(slot, pack_name, args.theme)
     exp_tags: list[str] = []
-    if settings.tts_provider != "dev":                             # no experiments offline
+    if settings.tts_provider != "dev":
+        for k, v in (fmt_spec.get("settings") or {}).items():     # the format's own fixed knobs (e.g. its voice)
+            if hasattr(settings, k):
+                setattr(settings, k, v)
+    if settings.tts_provider != "dev" and fmt_spec.get("experiments"):   # no experiments offline; only base formats are tested
         forced = str(settings.shorts_cold_open).lower()          # workflow input overrides the experiment
         from .experiments import assign
         # rapid-fire has its own experiment queue (format: rapid in experiments.yaml), never the Shorts one
@@ -68,6 +85,7 @@ def cmd_run(args, settings: Settings) -> int:
         ep.slug += "-cold" if cold else "-ann"
     else:
         ep.tags += exp_tags
+    ep.tags += _formats.tags(fmt_id, fmt_spec)             # fmt / mech / cue / twist: the axes analysis groups by
     ep.tags.append(f"thumb:{settings.thumb_style}")        # which thumbnail generator/style this upload carries
     if ep.format == "short":
         ep.tags.append(f"tier:{pack.tier(ep.items[0])}")   # item fame bucket, so experiments can balance it out
@@ -77,6 +95,7 @@ def cmd_run(args, settings: Settings) -> int:
         if str(settings.cry_version) == "legacy" and cries != {"legacy"}:   # Gen 6+ has no original cry: not a clean sample
             ep.tags = [t if not t.startswith("exp:cry=") else "exp:cry=fallback" for t in ep.tags]
     print(f"[plan] {ep.slug}: {', '.join(i.answer for i in ep.items)}")
+    print(f"[plan] intro: {ep.intro!r} · outro: {ep.outro!r} · alt audio on {sum(1 for i in ep.items if i.meta.get('alt_audio'))}/{len(ep.items)} items")
     state.upsert_episode(ep.slug, ep.pack, ep.title, ep.theme, "planned", meta={"manual": bool(args.force)})
     if ep.mechanic == "rapid":
         state.mark_used(ep.pack, "rapid", [i.id for i in ep.items], ep.slug)

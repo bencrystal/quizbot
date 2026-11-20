@@ -1,0 +1,18 @@
+# Format registry. Every upload is tagged `fmt:<id>` plus `mech:` / `cue:` / `twist:`; the analytics job, the
+# dashboard's Formats table and the format bandit all group by these. Add a format here and it starts at
+# average weight and earns (or loses) rapid-fire slots by its recent median views (state/formats.json).
+#   slot    which schedule slot makes it: short (single Shorts) | rapid (rapid-fire slots) | long
+#   mech    the game: ladder (hints) | rapid (name N) | binary (A or B) | odd | order | compare
+#   cue     what you're given: sound | word | text | image
+#   twist   the hook: none | nostalgia | speed | cross-domain | fake
+#   answer  open | binary | choice
+#   experiments  true = takes part in the slot's A/B tests (only the base formats do)
+#   settings     knobs this format always runs with (a format outside the tests doesn't inherit their winners)
+formats:
+  ladder:      {slot: short, pack: pokemon,    mech: ladder, cue: sound, twist: none,         answer: open,   experiments: true, label: "Name that Pokémon (hints)"}
+  cries:       {slot: rapid, pack: pokemon,    mech: rapid,  cue: sound, twist: none,         answer: open,   experiments: true, weight: 4, label: "Rapid-fire cries"}
+  then-now:    {slot: rapid, pack: pokemon,    theme: then-now, mech: rapid, cue: sound, twist: nostalgia,    answer: open,   weight: 1, label: "Then & Now cries"}
+  slow:        {slot: rapid, pack: pokemon,    theme: slow,     mech: rapid, cue: sound, twist: speed,        answer: open,   weight: 1, label: "Slowed-down cries"}
+  or-medicine: {slot: rapid, pack: pokemon_or, theme: medicine, mech: binary, cue: word, twist: cross-domain, answer: binary, weight: 2, label: "Pokémon or medicine?",
+                settings: {tts_provider: elevenlabs, tts_voice: "name:Liam"}}   # all voice, no cry: it gets the voice that won the Shorts test
+  long:        {slot: long,  pack: pokemon,    mech: ladder, cue: sound, twist: none,         answer: open,   experiments: true, label: "Long-form quiz"}

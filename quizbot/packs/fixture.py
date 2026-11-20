@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import subprocess
+from pathlib import Path
 
 from PIL import Image, ImageDraw
 
@@ -27,7 +28,11 @@ class FixturePack(Pack):
     bg_color = (20, 24, 30)
 
     def themes(self) -> list[dict]:
-        return [{"id": "all", "label": "All fixture critters"}]
+        return [{"id": "all", "label": "All fixture critters"},
+                # offline stand-in for the binary word quiz ("Pokémon or …?"): same meta, fixture art
+                {"id": "binary", "label": "Critter or Medicine?", "rapid_only": True, "weight": 0, "binary": ["Critter", "Medicine"],
+                 "title": "Critter or medicine? Only real fans get {n}/{n} #shorts",
+                 "intro": "Critter or medicine?", "outro": "How many did you get out of {n}?"}]
 
     def candidates(self, theme: dict) -> list[QuizItem]:
         items = []
@@ -56,4 +61,15 @@ class FixturePack(Pack):
                                   # exercise every hint visual the real packs use (map, size ladder, type pills)
                                   meta={"type_names": ["Fire", "Flying"], "visuals": {f"Its pitch is {'above' if hz >= 300 else 'below'} 300 hertz.": {"kind": "map", "regions": "EW" if hz >= 300 else "C"},
                                                     f"Its name starts with {name[0]}.": {"kind": "size", "rank": i % 4} if i % 2 else {"kind": "types", "types": ["Fire", "Flying"]}}}))
+        if theme.get("binary"):
+            meds = ["Zolpidem", "Dextromethorphan", "Pembrolizumab"]
+            out = []
+            for k, it in enumerate(items):
+                is_b = k % 2
+                word = meds[k // 2 % len(meds)] if is_b else it.answer
+                out.append(QuizItem(id=f"fixture:bin:{k}", answer=theme["binary"][is_b], prompt_audio=Path(), fact="",
+                                    reveal_image=it.reveal_image, subtitle=f"{word} · " + ("a test medicine" if is_b else "Fire / Flying type"),
+                                    tint=(64, 200, 190) if is_b else it.tint, shape_hint=False,
+                                    meta={"binary": {"word": word, "is": is_b, "labels": theme["binary"], "say": word}}))
+            return out
         return items

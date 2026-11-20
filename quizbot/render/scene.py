@@ -413,6 +413,28 @@ class Scene:
                 d = ImageDraw.Draw(img)
                 if st["shape_p"] < 0.5:
                     self.glyph_centered(d, (cx, cy), "?", int(box * 0.45), accent, alpha=1 - st["shape_p"] * 2)
+            elif st.get("binary") and st.get("word_p", 0) > 0:
+                # binary word quiz: the name itself is the cue — big, centred where the disc would be
+                word = st["binary"]["word"]
+                size = 118
+                while size > 50 and self.font(size).getlength(word) > self.W * 0.86:
+                    size -= 4
+                self.text(d, (cx, cy), word, size, fill=WHITE, alpha=ease_out(st["word_p"]))
+                # the two answers as chips under the word; a thin bar between them drains while you think
+                la, lb = st["binary"]["labels"]
+                f = self.font(40)
+                pad, hgt, gap = int(34 * self.u), int(76 * self.u), int(70 * self.u)
+                wa, wb = f.getlength(la.upper()) + 2 * pad, f.getlength(lb.upper()) + 2 * pad
+                y0 = int(cy + 0.19 * self.H) if self.portrait else int(cy + 0.30 * self.H)
+                x0 = self.W // 2 - (wa + gap + wb) / 2
+                for label, w, xx in ((la, wa, x0), (lb, wb, x0 + wa + gap)):
+                    d.rounded_rectangle((xx, y0 - hgt // 2, xx + w, y0 + hgt // 2), radius=hgt // 2, outline=accent, width=3)
+                    self.text(d, (xx + w / 2, y0), label.upper(), 40, fill=accent)
+                self.text(d, (x0 + wa + gap / 2, y0), "or", 30, fill=(150, 152, 168), bold=False)
+                if st.get("think") is not None:
+                    bw = int((wa + gap + wb) * (1 - st["think"]))
+                    by = y0 + hgt // 2 + int(26 * self.u)
+                    d.rounded_rectangle((self.W // 2 - bw // 2, by, self.W // 2 + bw // 2, by + int(8 * self.u)), radius=4, fill=accent)
             else:
                 r = int(box * 0.36)
                 d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(10, 10, 14))
@@ -619,7 +641,7 @@ class Scene:
                     # lines up in every chunk, not just the first
                     lit = self.lit_sets(lines, st.get("spoken", ""), st.get("word_i"), " ".join(lines))
                     centred = self.portrait and self.kinetic          # Shorts: the live hint reads as a caption
-                    if centred and live_label[0]:
+                    if centred and live_label[0] and st["wave"] is None:      # the waveform owns that strip while a sound plays
                         self.text(d, (g["art"][0] + dx, yy - int(50 * self.u)), " ".join(live_label[0].upper()), 24,
                                   fill=(200, 202, 214), anchor="mm", alpha=a * 0.9)
                     for ln, lw in zip(lines, lit):
