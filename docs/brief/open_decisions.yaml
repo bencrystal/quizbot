@@ -16,7 +16,9 @@
   how: "Reply in chat; it's a one-line edit to state/experiments.json."
 - id: pr-8-new-formats
   opened: 2026-11-17
-  status: open
+  status: decided
+  decided: 2026-11-20
+  answer: "Merge all of it (Ben, in chat)."
   title: "Merge PR #8: Pokémon-or-medicine, slowed cries, Pokédex-first test?"
   why: "Previews are rendered and the intro and voice fixes are in; nothing goes live until Ben says so."
   options:
