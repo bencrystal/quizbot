@@ -1,15 +1,25 @@
 {
  "pokemon": {
   "short": {
+   "Grass-type Pokémon": {
+    "n": 9,
+    "median_views": 305,
+    "fitness": 0.96
+   },
+   "Generation 2": {
+    "n": 5,
+    "median_views": 207,
+    "fitness": 0.65
+   },
    "Psychic-type Pokémon": {
     "n": 7,
     "median_views": 550,
-    "fitness": 1.75
+    "fitness": 1.74
    },
    "Fire-type Pokémon": {
-    "n": 7,
-    "median_views": 249,
-    "fitness": 0.79
+    "n": 6,
+    "median_views": 171.5,
+    "fitness": 0.54
    },
    "Water-type Pokémon": {
     "n": 3,
@@ -18,18 +28,18 @@
    },
    "Bug-type Pokémon": {
     "n": 7,
-    "median_views": 317,
-    "fitness": 1.01
+    "median_views": 355,
+    "fitness": 1.12
    },
    "Electric-type Pokémon": {
     "n": 8,
-    "median_views": 514.5,
-    "fitness": 1.64
+    "median_views": 466.0,
+    "fitness": 1.47
    },
    "Legendary Pokémon": {
     "n": 4,
-    "median_views": 355.0,
-    "fitness": 1.13
+    "median_views": 362.0,
+    "fitness": 1.14
    },
    "Starter Pokémon": {
     "n": 4,
@@ -39,7 +49,7 @@
    "Generation 4": {
     "n": 7,
     "median_views": 406,
-    "fitness": 1.3
+    "fitness": 1.28
    },
    "Generation 1": {
     "n": 3,
@@ -48,152 +58,142 @@
    },
    "Dragon-type Pokémon": {
     "n": 6,
-    "median_views": 753.5,
-    "fitness": 2.4
-   },
-   "Grass-type Pokémon": {
-    "n": 8,
-    "median_views": 419.0,
-    "fitness": 1.34
+    "median_views": 754.5,
+    "fitness": 2.38
    },
    "Generation 3": {
     "n": 5,
     "median_views": 138,
     "fitness": 0.44
    },
-   "Generation 2": {
-    "n": 4,
-    "median_views": 153.5,
-    "fitness": 0.49
-   },
    "Ghost-type Pokémon": {
     "n": 5,
     "median_views": 387,
-    "fitness": 1.23
+    "fitness": 1.22
    }
   },
   "rapid": {
+   "Electric-type Pokémon": {
+    "n": 3,
+    "median_views": 399,
+    "fitness": 1.0
+   },
+   "Pokémon Mix": {
+    "n": 8,
+    "median_views": 408.0,
+    "fitness": 1.02
+   },
+   "Ash's Pokémon": {
+    "n": 4,
+    "median_views": 411.0,
+    "fitness": 1.03
+   },
    "Generation 4": {
     "n": 3,
-    "median_views": 185,
-    "fitness": 0.47
+    "median_views": 259,
+    "fitness": 0.65
    },
    "Legendary Pokémon": {
     "n": 4,
-    "median_views": 537.5,
-    "fitness": 1.36
+    "median_views": 549.5,
+    "fitness": 1.38
    },
    "Generation 1": {
     "n": 5,
     "median_views": 197,
-    "fitness": 0.5
-   },
-   "Pokémon Mix": {
-    "n": 7,
-    "median_views": 687,
-    "fitness": 1.74
+    "fitness": 0.49
    },
    "Dragon-type Pokémon": {
     "n": 2,
-    "median_views": 442.0,
-    "fitness": 1.12
+    "median_views": 437.0,
+    "fitness": 1.1
    },
    "Then & Now cries": {
     "n": 2,
-    "median_views": 518.0,
-    "fitness": 1.31
+    "median_views": 373.0,
+    "fitness": 0.93
    },
    "Ghost-type Pokémon": {
     "n": 5,
-    "median_views": 362,
-    "fitness": 0.92
+    "median_views": 363,
+    "fitness": 0.91
    },
    "Generation 3": {
     "n": 3,
     "median_views": 225,
-    "fitness": 0.57
-   },
-   "Ash's Pokémon": {
-    "n": 3,
-    "median_views": 404,
-    "fitness": 1.02
+    "fitness": 0.56
    },
    "Generation 2": {
     "n": 4,
-    "median_views": 761.5,
-    "fitness": 1.93
+    "median_views": 794.5,
+    "fitness": 1.99
    },
    "Grass-type Pokémon": {
     "n": 1,
-    "median_views": 550,
+    "median_views": 555,
     "fitness": 1.39
    },
    "Kanto Gym Leaders' Pokémon": {
     "n": 4,
     "median_views": 405.0,
-    "fitness": 1.03
+    "fitness": 1.02
    },
    "Fire-type Pokémon": {
     "n": 2,
-    "median_views": 668.5,
-    "fitness": 1.69
+    "median_views": 669.0,
+    "fitness": 1.68
    },
    "Water-type Pokémon": {
     "n": 4,
-    "median_views": 314.0,
-    "fitness": 0.8
+    "median_views": 324.0,
+    "fitness": 0.81
    },
    "Starter Pokémon": {
     "n": 3,
     "median_views": 145,
     "fitness": 0.4
    },
-   "Electric-type Pokémon": {
-    "n": 2,
-    "median_views": 422.0,
-    "fitness": 1.07
-   },
    "Bug-type Pokémon": {
     "n": 3,
-    "median_views": 305,
+    "median_views": 306,
     "fitness": 0.77
    },
    "Original Game Boy cries": {
     "n": 2,
-    "median_views": 222.0,
+    "median_views": 223.0,
     "fitness": 0.56
    },
    "Psychic-type Pokémon": {
     "n": 1,
     "median_views": 377,
-    "fitness": 0.96
+    "fitness": 0.94
    }
   },
   "long": {
    "Dragon-type Pokémon": {
     "n": 1,
-    "median_views": 11,
+    "median_views": 14,
     "fitness": 1.0
    },
    "Fire-type Pokémon": {
     "n": 1,
-    "median_views": 63,
+    "median_views": 64,
     "fitness": 2.5
    },
    "Psychic-type Pokémon": {
     "n": 1,
     "median_views": 24,
-    "fitness": 2.18
+    "fitness": 1.71
    },
    "Generation 4": {
     "n": 1,
     "median_views": 8,
-    "fitness": 0.73
+    "fitness": 0.57
    },
    "Generation 1": {
     "n": 1,
     "median_views": 10,
-    "fitness": 0.91
+    "fitness": 0.71
    }
   }
  },
@@ -238,16 +238,6 @@
     "n": 1,
     "median_views": 115,
     "fitness": 1.14
-   },
-   "Eastern US Birds": {
-    "n": 1,
-    "median_views": 138,
-    "fitness": 1.37
-   },
-   "Birds of the Plains": {
-    "n": 1,
-    "median_views": 65,
-    "fitness": 0.64
    }
   }
  }
